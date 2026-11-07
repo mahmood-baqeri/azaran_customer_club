@@ -46,6 +46,7 @@ const EditProjectScreen = lazy(() => import("../modules/project_module/screen/ed
 const UploadAttachmentsScreen = lazy(() => import("../modules/project_module/screen/upload_attachments.screen"));
 const ProjectsListScreen = lazy(() => import("../modules/project_module/screen/projects_list.screen"));
 const ProjectDetailScreen = lazy(() => import("../modules/project_module/screen/project_detail.screen"));
+const ColleaguesScreen = lazy(() => import("../modules/project_module/screen/colleagues.screen"));
 
 
 export default function AppRouter() {
@@ -101,6 +102,7 @@ export default function AppRouter() {
                               <Route path={PROJECT_ROUTES.upload(":id")} element={<UploadAttachmentsScreen />} />
                               <Route path={PROJECT_ROUTES.edit(":id")} element={<EditProjectScreen />} />
                               <Route path={PROJECT_ROUTES.detail(":id")} element={<ProjectDetailScreen />} />
+                              <Route path={PROJECT_ROUTES.colleagues(":id")} element={<ColleaguesScreen />} />
 
                          </Route>
                     </Route>

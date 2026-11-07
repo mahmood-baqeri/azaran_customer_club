@@ -20,4 +20,4 @@ if __name__ == "__main__":
                 workers=4
             )
 
-        os.system("nohup python3 run.py > server.log 2>&1 &")
+        # os.system("nohup python3 run.py > server.log 2>&1 &")

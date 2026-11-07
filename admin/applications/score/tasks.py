@@ -73,7 +73,7 @@ def run_weekly_streak_job():
 def run_gallery_top_job():
     """شنبه‌ها — عکس برتر هفته."""
     try:
-        from applications.gallery.models import GalleryPhoto
+        from applications.gallery.models import GalleryPhoto # pyright: ignore[reportMissingImports]
     except ImportError:
         return
 

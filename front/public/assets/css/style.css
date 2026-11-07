@@ -1852,3 +1852,9 @@ p.verifyText {
     opacity: 1;
   }
 }
+
+
+.eggy>div svg:last-of-type {
+  position: relative;
+  left: -15px;
+}

@@ -33,7 +33,7 @@ def settings(request):
     data = {}
     data["pageTitle"] = "ویرایش پروفایل"
     data["user"] = request.user
-    data["profile"] = front__userForm(request.user)
+    data["profile"] = front__userForm(request.user) # pyright: ignore[reportUndefinedVariable]
     data["profileStore"] = reverse('userFront:updateProfile')
     return render(request, "user/settings.html", {"data": data})
 
@@ -49,8 +49,8 @@ def updateProfile(request):
             user.lat = request.POST.get('lat') if request.POST.get('lat') else user.lat
             user.long = request.POST.get('long') if request.POST.get('long') else user.long
             user.address = request.POST.get('address')
-            user.birthDay = request.POST.get('birthDay') if validate(request.POST.get('birthDay')) else user.birthDay
-            user.marriageDay = request.POST.get('marriageDay') if validate(request.POST.get('marriageDay')) else user.marriageDay
+            user.birthDay = request.POST.get('birthDay') if validate(request.POST.get('birthDay')) else user.birthDay # pyright: ignore[reportUndefinedVariable]
+            user.marriageDay = request.POST.get('marriageDay') if validate(request.POST.get('marriageDay')) else user.marriageDay # pyright: ignore[reportUndefinedVariable]
             user.phone = request.POST.get('phone') if request.POST.get('phone') else None
             user.photo = request.FILES.get('photo') if 'photo' in request.FILES else user.photo
             user.save()

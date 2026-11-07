@@ -5,6 +5,7 @@ from datetime import datetime
 
 from asgiref.sync import sync_to_async
 from fastapi import APIRouter, Depends, File, UploadFile
+from django.db import transaction
 
 from applications.factor.models import Factor
 from applications.factor.services import FactorError, create_factor
@@ -17,6 +18,7 @@ from app_fastapi.views.user.user_helper import get_current_user
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
+_EDIT_LOCKED_MSG = "تنها تا قبل از تایید فاکتور امکان ویرایش یا حذف وجود دارد"
 
 def _serialize_factor(f: Factor, *, full: bool = False) -> dict:
     data = {
@@ -51,7 +53,7 @@ def _serialize_factor(f: Factor, *, full: bool = False) -> dict:
 
 
 # ═══════════════════════════════════════════════════════════
-# ایجاد فاکتور
+# ۱. ایجاد فاکتور
 # ═══════════════════════════════════════════════════════════
 @router.post("/create/")
 async def create_factor_endpoint(
@@ -93,26 +95,123 @@ async def create_factor_endpoint(
         return error_response("خطا در ثبت فاکتور")
 
 
-def _to_int(val):
-    if val is None or val == "":
-        return None
+# ═══════════════════════════════════════════════════════════
+# ۲. ویرایش فاکتور (فقط PENDING)
+# ═══════════════════════════════════════════════════════════
+@router.post("/{factor_id}/update/")
+async def update_factor_endpoint(
+    factor_id: int,
+    photo: UploadFile | None = File(None),
+    form: dict = Depends(DependencyDataRequest),
+    user: User = Depends(get_current_user),
+):
     try:
-        return int(val)
-    except (ValueError, TypeError):
-        return None
+        saved_name = None
+        if photo:
+            saved_name = handle_save_file(photo)
+
+        result = await _update_factor_db(factor_id, user.id, form, saved_name)
+        if result.get("error"):
+            return error_response(result["error"], status_code=400)
+            
+        return success_response("فاکتور با موفقیت ویرایش شد", _serialize_factor(result["data"], full=True))
+    except Exception:
+        logger.exception("update_factor failed")
+        return error_response("خطا در ویرایش فاکتور")
 
 
-def _to_datetime(val):
-    if not val:
-        return None
-    try:
-        return datetime.fromisoformat(str(val))
-    except (ValueError, TypeError):
-        return None
+@sync_to_async
+def _update_factor_db(factor_id, user_id, form, saved_name):
+    with transaction.atomic():
+        f = Factor.objects.select_for_update().filter(id=factor_id, user_id=user_id).first()
+        if not f:
+            return {"error": "فاکتور یافت نشد"}
+        if f.status != Factor.Status.PENDING:
+            return {"error": _EDIT_LOCKED_MSG}
+
+        update_fields = []
+        
+        if saved_name:
+            f.photo = saved_name
+            update_fields.append("photo")
+            
+        if "amount" in form:
+            f.amount = _to_int(form.get("amount"))
+            update_fields.append("amount")
+            
+        if "invoice_number" in form:
+            f.invoice_number = form.get("invoice_number")
+            update_fields.append("invoice_number")
+            
+        if "invoice_issue_at" in form:
+            f.invoice_issue_at = _to_datetime(form.get("invoice_issue_at"))
+            update_fields.append("invoice_issue_at")
+            
+        if "number_water_taps" in form:
+            f.number_water_taps = _to_int(form.get("number_water_taps"))
+            update_fields.append("number_water_taps")
+            
+        if "number_connections" in form:
+            f.number_connections = _to_int(form.get("number_connections"))
+            update_fields.append("number_connections")
+            
+        if "pipe_length" in form:
+            f.pipe_length = _to_int(form.get("pipe_length"))
+            update_fields.append("pipe_length")
+            
+        if "shop_name" in form:
+            f.shop_name = form.get("shop_name")
+            update_fields.append("shop_name")
+            
+        if "seller_phone" in form:
+            f.seller_phone = form.get("seller_phone")
+            update_fields.append("seller_phone")
+            
+        if "seller_address" in form:
+            f.seller_address = form.get("seller_address")
+            update_fields.append("seller_address")
+
+        if update_fields:
+            f.save(update_fields=update_fields)
+
+        # رفرش از دیتابیس برای برگرداندن اطلاعات جدید
+        f.refresh_from_db()
+        return {"data": f}
 
 
 # ═══════════════════════════════════════════════════════════
-# لیست و جزئیات
+# ۳. حذف فاکتور (فقط PENDING)
+# ═══════════════════════════════════════════════════════════
+@router.delete("/{factor_id}/")
+async def delete_factor_endpoint(
+    factor_id: int,
+    user: User = Depends(get_current_user),
+):
+    try:
+        result = await _delete_factor_db(factor_id, user.id)
+        if result.get("error"):
+            return error_response(result["error"], status_code=400)
+        return success_response("فاکتور با موفقیت حذف شد", {})
+    except Exception:
+        logger.exception("delete_factor failed")
+        return error_response("خطا در حذف فاکتور")
+
+
+@sync_to_async
+def _delete_factor_db(factor_id, user_id):
+    with transaction.atomic():
+        f = Factor.objects.select_for_update().filter(id=factor_id, user_id=user_id).first()
+        if not f:
+            return {"error": "فاکتور یافت نشد"}
+        if f.status != Factor.Status.PENDING:
+            return {"error": _EDIT_LOCKED_MSG}
+        
+        f.delete()
+        return {"success": True}
+
+
+# ═══════════════════════════════════════════════════════════
+# ۴. لیست و جزئیات
 # ═══════════════════════════════════════════════════════════
 @router.get("/list/")
 async def list_my_factors(user: User = Depends(get_current_user)):
@@ -148,3 +247,24 @@ def _get_one(factor_id, user_id):
         .first()
     )
     return _serialize_factor(f, full=True) if f else None
+
+
+# ═══════════════════════════════════════════════════════════
+# Helpers
+# ═══════════════════════════════════════════════════════════
+def _to_int(val):
+    if val is None or val == "":
+        return None
+    try:
+        return int(val)
+    except (ValueError, TypeError):
+        return None
+
+
+def _to_datetime(val):
+    if not val:
+        return None
+    try:
+        return datetime.fromisoformat(str(val))
+    except (ValueError, TypeError):
+        return None

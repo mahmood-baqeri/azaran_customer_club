@@ -7,6 +7,8 @@ import { projectRepository } from "../repository/project.repository";
 import { MyNotification } from "../../../shared/utils/notification";
 import PhoneInput from "../../../shared/components/inputs/Phone";
 import NumberInput from "../../../shared/components/inputs/Number";
+import MyImage from "../../../shared/components/image-show";
+import { ICONS } from "../../../shared/constants/icons";
 
 interface Props {
      isOpen: boolean;
@@ -239,20 +241,11 @@ export default function ColleaguesModal({ isOpen, onClose, projectId }: Props) {
                                              <div
                                                   style={{ display: "flex", alignItems: "center", gap: 12 }}
                                              >
-                                                  <span
-                                                       style={{
-                                                            fontSize: 13,
-                                                            fontWeight: 800,
-                                                            color: "#14306b",
-                                                       }}
-                                                  >
+                                                  <span className="fs-12" >
                                                        {c.percent}%
                                                   </span>
 
-                                                  <label
-                                                       className="auth-switch"
-                                                       aria-label={`فعال/غیرفعال کردن ${c.user_name}`}
-                                                  >
+                                                  <label className="auth-switch" aria-label={`فعال/غیرفعال کردن ${c.user_name}`}>
                                                        <input
                                                             type="checkbox"
                                                             checked={c.is_active}
@@ -268,16 +261,7 @@ export default function ColleaguesModal({ isOpen, onClose, projectId }: Props) {
                                                             onClick={() => handleDelete(c.id)}
                                                             aria-label={`حذف ${c.user_name}`}
                                                        >
-                                                            <svg
-                                                                 width="16"
-                                                                 height="16"
-                                                                 viewBox="0 0 24 24"
-                                                                 fill="none"
-                                                                 stroke="#d32f2f"
-                                                                 strokeWidth="2"
-                                                            >
-                                                                 <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                                                            </svg>
+                                                            <MyImage src={ICONS.trash} className="w__20 " />
                                                        </button>
                                                   )}
                                              </div>

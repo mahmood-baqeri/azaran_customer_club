@@ -1,10 +1,8 @@
 // src/modules/project_module/screen/project_detail.screen.tsx
 
-import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Header from "../../../app/layouts/header";
 import { useProjectDetail } from "../hooks/use-project-detail";
-import ColleaguesModal from "../components/ColleaguesModal";
 import { PROJECT_ROUTES } from "../routes";
 import { convertToJalaliDate } from "../../../shared/utils/date";
 import "../../../shared/styles/project.css";
@@ -21,7 +19,7 @@ export default function ProjectDetailScreen() {
      const navigate = useNavigate();
 
      const { project, loading } = useProjectDetail(projectId);
-     const [showColleagues, setShowColleagues] = useState(false);
+
 
      if (loading || !project) return null;
 
@@ -33,7 +31,7 @@ export default function ProjectDetailScreen() {
 
      return (
           <>
-               <Header title="جزئیات پروژه" showBack showLogo={false} menuBg="f7f8fb" />
+               <Header title="جزئیات پروژه" showBack showLogo={false} menuBg="f7f8fb" buttonBg="e8eefc" />
 
                <div className="proj-body" style={{ paddingBottom: 100 }}>
                     <div className="proj-summary-card">
@@ -53,7 +51,7 @@ export default function ProjectDetailScreen() {
 
                     <button
                          className="proj-add-colleague-btn"
-                         onClick={() => setShowColleagues(true)}
+                         onClick={() => navigate(PROJECT_ROUTES.colleagues(project.id))}
                     >
                          مدیریت همکاران پروژه ({project.colleagues?.length || 0} نفر)
                     </button>
@@ -72,11 +70,6 @@ export default function ProjectDetailScreen() {
                     )}
                </div>
 
-               <ColleaguesModal
-                    isOpen={showColleagues}
-                    onClose={() => setShowColleagues(false)}
-                    projectId={project.id}
-               />
           </>
      );
 }

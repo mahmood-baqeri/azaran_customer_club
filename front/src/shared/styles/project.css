@@ -451,7 +451,7 @@
 }
 
 .proj-modal-sheet {
-     background: #fff;
+     background: #f7f7f7;
      width: 100%;
      max-width: 430px;
      border-top-left-radius: 24px;
@@ -534,12 +534,22 @@
      gap: 8px;
 }
 
+.colleagues-empty {
+     text-align: center;
+     font-size: 12px;
+     color: #9b712e;
+     padding: 20px 0px;
+     background: #fee7ba;
+     border-radius: 10px;
+     margin: 30px 0;
+}
+
 .colleague-row {
      display: flex;
      justify-content: space-between;
      align-items: center;
      padding: 12px;
-     background: #f8fafd;
+     background: #fff;
      border-radius: 12px;
 }
 
@@ -554,10 +564,8 @@
 }
 
 .colleague-delete-btn {
-     background: #ffebee;
+     background: none;
      border: none;
-     width: 32px;
-     height: 32px;
      border-radius: 8px;
      display: flex;
      align-items: center;
@@ -567,6 +575,9 @@
 
 .colleagues-progress {
      margin-top: 20px;
+     background: #fff;
+     padding: 30px 10px;
+     border-radius: 10px;
 }
 
 .progress-bar {

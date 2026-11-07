@@ -56,10 +56,8 @@ export default function UploadAttachmentsScreen() {
      const { project, loading, refresh } = useProjectDetail(projectId);
 
      /* ----------------------------- Derive state --------------------------- */
-     // ✅ isEditMode فقط زمانی true است که فاکتور با وضعیت approved وجود داشته باشد
-     const isEditMode = !!project?.attachments?.some(
-          (a) => a.type === "Invoice" && a.status === "approved"
-     );
+     // ✅ هر فایلی که قبلاً آپلود شده باشد = حالت ویرایش
+     const isEditMode = (project?.attachments?.length ?? 0) > 0;
 
      /* ------------------------------- State -------------------------------- */
      const [files, setFiles] = useState<FileState>({});
@@ -145,9 +143,19 @@ export default function UploadAttachmentsScreen() {
 
      const canSubmit = hasAllRequired && !invoiceMissing && isSelfCheckedOk && !submitting;
 
+     const hasNewFiles = Object.keys(files).length > 0;
+
      /* ------------------------------ Submit -------------------------------- */
      const handleSubmit = async () => {
           if (!canSubmit || !projectId) return;
+
+          // ✅ ایراد ۱: اگر هیچ فایلی برای آپلود انتخاب نشده، خطا بده
+          if (!hasNewFiles) {
+               MyNotification("", "هیچ فایلی برای آپلود انتخاب نکرده‌اید", "warning");
+               return;
+          }
+
+
           setSubmitting(true);
           try {
                await projectRepository.uploadAttachmentsBatch(projectId, files);

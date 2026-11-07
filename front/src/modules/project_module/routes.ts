@@ -6,4 +6,5 @@ export const PROJECT_ROUTES = {
   detail: (id: number | string) => `/projects/${id}`,
   edit: (id: number | string) => `/projects/${id}/edit`,
   upload: (id: number | string) => `/projects/${id}/upload`,
+  colleagues: (id: number | string) => `/projects/${id}/colleagues`, 
 };
