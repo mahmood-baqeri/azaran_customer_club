@@ -1,0 +1,1 @@
+export const NOTIFICATIONS_ROUTES = { all: "notifications" };

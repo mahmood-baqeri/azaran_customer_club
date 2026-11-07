@@ -1,0 +1,48 @@
+<div class="stateCityElement text-end">
+    <p class="m-0"><b>{{ item.l }}</b></p>
+</div>
+<div class="{{ item.c }}">
+    <div class="form-group">
+        {% if item.r %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{ item.stateID }}"> انتخاب استان </label>
+        <select class="form-control select2" name="{{ item.sn }}" id="{{ item.stateID }}" {% if item.r %} required {% endif %}>
+            {% for key in item.states %}
+                <option value="{{ key.id }}" {% if key.id == item.currentStateID %} selected {% endif %}>{{ key.label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+<div class="{{ item.c }}">
+    <div class="form-group">
+        {% if item.r %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{ item.cityID }}"> انتخاب شهر </label>
+        <select class="form-control select2" name="{{ item.cn }}" id="{{ item.cityID }}" {% if item.r %} required {% endif %}>
+            {% for key in item.cities %}
+                <option value="{{ key.id }}" {% if key.id == item.currentCityID %} selected {% endif %}>{{ key.label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#{{ item.stateID }}').on('change', function () {
+            $('#{{ item.cityID }}').children().remove();
+            let inputs = {
+                'id': $(this).val(),
+            };
+            ajaxFunction("api/state/cities", inputs, true).then((data) => {
+                var toAppend = '';
+                $.each(data.data, function (key, item) {
+                    toAppend += '<option value="' + item.id + '">' + item.name + '</option>';
+                });
+                $('#{{ item.cityID }}').append(toAppend);
+            });
+        });
+    });
+</script>
+

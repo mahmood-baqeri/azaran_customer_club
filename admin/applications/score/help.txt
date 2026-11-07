@@ -1,0 +1,843 @@
+۵. یکپارچه‌سازی در اپ‌های دیگر — نمونه‌های واقعی
+
+
+
+🎯 ۵.۱ اپ quiz — DAILY_QUIZ
+# applications/quiz/views.py  (endpoint کاربر)
+@router.post("/quiz/{quiz_id}/submit/")
+async def submit_quiz(
+    quiz_id: int,
+    form: dict = Depends(DependencyDataRequest),
+    user: User = Depends(get_current_user),
+):
+    result = await database_sync_to_async(submit_quiz_service)(
+        user.id, quiz_id, form.get("answer_index"),
+    )
+    if not result["ok"]:
+        return error_response(result["message"])
+    return success_response("ثبت شد", result)
+    
+    
+    
+    
+سرویس اپ quiz:
+# applications/quiz/services.py
+from applications.quiz.models import Quiz, QuizAttempt
+from applications.score import api as score_api
+
+
+def submit_quiz_service(user_id: int, quiz_id: int, answer_index: int) -> dict:
+    quiz = Quiz.objects.filter(id=quiz_id, is_active=True).first()
+    if not quiz:
+        return {"ok": False, "message": "کوئیز یافت نشد"}
+
+    # ۱) ذخیره پاسخ (مسئولیت اپ quiz)
+    correct = answer_index == quiz.correct_index
+    attempt = QuizAttempt.objects.create(
+        user_id=user_id, quiz=quiz,
+        answer_index=answer_index, is_correct=correct,
+    )
+
+    # ۲) امتیاز (عوارض جانبی — بعد از ذخیره)
+    log = score_api.award(
+        user_id,
+        code="DAILY_QUIZ",
+        amount_override=1 if correct else 0,   # غلط هم ۰ ثبت می‌شه
+        reference_type="quiz_attempt",
+        reference_id=str(attempt.id),
+        reason="کوئیز روزانه",
+        extra={"quiz_id": quiz.id, "correct": correct},
+    )
+
+    return {
+        "ok": True,
+        "correct": correct,
+        "awarded": log is not None,
+        "score_log_id": log.id if log else None,
+    }
+    
+    
+    
+    
+    
+🎯 ۵.۲ اپ qa — QA_QUESTION / QA_ANSWER
+# applications/qa/services.py
+from applications.qa.models import QAQuestion, QAAnswer
+from applications.score import api as score_api
+
+
+def create_question(user, title: str, body: str) -> QAQuestion:
+    q = QAQuestion.objects.create(user=user, title=title, body=body)
+    # امتیاز در این مرحله ثبت نمی‌شه — سؤال باید تأیید بشه (طبق اکسل)
+    return q
+
+
+def approve_question(question_id: int, admin) -> None:
+    """ادمین سؤال رو تأیید می‌کنه → امتیاز داده می‌شه."""
+    q = QAQuestion.objects.filter(id=question_id, is_approved=False).first()
+    if not q:
+        return
+    q.is_approved = True
+    q.approved_by = admin
+    q.save(update_fields=["is_approved", "approved_by"])
+
+    # ✅ امتیاز بعد از تأیید
+    score_api.award(
+        q.user,
+        code="QA_QUESTION",
+        reference_type="qa_question",
+        reference_id=str(q.id),
+        reason="سؤال تأییدشده",
+        extra={"question_id": q.id},
+    )
+
+
+def create_answer(user, question_id: int, body: str) -> QAAnswer:
+    a = QAAnswer.objects.create(user=user, question_id=question_id, body=body)
+    return a
+
+
+def on_answer_liked(answer_id: int) -> None:
+    """وقتی پاسخ به آستانه لایک رسید → امتیاز (طبق اکسل: «وابسته به لایک»)."""
+    from django.conf import settings
+    a = QAAnswer.objects.filter(id=answer_id).first()
+    if not a or a.likes_count < getattr(settings, "QA_ANSWER_LIKE_THRESHOLD", 5):
+        return
+    score_api.award(
+        a.user,
+        code="QA_ANSWER",
+        reference_type="qa_answer",
+        reference_id=str(a.id),
+        reason=f"پاسخ با {a.likes_count} لایک",
+        extra={"likes": a.likes_count},
+    )
+    
+    
+    
+    
+🎯 ۵.۳ اپ invoice — INVOICE / INVOICE_PARTICIPATION
+# applications/invoice/services.py
+from applications.invoice.models import Invoice
+from applications.score import api as score_api
+
+
+def approve_invoice(invoice_id: int, admin) -> None:
+    invoice = Invoice.objects.filter(id=invoice_id, status="pending").first()
+    if not invoice:
+        return
+    invoice.status = "approved"
+    invoice.approved_by = admin
+    invoice.save(update_fields=["status", "approved_by"])
+
+    # ۱) ثبت‌کننده — INVOICE (درصد از مبلغ فاکتور)
+    score_api.award(
+        invoice.user,
+        code="INVOICE",
+        base_value=int(invoice.total_amount),
+        reference_type="invoice",
+        reference_id=str(invoice.id),
+        reason=f"تأیید فاکتور #{invoice.id}",
+        extra={"invoice_amount": int(invoice.total_amount)},
+    )
+
+    # ۲) مشارکت‌کنندگان
+    for p in invoice.participants.all():
+        score_api.award(
+            p.user,
+            code="INVOICE_PARTICIPATION",
+            base_value=int(invoice.total_amount),
+            reference_type="invoice_participant",
+            reference_id=f"{invoice.id}:{p.id}",
+            reason=f"مشارکت در فاکتور #{invoice.id}",
+            extra={"share_percent": float(p.share_percent)},
+        )
+        
+        
+        
+🎯 ۵.۴ اپ project
+# applications/project/services.py
+def approve_project(project_id: int, admin) -> None:
+    p = Project.objects.filter(id=project_id, status="pending").first()
+    if not p:
+        return
+    p.status = "approved"; p.save(update_fields=["status"])
+
+    score_api.award(
+        p.user, "PROJECT",
+        reference_type="project", reference_id=str(p.id),
+        reason=f"تأیید پروژه #{p.id}",
+    )
+    for member in p.participants.all():
+        score_api.award(
+            member.user, "PROJECT_PARTICIPATION",
+            units=member.units,
+            reference_type="project_participant",
+            reference_id=f"{p.id}:{member.id}",
+            reason=f"مشارکت در پروژه #{p.id}",
+        )
+        
+        
+        
+        
+🎯 ۵.۵ اپ gift — GIFT_REDEEM / CUSTOM_GIFT / ORDER_REFUND
+# applications/gift/services.py
+from applications.gift.models import GiftOrder
+from applications.score import api as score_api
+from applications.score.services import ScoreError
+
+
+def create_gift_order(user, gift, quantity: int = 1) -> GiftOrder:
+    # ۱) ساخت سفارش
+    order = GiftOrder.objects.create(
+        user=user, gift=gift, quantity=quantity,
+        score_cost=gift.score_cost * quantity,
+        status="pending",
+    )
+
+    # ۲) کسر امتیاز — اگه موجودی کافی نباشه، ScoreError می‌ده
+    try:
+        log = score_api.spend(
+            user, "GIFT_REDEEM",
+            amount=order.score_cost,
+            reference_type="gift_order", reference_id=str(order.id),
+            reason=f"خرید هدیه #{order.id}",
+            extra={"gift_id": gift.id, "quantity": quantity},
+        )
+        order.score_log_id = log.id
+        order.status = "approved"
+        order.save(update_fields=["score_log_id", "status"])
+        return order
+    except ScoreError:
+        order.delete()
+        raise
+
+
+def cancel_gift_order(order_id: int) -> None:
+    order = GiftOrder.objects.filter(id=order_id).first()
+    if not order or order.status == "cancelled":
+        return
+
+    order.status = "cancelled"
+    order.save(update_fields=["status"])
+
+    # ✅ برگشت امتیاز → ORDER_REFUND
+    if order.score_log_id:
+        score_api.refund(
+            order.score_log_id,
+            reason=f"لغو سفارش هدیه #{order.id}",
+        )
+        
+        
+        
+        
+🎯 ۵.۶ اپ user — REFERRAL
+
+# app_fastapi/views/auth/verify.py
+
+from applications.user.services import reward_referral_after_verification
+@router.post("/verify/")
+async def verify_mobile(form: dict = Depends(DependencyDataRequest)):
+    mobile = form.get("mobile")
+    code = form.get("code")
+
+    # ── تأیید کد ──────────────────────────────────
+    ok = await sync_to_async(_verify_code)(mobile, code)
+    if not ok:
+        return error_response("کد نامعتبر است")
+
+    # ── فعال‌سازی کاربر ───────────────────────────
+    user = await sync_to_async(_activate_user)(mobile)
+
+    # ── REFERRAL (فقط اینجا!) ─────────────────────
+    await sync_to_async(reward_referral_after_verification)(user)
+
+    return success_response("شماره تأیید شد")
+
+
+@sync_to_async
+def _activate_user(mobile):
+    user = User.objects.get(mobile=mobile)
+    user.is_mobile_verified = True
+    user.save(update_fields=["is_mobile_verified"])
+    return user
+
+
+
+# applications/user/services.py
+def reward_referral_after_verification(user):
+    """بعد از verify موبایل کاربر دعوت‌شده صدا زده می‌شه."""
+    from applications.score import api as score_api
+
+    with transaction.atomic():
+        inv = (
+            UserInvitation.objects
+            .select_for_update()
+            .filter(invited_user=user, is_rewarded=False)
+            .first()
+        )
+        if not inv:
+            return
+
+        score_api.award(
+            inv.inviter, "REFERRAL",
+            reference_type="invitation",
+            reference_id=f"{inv.id}:inviter",
+            reason=f"دعوت {user.mobile}",
+            extra={"role": "inviter"},
+        )
+        score_api.award(
+            user, "REFERRAL",
+            reference_type="invitation",
+            reference_id=f"{inv.id}:invited",
+            reason="هدیه ثبت‌نام با کد دعوت",
+            extra={"role": "invited"},
+        )
+
+        inv.is_rewarded = True
+        inv.rewarded_at = timezone.now()
+        inv.save(update_fields=["is_rewarded", "rewarded_at"])
+        
+        
+        
+        
+        
+🎯 ۵.۷ اپ game — TREASURE_HUNT / PUZZLE / FORTUNE_WHEEL / LUCKY_BOX
+# applications/game/services.py
+from applications.score import api as score_api
+
+
+def submit_treasure_hunt(user, hunt_id: int, found: bool) -> dict:
+    log = score_api.award(
+        user, "TREASURE_HUNT",
+        amount_override=5 if found else 0,
+        reference_type="treasure_hunt",
+        reference_id=f"{user.id}:{hunt_id}:{timezone.now().date()}",
+        reason="گنج‌یابی",
+        extra={"found": found, "hunt_id": hunt_id},
+    )
+    return {"found": found, "awarded": log is not None}
+
+
+def submit_puzzle(user, puzzle_id: int, solved: bool) -> dict:
+    log = score_api.award(
+        user, "PUZZLE",
+        amount_override=1 if solved else 0,
+        reference_type="puzzle",
+        reference_id=f"{user.id}:{puzzle_id}",
+        reason="پازل محصولات",
+        extra={"solved": solved},
+    )
+    return {"solved": solved, "awarded": log is not None}
+
+
+def spin_wheel(user) -> dict:
+    log = score_api.award(
+        user, "FORTUNE_WHEEL",
+        reference_type="wheel_spin",
+        reference_id=str(uuid.uuid4()),
+        reason="گردونه شانس",
+    )
+    return {"amount": log.amount if log else 0}
+
+
+def open_lucky_box(user) -> dict:
+    log = score_api.award(
+        user, "LUCKY_BOX",
+        reference_type="lucky_box",
+        reference_id=str(uuid.uuid4()),
+        reason="جعبه شانس",
+    )
+    return {"amount": log.amount if log else 0}
+نکته: reference_id یکتا برای هر spin (با uuid) → idempotency از تکرار در یک روز جلوگیری نمی‌کنه، ولی cap_count=1 روی rule این کار رو می‌کنه. پس هر کاربر فقط یک بار در روز می‌تونه اسپین کنه (چون cap_count=1).
+
+
+
+
+🎯 ۵.۸ اپ survey
+# applications/survey/services.py
+def submit_survey(user, survey_id: int, answers: list) -> None:
+    resp = SurveyResponse.objects.create(
+        user=user, survey_id=survey_id, answers=answers,
+    )
+    score_api.award(
+        user, "SURVEY",
+        reference_type="survey_response",
+        reference_id=str(resp.id),
+        reason="شرکت در نظرسنجی",
+    )
+    
+    
+    
+    
+    
+🎯 ۵.۹ اپ checkin — FRIDAY_CHECKIN
+# applications/checkin/services.py
+from django.utils import timezone
+
+
+def checkin(user) -> dict:
+    # شنبه در ایران روز تعطیل، جمعه روز ۵ هست (weekday: Mon=0..Sun=6)
+    # اما در ایران جمعه weekday=4 هست (Saturday=5)
+    now = timezone.localtime()
+    if now.weekday() != 4:   # جمعه
+        return {"ok": False, "message": "قرار جمعه فقط روزهای جمعه فعال است"}
+
+    log = score_api.award(
+        user, "FRIDAY_CHECKIN",
+        reference_type="checkin",
+        reference_id=f"{user.id}:{now.date().isoformat()}",
+        reason="حضور در قرار جمعه",
+    )
+    return {"ok": True, "awarded": log is not None}
+
+
+
+
+
+
+
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+# applications/invoice/services.py
+from applications.score import api as score_api
+from applications.score.models import UserScoreLog
+
+def approve_invoice(invoice_id: int, admin) -> None:
+    invoice = Invoice.objects.filter(id=invoice_id, status="pending").first()
+    if not invoice:
+        return
+    invoice.status = "approved"
+    invoice.approved_by = admin
+    invoice.save(update_fields=["status", "approved_by"])
+
+    # 6) ثبت‌کننده — درصد از مبلغ فاکتور
+    score_api.award(
+        invoice.user,
+        code=UserScoreLog.TransactionCode.INVOICE,
+        base_value=int(invoice.total_amount),
+        reference_type="invoice",
+        reference_id=str(invoice.id),
+        reason=f"تأیید فاکتور #{invoice.id}",
+        extra={"invoice_amount": int(invoice.total_amount)},
+    )
+
+    # 7) مشارکت‌کنندگان
+    for p in invoice.participants.select_related("user").all():
+        score_api.award(
+            p.user,
+            code=UserScoreLog.TransactionCode.INVOICE_PARTICIPATION,
+            base_value=int(invoice.total_amount),
+            reference_type="invoice_participant",
+            reference_id=f"{invoice.id}:{p.id}",
+            reason=f"مشارکت در فاکتور #{invoice.id}",
+            extra={"share_percent": float(p.share_percent)},
+        )
+        
+        
+        
+
+
+# applications/project/services.py
+def approve_project(project_id: int, admin) -> None:
+    p = Project.objects.filter(id=project_id, status="pending").first()
+    if not p:
+        return
+    p.status = "approved"
+    p.save(update_fields=["status"])
+
+    # 8) ثبت‌کننده — مقدار ثابت (۵۰ امتیاز)
+    score_api.award(
+        p.user,
+        code=UserScoreLog.TransactionCode.PROJECT,
+        reference_type="project",
+        reference_id=str(p.id),
+        reason=f"تأیید پروژه #{p.id}",
+    )
+
+    # 9) مشارکت‌کنندگان — PER_UNIT
+    for m in p.participants.select_related("user").all():
+        score_api.award(
+            m.user,
+            code=UserScoreLog.TransactionCode.PROJECT_PARTICIPATION,
+            units=m.units,   # تعداد واحد
+            reference_type="project_participant",
+            reference_id=f"{p.id}:{m.id}",
+            reason=f"مشارکت در پروژه #{p.id}",
+        )
+        
+        
+
+
+
+# applications/quiz/services.py
+def submit_quiz_service(user_id: int, quiz_id: int, answer_index: int) -> dict:
+    quiz = Quiz.objects.filter(id=quiz_id, is_active=True).first()
+    if not quiz:
+        return {"ok": False, "message": "کوئیز یافت نشد"}
+
+    correct = answer_index == quiz.correct_index
+    attempt = QuizAttempt.objects.create(
+        user_id=user_id, quiz=quiz,
+        answer_index=answer_index, is_correct=correct,
+    )
+
+    log = score_api.award(
+        user_id,
+        code=UserScoreLog.TransactionCode.DAILY_QUIZ,
+        amount_override=1 if correct else 0,   # غلط → ۰ ثبت می‌شه
+        reference_type="quiz_attempt",
+        reference_id=str(attempt.id),
+        reason="کوئیز روزانه",
+        extra={"quiz_id": quiz.id, "correct": correct},
+    )
+
+    return {
+        "ok": True, "correct": correct,
+        "awarded": log is not None,
+    }
+
+
+
+
+
+# applications/game/services.py
+from uuid import uuid4
+
+def submit_treasure_hunt(user, hunt_id: int, found: bool) -> dict:
+    log = score_api.award(
+        user,
+        code=UserScoreLog.TransactionCode.TREASURE_HUNT,
+        amount_override=5 if found else 0,
+        reference_type="treasure_hunt",
+        reference_id=f"{user.id}:{uuid4()}",   # هر تلاش یکتا
+        reason="گنج‌یابی",
+        extra={"found": found, "hunt_id": hunt_id},
+    )
+    return {"found": found, "awarded": log is not None}
+    
+    
+def submit_puzzle(user, puzzle_id: int, solved: bool) -> dict:
+    log = score_api.award(
+        user,
+        code=UserScoreLog.TransactionCode.PUZZLE,
+        amount_override=1 if solved else 0,
+        reference_type="puzzle",
+        reference_id=f"{user.id}:{puzzle_id}",
+        reason="پازل محصولات",
+        extra={"solved": solved},
+    )
+    return {"solved": solved, "awarded": log is not None}
+    
+    
+def spin_wheel(user) -> dict:
+    # مقدار از metadata.options / weights در ScoreRule انتخاب می‌شه
+    log = score_api.award(
+        user,
+        code=UserScoreLog.TransactionCode.FORTUNE_WHEEL,
+        reference_type="wheel_spin",
+        reference_id=str(uuid4()),
+        reason="گردونه شانس",
+    )
+    return {"amount": log.amount if log else 0}
+    
+    
+def open_lucky_box(user) -> dict:
+    log = score_api.award(
+        user,
+        code=UserScoreLog.TransactionCode.LUCKY_BOX,
+        reference_type="lucky_box",
+        reference_id=str(uuid4()),
+        reason="جعبه شانس",
+    )
+    return {"amount": log.amount if log else 0}
+    
+    
+    
+    
+
+# applications/checkin/services.py
+from django.utils import timezone
+
+def checkin(user) -> dict:
+    now = timezone.localtime()
+    if now.weekday() != 4:   # جمعه در ایران = 4
+        return {"ok": False, "message": "قرار جمعه فقط روزهای جمعه فعال است"}
+
+    log = score_api.award(
+        user,
+        code=UserScoreLog.TransactionCode.FRIDAY_CHECKIN,
+        reference_type="checkin",
+        reference_id=f"{user.id}:{now.date().isoformat()}",
+        reason="حضور در قرار جمعه",
+    )
+    return {"ok": True, "awarded": log is not None}
+    
+    
+    
+    
+    
+
+# applications/qa/services.py
+def approve_question(question_id: int, admin) -> None:
+    """ادمین سؤال رو تأیید می‌کنه → امتیاز داده می‌شه."""
+    q = QAQuestion.objects.filter(id=question_id, is_approved=False).first()
+    if not q:
+        return
+    q.is_approved = True
+    q.approved_by = admin
+    q.save(update_fields=["is_approved", "approved_by"])
+
+    score_api.award(
+        q.user,
+        code=UserScoreLog.TransactionCode.QA_QUESTION,
+        reference_type="qa_question",
+        reference_id=str(q.id),
+        reason="سؤال تأییدشده",
+        extra={"question_id": q.id},
+    )
+    
+    
+def on_answer_liked(answer_id: int) -> None:
+    """وقتی پاسخ به آستانه لایک رسید → امتیاز (طبق اکسل: وابسته به لایک)."""
+    from django.conf import settings
+    threshold = getattr(settings, "QA_ANSWER_LIKE_THRESHOLD", 5)
+
+    a = QAAnswer.objects.filter(id=answer_id).first()
+    if not a or a.likes_count < threshold:
+        return
+
+    score_api.award(
+        a.user,
+        code=UserScoreLog.TransactionCode.QA_ANSWER,
+        reference_type="qa_answer",
+        reference_id=str(a.id),
+        reason=f"پاسخ با {a.likes_count} لایک",
+        extra={"likes": a.likes_count},
+    )
+    
+    
+    
+    
+
+
+
+
+
+
+# applications/gift/services.py
+from applications.score.services import ScoreError
+
+def create_gift_order(user, gift, quantity: int = 1) -> GiftOrder:
+    cost = gift.score_cost * quantity
+
+    # ۱) اول کسر امتیاز (اگه موفق شد، سفارش ساخته می‌شه)
+    code = (
+        UserScoreLog.TransactionCode.GIFT_REDEEM
+        if gift.kind == "showcase"
+        else UserScoreLog.TransactionCode.CUSTOM_GIFT
+    )
+
+    # ابتدا یه order موقت می‌سازیم تا reference_id داشته باشیم
+    order = GiftOrder.objects.create(
+        user=user, gift=gift, quantity=quantity,
+        score_cost=cost, status="pending",
+    )
+
+    try:
+        log = score_api.spend(   # ← SPENT (throw می‌کنه اگه موجودی نباشه)
+            user,
+            code=code,
+            amount=cost,
+            reference_type="gift_order",
+            reference_id=str(order.id),
+            reason=f"خرید هدیه #{order.id}",
+            extra={"gift_id": gift.id, "quantity": quantity},
+        )
+    except ScoreError:
+        order.delete()   # rollback دستی
+        raise
+
+    order.score_log_id = log.id
+    order.status = "approved"
+    order.save(update_fields=["score_log_id", "status"])
+    return order
+
+
+def cancel_gift_order(order_id: int, reason: str = "") -> None:
+    order = GiftOrder.objects.filter(id=order_id).first()
+    if not order or order.status == "cancelled":
+        return
+
+    order.status = "cancelled"
+    order.save(update_fields=["status"])
+
+    # 24) برگشت امتیاز → ORDER_REFUND
+    if order.score_log_id:
+        score_api.refund(
+            order.score_log_id,
+            reason=reason or f"لغو سفارش هدیه #{order.id}",
+        )
+
+
+
+
+
+
+
+
+# applications/survey/services.py
+def submit_survey(user, survey_id: int, answers: list) -> None:
+    resp = SurveyResponse.objects.create(
+        user=user, survey_id=survey_id, answers=answers,
+    )
+
+    score_api.award(
+        user,
+        code=UserScoreLog.TransactionCode.SURVEY,
+        reference_type="survey_response",
+        reference_id=str(resp.id),
+        reason="شرکت در نظرسنجی",
+        extra={"survey_id": survey_id},
+    )
+    
+    
+    
+
+
+
+
+# applications/score/tasks.py
+def run_weekly_streak_job():
+    """شنبه‌ها اجرا شود."""
+    from applications.user.models import User
+    now = timezone.now()
+    week_start = (now - timedelta(days=7)).replace(hour=0, minute=0, second=0, microsecond=0)
+    week_end = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    for user in User.objects.filter(is_active=True).iterator():
+        days = (
+            UserScoreLog.objects
+            .filter(
+                user_id=user.id,
+                created_at__gte=week_start,
+                created_at__lt=week_end,
+            )
+            .dates("created_at", "day")
+            .count()
+        )
+        if days >= 7:
+            try:
+                score_api.award(
+                    user,
+                    code=UserScoreLog.TransactionCode.WEEKLY_STREAK,
+                    reference_type="weekly_streak",
+                    reference_id=f"{user.id}:{week_end.date().isoformat()}",
+                    reason="تکمیل هفته با ۷ روز فعالیت",
+                )
+            except Exception:
+                logger.exception("WEEKLY_STREAK failed user=%s", user.id)
+                
+
+def run_gallery_top_job():
+    """شنبه‌ها اجرا شود."""
+    try:
+        from applications.gallery.models import GalleryPhoto
+    except ImportError:
+        return
+
+    week_start = (timezone.now() - timedelta(days=7)).replace(
+        hour=0, minute=0, second=0, microsecond=0,
+    )
+    winner = (
+        GalleryPhoto.objects
+        .filter(created_at__gte=week_start)
+        .order_by("-likes_count")
+        .first()
+    )
+    if winner:
+        try:
+            score_api.award(
+                winner.user,
+                code=UserScoreLog.TransactionCode.GALLERY_TOP,
+                reference_type="gallery_photo",
+                reference_id=str(winner.id),
+                reason="عکس برتر هفته",
+            )
+        except Exception:
+            logger.exception("GALLERY_TOP failed photo=%s", winner.id)
+
+
+def run_expire_job():
+    """روزانه اجرا شود."""
+    from applications.score.models import ScoreRule, UserScore
+
+    rule = ScoreRule.objects.filter(code="EXPIRE", is_active=True).first()
+    if not rule:
+        return
+    days = rule.metadata.get("expire_after_days", 365)
+    cutoff = timezone.now() - timedelta(days=days)
+
+    recent_earners = UserScoreLog.objects.filter(
+        direction=UserScoreLog.Direction.EARNED,
+        created_at__gte=cutoff,
+    ).values_list("user_id", flat=True)
+
+    stale = UserScore.objects.filter(
+        current_balance__gt=0,
+    ).exclude(user_id__in=recent_earners)
+
+    for score in stale.iterator():
+        try:
+            score_api.spend(
+                score.user_id,
+                code=UserScoreLog.TransactionCode.EXPIRE,
+                amount=score.current_balance,
+                reason=f"انقضای امتیاز پس از {days} روز بی‌فعالیتی",
+                source=UserScoreLog.Source.SYSTEM,
+            )
+        except Exception:
+            logger.exception("EXPIRE failed user=%s", score.user_id)
+            
+
+
+
+
+
+
+گروه I — ادمین
+
+# applications/score/views.py
+@router.post("/admin/adjust/")
+async def admin_adjust(
+    form: dict = Depends(DependencyDataRequest),
+    admin: User = Depends(get_current_user),
+):
+    try:
+        if not (admin.is_staff or admin.is_superuser):
+            return error_response("دسترسی ادمین لازم است", status_code=403)
+
+        target = await database_sync_to_async(
+            lambda: User.objects.filter(uuid=form.get("user_uuid")).first()
+        )()
+        if not target:
+            return error_response("کاربر یافت نشد", status_code=404)
+
+        direction = form.get("direction")
+        if direction not in ("earned", "spent"):
+            return error_response("direction باید earned یا spent باشد")
+
+        log = await database_sync_to_async(score_api.adjust)(
+            target,
+            int(form.get("amount", 0)),
+            direction,
+            admin=admin,
+            reason=form.get("reason") or "تنظیم دستی",
+            extra={"admin_name": admin.full_name},
+        )
+        return success_response("امتیاز تنظیم شد", _log(log))
+    except PermissionError as e:
+        return error_response(str(e), status_code=403)
+    except ScoreError as e:
+        return error_response(str(e))

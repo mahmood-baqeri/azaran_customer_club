@@ -1,0 +1,88 @@
+{% load static %}
+<div class="col-md-12 itemPlusEl">
+    <div class="row addSection">
+        <div class="col-4">
+            <div class="form-group m-0">
+                <label for="itemPlusSelectEl">انتخاب داده</label>
+                <select class="form-control" id="itemPlusSelectEl" name="type">
+                    {% for key in item.data %}
+                        <option value="{{ key.id }}">{{ key.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row items">
+        <div class="col-12 d-none elementBox ckEdtorElement">
+            <textarea class="w-100" id="contentText"></textarea>
+        </div>
+        <div class="col-12 d-none elementBox fileElement">
+            <div class="row">
+                <div class="col-4">
+                    <div class="form-group">
+                        <label class="mg-b-10 label" for="contentFile"
+                               style="width: 100%;padding: 8px;border-radius: 5px;background: white;border: 1px solid #eee">
+                            <span></span>
+                            <i class="fa fa-plus-circle"></i>
+                        </label>
+                        <input type="file" class="form-control border-left-0 browse-file d-none" id="contentFile"
+                               accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#itemPlusSelectEl').on('change', function () {
+            let selected = $('#itemPlusSelectEl').find(":selected").val();
+
+            //CKEDITOR
+            if (selected == 'text') {
+                $('.ckEdtorElement').removeClass('d-none').find('textarea').attr('name', "text");
+                $('.fileElement').addClass('d-none').find('input').attr('name', "");
+            } else {
+                $('.ckEdtorElement').addClass('d-none').find('textarea').attr('name', "");
+                $('.fileElement').removeClass('d-none');
+
+                // Photo
+                if (selected == 'photo') {
+                    let accept = ".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*";
+                    $('.fileElement').find('input').attr('name', "photo").attr('accept', accept);
+                    $('.fileElement').find('label').find('span').text('انتخاب تصویر');
+                }
+                // video
+                else if (selected == 'video') {
+                    let accept = "video/mp4,video/x-m4v,video/*";
+                    $('.fileElement').find('input').attr('name', "video").attr('accept', accept);
+                    $('.fileElement').find('label').find('span').text('انتخاب فایل ویدیویی');
+                }
+                // audio
+                else if (selected == 'audio') {
+                    let accept = "audio/mp3,audio/*;capture=microphone";
+                    $('.fileElement').find('input').attr('name', "audio").attr('accept', accept);
+                    $('.fileElement').find('label').find('span').text('انتخاب فایل صوتی');
+                }
+            }
+
+        });
+    });
+</script>
+
+
+<style>
+    .elementBox {
+        padding: 50px 15px 10px;
+    }
+</style>
+
+{# CKEDITOR #}
+<script src="{% static '/' %}myPlugins/ckeditor/ckeditor.js"></script>
+<script>
+    CKEDITOR.replace(document.getElementById('contentText'));
+</script>
+
+

@@ -1,0 +1,19 @@
+<div class="{{item.c}}">
+    <div class="form-group">
+        <label class="custom-switch" style="display: flex;flex-direction: column;align-items: flex-start;">
+            <p class="">
+                {% if item.r  %}
+                    <span class="text-danger">*</span>
+                {% endif %}
+                <b>{{item.l}}</b>
+            </p>
+            <p>
+                <input type="checkbox" name="{{item.n}}" class="custom-switch-input" id="{{item.id}}"
+                       {% if item.v == 1 or item.v == 'on' %}  checked {% endif %}
+                        {% if item.r  %} required {% endif %}
+                >
+                <span class="custom-switch-indicator"></span>
+            </p>
+        </label>
+    </div>
+</div>

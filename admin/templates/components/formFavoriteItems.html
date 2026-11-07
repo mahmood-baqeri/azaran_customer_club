@@ -1,0 +1,45 @@
+{% load customTags %}
+<div class="{{ item.c }} formMultiChoiceEl">
+    <p><b>{{ item.counter }}- {{ item.l }}</b></p>
+    {% for theItem in item.items %}
+        {% checkUserFavoriteItem request.user.id theItem as check %}
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="answer__{{ theItem.id }}" {% if check %} checked {% endif %}
+                   id="flexRadioDefault__{{ item.opID }}{{ forloop.counter }}" value="{{ theItem }}">
+            <label class="form-check-label" for="flexRadioDefault__{{ item.opID }}{{ forloop.counter }}">
+                {{ forloop.counter }}-  {{ theItem }}
+            </label>
+        </div>
+    {% endfor %}
+    <div class="col-12">
+        {% checkUserFavoriteDescription request.user item.l as des %}
+        <div class="form-group">
+            <label class="mg-b-10"> توضیحات</label>
+            <textarea class="form-control" rows="5" name="description__{{ item.id }}" placeholder="توضیحات">{{ des }}</textarea>
+        </div>
+    </div>
+</div>
+
+<style>
+    .formMultiChoiceEl {
+        text-align: right;
+        margin: 15px 0;
+    }
+
+    .formMultiChoiceEl > label {
+    }
+
+    .formMultiChoiceEl .form-check {
+        margin-left: 10px;
+    }
+
+    .formMultiChoiceEl .form-check input {
+        float: right;
+        margin-left: 5px;
+    }
+
+    .formMultiChoiceEl .form-check label {
+        margin-bottom: 15px;
+    }
+</style>

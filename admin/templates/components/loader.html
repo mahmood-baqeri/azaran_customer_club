@@ -1,0 +1,61 @@
+<div class="section-loader-heart">
+    <div></div>
+</div>
+<style>
+    .section-loader-heart,
+    .section-loader-heart div,
+    .section-loader-heart div:after,
+    .section-loader-heart div:before {
+        box-sizing: border-box;
+    }
+
+    .section-loader-heart {
+        color: #ff3c3c;
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 100%;
+    }
+
+    .section-loader-heart div {
+        top: 15px;
+        left: 15px;
+        position: absolute;
+        width: 15px;
+        height: 15px;
+        background: currentColor;
+        animation: section-loader-heart 1.2s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+        border-radius: 100%;
+    }
+
+    .section-loader-heart div:before {
+        left: -24px;
+        border-radius: 50% 0 0 50%;
+    }
+
+    .section-loader-heart div:after {
+        top: -24px;
+        border-radius: 50% 50% 0 0;
+    }
+
+    @keyframes section-loader-heart {
+        0% {
+            transform: scale(0.95);
+        }
+        5% {
+            transform: scale(1.1);
+        }
+        39% {
+            transform: scale(0.85);
+        }
+        45% {
+            transform: scale(1);
+        }
+        60% {
+            transform: scale(0.95);
+        }
+        100% {
+            transform: scale(0.9);
+        }
+    }
+</style>

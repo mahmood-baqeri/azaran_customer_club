@@ -1,0 +1,35 @@
+{# ################ دادن امتیاز ####################### #}
+{% if data.applicationsStoreFields %}
+  <div class="modal fade" id="modalApplicationsStoreScore">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content modal-content-demo">
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h6 class="modal-title">دادن امتیاز</h6>
+            <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body py-2 px-0">
+            {% for item in data.applicationsStoreFields %}
+              {% include 'components/'|add:item.b %}
+            {% endfor %}
+          </div>
+
+          <input type="hidden" name="userID" value="" />
+
+          <div class="modal-footer">
+            <button class="btn ripple btn-primary" type="submit">ذخیره</button>
+            <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">بستن</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $('.modalApplicationsStoreScore').on('click', function () {
+      $('#modalApplicationsStoreScore form').attr('action', $(this).attr('data-href'))
+      $('#modalApplicationsStoreScore [name=userID]').val($(this).attr('data-userID'))
+    })
+  </script>
+{% endif %}

@@ -1,0 +1,237 @@
+/* src/shared/styles/sidebar-menu.css */
+
+.menu-overlay {
+     position: fixed;
+     inset: 0;
+     background: rgba(0, 0, 0, 0.45);
+     opacity: 0;
+     visibility: hidden;
+     transition: opacity 0.3s ease, visibility 0.3s ease;
+     z-index: 1040;
+     border: none;
+     padding: 0;
+     cursor: pointer;
+}
+
+.menu-overlay.is-open {
+     opacity: 1;
+     visibility: visible;
+}
+
+.app-sidebar {
+     position: fixed;
+     top: 50px;
+     right: 0;
+     bottom: 0;
+     width: 270px;
+     max-width: 85vw;
+     height: 58vh;
+     background: #fff;
+     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.12);
+     z-index: 1050;
+     display: flex;
+     flex-direction: column;
+     transform: translateX(100%);
+     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+     will-change: transform;
+     border-radius: 15px;
+}
+
+.app-sidebar.is-open {
+     transform: translateX(0);
+     right: 15px;
+}
+
+.sidebar-head {
+     padding: 16px 20px;
+     flex-shrink: 0;
+     text-align: center;
+}
+
+.sidebar-close-btn {
+     background: transparent;
+     border: none;
+     font-size: 28px;
+     line-height: 1;
+     cursor: pointer;
+     color: #555;
+     padding: 4px 10px;
+     border-radius: 6px;
+     transition: background 0.2s ease;
+}
+
+.sidebar-close-btn:hover {
+     background: #f2f5fa;
+}
+
+.sidebar-body {
+     flex: 1;
+     overflow-y: auto;
+     padding: 0 20px;
+     display: flex;
+     flex-direction: column;
+}
+
+.app-sidebar .info {
+     display: flex;
+     flex-direction: column;
+     gap: 8px;
+}
+
+.app-sidebar .info .name {
+     margin: 0;
+     font-weight: 700;
+     font-size: 16px;
+}
+
+.app-sidebar .info div {
+     display: flex;
+     align-items: center;
+     gap: 6px;
+     font-size: 13px;
+     color: #555;
+     justify-content: space-evenly;
+}
+
+.app-sidebar .info div p {
+     margin: 0;
+}
+
+.app-sidebar .info div img {
+     width: 16px;
+     height: 16px;
+}
+
+.sidenav-nav {
+     list-style: none;
+     padding: 0;
+     margin: 0;
+     display: flex;
+     flex-direction: column;
+     gap: 4px;
+}
+
+.sidenav-nav li {
+     margin: 2px;
+     padding: 1px;
+}
+
+.nav-link-btn {
+     display: flex;
+     align-items: center;
+     gap: 10px;
+     width: 100%;
+     padding: 9px 14px;
+     background: transparent;
+     border: none;
+     border-radius: 10px;
+     text-align: right;
+     font-size: 13px;
+     cursor: pointer;
+     transition: background 0.2s ease, color 0.2s ease;
+     border: 1px solid var(--bs-border-color);
+}
+
+.nav-link-btn:hover {
+     background: #f2f5fa;
+     color: #0d6efd;
+}
+
+.nav-link-btn i {
+     font-size: 18px;
+
+}
+
+.nav-link-btn ._text {
+     font-size: 9px;
+     margin: 0 auto 0 0;
+}
+
+.nav-spacer {
+     height: 25px;
+}
+
+.logout-item {
+     margin-top: auto;
+     padding-top: 12px;
+}
+
+.badge_element {
+     width: 10px;
+     height: 10px;
+     background-color: #ff0000;
+     border-radius: 100%;
+}
+
+.logout-btn {
+     width: 100%;
+     padding: 10px;
+     background: #f4f5f9;
+     color: #d33;
+     border: none;
+     border-radius: 10px;
+     font-weight: 600;
+     cursor: pointer;
+     transition: background 0.2s ease;
+     position: relative;
+}
+
+.logout-btn i {
+     position: absolute;
+     top: 10px;
+     right: 15px;
+     font-size: 20px;
+}
+
+.logout-btn:hover {
+     background: #ffd6d6;
+}
+
+.sidebar-avatar-wrap {
+     position: relative;
+     display: inline-block;
+     margin: auto;
+}
+
+.sidebar-avatar-wrap .user-avatar {
+     width: 72px;
+     height: 72px;
+     border-radius: 50%;
+     object-fit: cover;
+     border: 3px solid var(--color-2);
+     background: #e8eefc;
+     display: block;
+}
+
+.avatar-edit-btn {
+     position: absolute;
+     bottom: -2px;
+     left: -2px;
+     width: 28px;
+     height: 28px;
+     border-radius: 50%;
+     border: 2px solid #fff;
+     background: #14306b;
+     color: #fff;
+     font-size: 13px;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     box-shadow: 0 2px 6px rgba(20, 48, 107, 0.3);
+     transition: transform 0.15s ease, background 0.2s ease;
+}
+
+.avatar-edit-btn:hover:not(:disabled) {
+     background: #1c3f87;
+     transform: scale(1.05);
+}
+
+.avatar-edit-btn:active:not(:disabled) {
+     transform: scale(0.95);
+}
+
+.avatar-edit-btn:disabled {
+     opacity: 0.7;
+     cursor: not-allowed;
+}

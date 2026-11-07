@@ -1,0 +1,40 @@
+{% extends 'layout/auth.html' %}
+{% load static %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <div class="row row-sm">
+      <div class="col-12 login_form">
+        <div class="container-fluid">
+          <div class="row row-sm">
+            <div class="card-body mt-2 mb-2">
+              <div class="clearfix"></div>
+              <form method="post" action="{% url 'app_user:admin_login_with_pass' %}">
+                {% csrf_token %}
+
+                <div class="form-group text-right">
+                  <label for="mobile">شماره موبایل</label>
+                  <input class="form-control" id="mobile" name="mobile" placeholder="شماره موبایل" type="number" />
+                </div>
+
+                <div class="form-group text-right">
+                  <label for="password">رمزعبور</label>
+                  <input class="form-control" id="password" name="password" placeholder="رمزعبور" type="password" />
+                </div>
+
+                <br />
+                <button class="btn ripple btn-main-primary btn-block" type="submit">ورود</button>
+                <br /><br />
+                <a href="{% url 'app_user:admin_login_with_mobile' %}">ورود با رمز جدید</a>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

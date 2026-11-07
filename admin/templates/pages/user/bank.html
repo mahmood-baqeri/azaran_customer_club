@@ -1,0 +1,64 @@
+{% extends 'admin\layout\app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'admin\layout\pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% include 'admin\components\search.html' %}
+
+            <div class="table-responsive">
+              <table class="table text-nowrap text-md-nowrap table-striped mg-b-0">
+                <thead>
+                  <tr>
+                    <th>ردیف</th>
+                    <th>نام بانک</th>
+                    <th>شماره حساب</th>
+                    <th>شماره کارت</th>
+                    <th>شبا</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in data.all %}
+                    <tr>
+                      <td>{{ forloop.counter }}</td>
+                      <td>{{ item.bankName }}</td>
+                      <td>{{ item.accountNumber }}</td>
+                      <td>{{ item.cardNumber }}</td>
+                      <td>{{ item.shaba }}</td>
+                      <td>
+                        <a href="{% url 'urlsapp_user:updateBank' userID=item.user.pk bankID=item.id %}" data-toggle="tooltip" title="مشاهده و بروزرسانی"><i class="icon-note"></i></a>
+                        <a href="" data-toggle="tooltip" data-original-title="حذف" class="deleteRecordFromTable" data-deleteId="{{ item.id }}"><i class="icon-trash"></i></a>
+                        <form id="deleteRecordForm_{{ item.id }}" action="{% url 'urlsapp_user:deleteBank' userID=item.user.pk bankID=item.id %}" method="post" style="display: none;">
+                          {% csrf_token %}
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              <div class="paginateSection">
+                {% include 'admin\components\pagination.html' with all=data.all %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

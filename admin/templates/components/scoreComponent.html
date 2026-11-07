@@ -1,0 +1,119 @@
+<div class="col-md-12"></div>
+<div class="{{ item.c }}">
+    <div class="form-group">
+        <label class="custom-switch" style="display: flex;flex-direction: column;align-items: flex-start;">
+            <p class="">
+                {{ item.l }}
+            </p>
+            <p>
+                <input type="checkbox" name="{{ item.n }}" class="custom-switch-input" id="{{ item.id }}" checked>
+                <span class="custom-switch-indicator"></span>
+            </p>
+        </label>
+    </div>
+</div>
+<div class="col-md-12"></div>
+
+<script>
+    $(document).ready(function () {
+        let sectionParent = $('#theSectionElement').parent().parent();
+        let unitParent = $('#theUnitElement').parent().parent();
+        let userSection = $('.switchContent ');
+        let sectionSelectAllUsers = $('.sectionSelectAllUsers ');
+
+        sectionParent.addClass('d-none');
+        unitParent.addClass('d-none');
+        userSection.addClass('d-none');
+        sectionSelectAllUsers.addClass('d-none');
+        $('#theSendMethodsEl').on('change', function () {
+            if (!this.checked) {
+                sectionParent.removeClass('d-none');
+                unitParent.removeClass('d-none');
+                userSection.removeClass('d-none');
+                sectionSelectAllUsers.removeClass('d-none');
+            } else {
+                sectionParent.addClass('d-none');
+                unitParent.addClass('d-none');
+                userSection.addClass('d-none');
+                sectionSelectAllUsers.addClass('d-none');
+
+                /*
+                ajaxFunction("manager/api/user/all", null, true).then((data) => {
+                    $(".switchContent > div").remove();
+                    $.each(data.data, function (key, item) {
+                        let newItem = $(".theUserItem").clone();
+                        newItem.removeClass('theUserItem d-none');
+                        newItem.find('.name').text(item.name);
+                        newItem.find('input').attr('name', 'theUser##%$^&*##' + data.id);
+                        newItem.appendTo('.switchContent');
+                    });
+                });*/
+            }
+        });
+
+        $('.sectionSelectAllUsers input').on('change', function () {
+            $(".switchContent input").each(function () {
+                $(this).attr("checked", !$(this).attr("checked"));
+            });
+        });
+    });
+
+    $(document).ready(function () {
+        $('#theSectionElement').on('change', function () {
+            let inputs = {
+                'id': $(this).val(),
+            };
+            ajaxFunction("api/section/users", inputs, true).then((data) => {
+                $(".switchContent > div").remove();
+                $.each(data.data, function (key, item) {
+                    let newItem = $(".theUserItem").clone();
+                    newItem.removeClass('theUserItem d-none');
+                    newItem.find('.name').text(item.name);
+                    newItem.find('input').attr('name', 'theUser##%$^&*##' + item.id);
+                    newItem.appendTo('.switchContent');
+                });
+            });
+        });
+
+        $('#theUnitElement').on('change', function () {
+            let inputs = {
+                'id': $(this).val(),
+            };
+            ajaxFunction("api/unit/users", inputs, true).then((data) => {
+                $(".switchContent > div").remove();
+                $.each(data.data, function (key, item) {
+                    let newItem = $(".theUserItem").clone();
+                    newItem.removeClass('theUserItem d-none');
+                    newItem.find('.name').text(item.name);
+                    newItem.find('input').attr('name', 'theUser##%$^&*##' + item.id);
+                    newItem.appendTo('.switchContent');
+                });
+            });
+        });
+    });
+</script>
+
+<style>
+    .d-none {
+        display: none !important;
+    }
+
+    .select2-selection.select2-selection--multiple {
+        padding: 3px 10px 0 !important;
+    }
+</style>
+
+<div class="col-md-2 theUserItem d-none">
+    <div class="form-group">
+        <label class="custom-switch" style="display: flex;flex-direction: column;align-items: flex-start;">
+            <p class="name"></p>
+            <p>
+                <input type="checkbox" class="custom-switch-input">
+                <span class="custom-switch-indicator"></span>
+            </p>
+        </label>
+    </div>
+</div>
+
+
+

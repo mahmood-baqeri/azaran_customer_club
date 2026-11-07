@@ -1,0 +1,28 @@
+<div class="modal fade" id="frontReferralModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-end">
+      <form action="{{ data.referralStoreUrl }}" method="post">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">ارجاع دادن</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% for item in data.referralFields %}
+            {% include 'components/'|add:item.b %}
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">ارجاع</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  #frontReferralModal label {
+    margin-bottom: 10px !important;
+  }
+</style>

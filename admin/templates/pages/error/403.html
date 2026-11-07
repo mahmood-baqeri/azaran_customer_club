@@ -1,0 +1,27 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body errorBoy">
+        <h1>شما دسترسی لازم را ندارید</h1>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+  <script>
+    $(document).ready(function () {
+      setTimeout(function () {
+        window.location.href = "{% url 'app_user:logout' %}"
+      }, 2500)
+    })
+  </script>
+{% endblock %}

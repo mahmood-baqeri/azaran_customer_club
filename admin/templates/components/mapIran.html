@@ -1,0 +1,91 @@
+<div class="{{ item.c }}">
+    <div class="form-group">
+        <label for="user-location" class="mg-b-10"><b>{{ item.l }}</b></label>
+        <div id="iranMap"></div>
+        <input type="hidden" name="lat" id="user-lat-location" value="{{ item.lat }}"/>
+        <input type="hidden" name="long" id="user-lng-location" value="{{ item.long }}"/>
+    </div>
+</div>
+
+{% block js %}
+    <link rel="stylesheet" href="https://cdn.map.ir/web-sdk/1.4.2/css/mapp.min.css">
+    <link rel="stylesheet" href="https://cdn.map.ir/web-sdk/1.4.2/css/fa/style.css">
+    <style>
+        #iranMap {
+            width: 100%;
+            height: 500px;
+            background: #eee;
+            border: 2px solid #aaa;
+            border-radius:15px
+        }
+
+        @media (max-width: 768px) {
+            #iranMap {
+                width: 100%;
+                height: 250px;;
+            }
+        }
+    </style>
+
+    <script type="text/javascript" src="https://cdn.map.ir/web-sdk/1.4.2/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="https://cdn.map.ir/web-sdk/1.4.2/js/mapp.env.js"></script>
+    <script type="text/javascript" src="https://cdn.map.ir/web-sdk/1.4.2/js/mapp.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            const apiKey = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImVjZTgzODNjMGExODgxZGNjOGRiMTJjODFlZWY5N2Q2MmM2ZDRjZjgxNmFhMzY5MDcwYmQyOWJjMTQyYzg1ZjhjNzNiMzE3NTZhMDBlZTFmIn0.eyJhdWQiOiIxNDE1MCIsImp0aSI6ImVjZTgzODNjMGExODgxZGNjOGRiMTJjODFlZWY5N2Q2MmM2ZDRjZjgxNmFhMzY5MDcwYmQyOWJjMTQyYzg1ZjhjNzNiMzE3NTZhMDBlZTFmIiwiaWF0IjoxNjIyMTcyMTQ3LCJuYmYiOjE2MjIxNzIxNDcsImV4cCI6MTYyNDc2NDE0Nywic3ViIjoiIiwic2NvcGVzIjpbImJhc2ljIl19.nU7eMIxAjqMyUzaSMqRwKkjFZ3u5vO79xv05UY-J_DgEiVlw-gkQR8HfneO44qMdivorUeXQrd-ANaz-3uMiryyYilw9iNxyiQcBMW33qP2zOpHl-yb41T4iHTM6DCLMvjtyXLJm-qIfz2z0jh5dQtN26M1b-yrXY3IIELWETB1dZv72eHPai1K9oWtZKaB4Hg-qewZ35fRvT_07Sqex7b204KugO0Z_NbUJQNsH266mDsTslgbomWX9BdJi1Wbjr98t3A3zlAa-knsSHi3X_kpO3MSeVkVu0lFvBhKOLLG0IjXbbL73X_QAAnxT7EV4u21d3qUNLZf7laj0yhfPVg';
+            let lat = 32.66;
+            let long = 51.65;
+            let zoom = 10;
+
+            {% if item.lat != None %}
+                lat = parseFloat("{{item.lat}}");
+                long = parseFloat("{{item.long}}");
+                zoom = 14
+            {% endif %}
+
+            let app = new Mapp({
+                element: '#iranMap',
+                presets: {
+                    latlng: {
+                        lat: lat,
+                        lng: long,
+                    },
+                    zoom: zoom
+                },
+                apiKey: apiKey,
+            });
+
+            app.addVectorLayers();
+
+            app.addMarker({
+                name: 'advanced-marker',
+                latlng: {
+                    lat: lat,
+                    lng: long,
+                },
+                icon: app.icons.red,
+                pan: false,
+                draggable: true,
+                history: false,
+                popup: false
+            });
+
+            app.map.on('click', function (e) {
+                document.getElementById('user-lat-location').value = JSON.stringify(e.latlng.lat);
+                document.getElementById('user-lng-location').value = JSON.stringify(e.latlng.lng);
+                app.addMarker({
+                    name: 'advanced-marker',
+                    latlng: {
+                        lat: e.latlng.lat,
+                        lng: e.latlng.lng,
+                    },
+                    icon: app.icons.red,
+                    pan: false,
+                    draggable: true,
+                    history: false,
+                    popup: false
+                });
+            });
+        });
+    </script>
+{% endblock %}

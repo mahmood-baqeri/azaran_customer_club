@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    {% load static %}
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+    <link rel="icon" href="" type="image/x-icon" />
+    <title>ورود به حساب کاربری</title>
+    <link href="{% static '/' %}fonts/iransans/iransans.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/plugins/web-fonts/icons.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/plugins/web-fonts/font-awesome/font-awesome.min.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/plugins/web-fonts/plugin.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/style.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/skins.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/dark-style.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/colors/default.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/colors/color.css" id="theme" rel="stylesheet" media="all" />
+    <link href="{% static '/' %}adminAssets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/sidemenu/sidemenu.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/switcher/css/switcher-rtl.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/switcher/demo.css" rel="stylesheet" />
+  </head>
+
+  <body class="main-body leftmenu">
+    <div id="global-loader">
+      <img src="{% static '/' %}images/loader.svg" class="loader-img" alt="Loader" />
+    </div>
+
+    <div class="page main-signin-wrapper">
+      <div class="row signpages text-center">
+        <div class="col-md-3"></div>
+        <div class="col-md-6">
+          {% block content %}
+
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+
+    <script src="{% static '/' %}adminAssets/plugins/jquery/jquery.min.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/bootstrap/js/popper.min.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/select2/js/select2.min.js"></script>
+    <script src="{% static '/' %}adminAssets/js/custom.js"></script>
+
+    {% include 'layout/Messages.html' %}
+
+    <link href="{% static '/' %}myPlugins/EggyToaster/eggy.css" rel="stylesheet" />
+    <script src="{% static '/' %}myPlugins/EggyToaster/eggy.js"></script>
+
+    <script>
+      $('.linkElement').each(function (index, element) {
+        $(element).attr('href', Domain + $(element).attr('data-link'))
+      })
+    </script>
+  </body>
+</html>

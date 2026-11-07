@@ -1,0 +1,33 @@
+{% extends 'layout/auth.html' %}
+{% load static %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="card">
+    <div class="row row-sm">
+      <div class="col-12 login_form">
+        <div class="container-fluid">
+          <div class="row row-sm">
+            <div class="card-body mt-2 mb-2">
+              <form method="post" action="{% url 'app_user:admin_verify' %}">
+                {% csrf_token %}
+
+                <div class="form-group text-right">
+                  <label for="code">رمز جدید</label>
+                  <input class="form-control" id="code" name="code" placeholder="رمز جدید" type="number" />
+                </div>
+
+                <br />
+                <button class="btn ripple btn-main-primary btn-block" type="submit">ارسال</button>
+                <br /><br />
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

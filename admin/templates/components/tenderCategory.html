@@ -1,0 +1,119 @@
+{% load static %}
+<div class="col-md-12 itemPlusEl">
+    <div class="row">
+        <h2>موارد اضافی</h2>
+        <button class="btn btn-outline-info mt-1" id="itemPlusNewBrnEl" type="button">اضافه کردن مورد جدید</button>
+    </div>
+    <div class="row items">
+        {% for data in item.data %}
+             <div class="col-12 newItem d-flex">
+                <div class="col-6">
+                    <div class="form-group m-0">
+                        <div class="form-group">
+                            <span class="text-danger">*</span>
+                            <label class="mg-b-10">عنوان</label>
+                            <input type="text" class="form-control title" name="metaTitle" placeholder="عنوان" value="{{ data.title }}">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="form-group m-0">
+                        <label class="mg-b-10">نوع</label>
+                        <select class="form-control" name="metaType">
+                            {% for key in item.types %}
+                                <option value="{{ key.id }}" {% if data.type == key.id %} selected {% endif %}>{{ key.label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-2 pt-4">
+                    <button class="btn btn-outline-warning mt-1 removeItem" data-id="{{ data.id }}" type="button">حذف کردن</button>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div class="col-12 cloneItem d-none">
+        <div class="col-6">
+            <div class="form-group m-0">
+                <div class="form-group">
+                    <span class="text-danger">*</span>
+                    <label class="mg-b-10">عنوان</label>
+                    <input type="text" class="form-control title" name="metaTitle" placeholder="عنوان">
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="form-group m-0">
+                <label class="mg-b-10">نوع</label>
+                <select class="form-control" name="metaType">
+                    {% for key in item.types %}
+                        <option value="{{ key.id }}">{{ key.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-2 pt-4">
+            <button class="btn btn-outline-warning mt-1 removeItem" type="button">حذف کردن</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#itemPlusNewBrnEl').on('click', function () {
+            let newClone = $(".cloneItem").clone();
+            newClone.addClass('newItem d-flex');
+            newClone.removeClass('d-none cloneItem');
+            newClone.appendTo(".itemPlusEl .items");
+        });
+        $('body').on('click', '.removeItem ', function () {
+            if($(this).attr('data-id') != ''){
+                let inputs =  {
+                    'id': $(this).attr('data-id'),
+                };
+                ajaxFunction("manager/tender/api/category/meta/delete", inputs, true).then((data) => {
+                     $(this).parents('.newItem').remove();
+                });
+            }
+            else
+                $(this).parents('.newItem').remove();
+        });
+    });
+</script>
+
+<style>
+    .itemPlusEl {
+        padding: 10px 0;
+        margin: 23px 1%;
+        max-width: 98%;
+        box-shadow: 0 0 8px #ddd;
+        border-radius: 10px;
+    }
+
+    .itemPlusEl h2 {
+        display: block;
+        margin: 20px;
+        font-weight: 700;
+        padding: 15px;
+        font-size: 25px;
+        box-shadow: 0px 10px 16px #ddd;
+    }
+
+    .itemPlusEl .items {
+        margin: 0;
+    }
+
+    .itemPlusEl .items > div {
+    margin-bottom: 30px;
+    }
+
+    #itemPlusNewBrnEl{
+        height: 50px;
+        position: absolute;
+        left: 24px;
+        top: 24px;
+    }
+</style>
+
+

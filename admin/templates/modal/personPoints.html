@@ -1,0 +1,48 @@
+{# ################ امتیازات کارمند ####################### #}
+{% if data.personSendScoreApplication %}
+  {% load customTags %}
+  {% handelPersonSendScoreApplication item.user_id data.personSendScoreApplication item.id as personSendScoreList %}
+
+  <div class="modal fade" id="modalPersonScoreList__{{ item.id }}">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content modal-content-demo">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h6 class="modal-title">لیست امتیازات</h6>
+          <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body p-0">
+          <table class="table text-nowrap text-md-nowrap table-striped mg-b-0">
+            <thead>
+              <tr>
+                <th>ردیف</th>
+                <th>توضیح</th>
+                <th>امتیاز</th>
+                <th>تاریخ</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for point in personSendScoreList %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ point.description }}</td>
+                  <td>{{ point.point }}</td>
+                  <td>
+                    {% gregorian_to_jalali point.created as created %}{{ created }}
+                  </td>
+                  <td>
+                    <a href="" data-toggle="tooltip" data-original-title="حذف" class="deleteRecordFromTable" data-deleteId="{{ point.id }}"><i class="fa fa-trash"></i></a>
+                    <form id="deleteRecordForm_{{ point.id }}" action="{% url 'score:userScoreDelete' point.id %}" method="post" style="display: none;">
+                      {% csrf_token %}
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}

@@ -1,0 +1,139 @@
+{% load static %}
+{% load customTags %}
+
+<div class="main-header side-header sticky">
+  <div class="container-fluid">
+    <div class="main-header-right">
+      <a class="main-header-menu-icon" href="#" id="mainSidebarToggle"><span></span></a>
+    </div>
+    <div class="main-header-center">
+      <div class="responsive-logo">
+        <a class="mr-3" href="{% url 'dashboard:dashboard' %}"><img src="/media/{{ sitSettings.Logo }}" class="mobile-logo" style="width: 80px" alt="logo" /></a>
+      </div>
+    </div>
+    <div class="main-header-right">
+      <div class="dropdown d-md-flex">
+        <a class="nav-link icon full-screen-link" href="#">
+          <i class="fe fe-maximize fullscreen-button fullscreen header-icons"></i>
+          <i class="fe fe-minimize fullscreen-button exit-fullscreen header-icons"></i>
+        </a>
+      </div>
+      <div class="dropdown main-header-notification adminNotifications">
+        <a class="nav-link icon" href="#">
+          <i class="fe fe-bell header-icons"></i>
+          <span class="badge badge-danger nav-link-badge">{{ adminNotifications.all }}</span>
+        </a>
+        {% if adminNotifications.all %}
+          <div class="dropdown-menu">
+            <div class="main-notification-list">
+              {% if adminNotifications.secretariat %}
+                <div class="media">
+                  <a class="media-body" href="{% url 'secretariat:indexCorrelation' %}?status=2">
+                    <h4>مکاتبات</h4>
+                    <span class="badge badge-danger">{{ adminNotifications.secretariat }}</span>
+                  </a>
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+
+      {% if adminMsgAlerts.all %}
+        <div class="dropdown main-header-notification adminNotifications">
+          <a class="nav-link icon" href="#">
+            <i class="fe fe-message-square header-icons"></i>
+            <span class="badge badge-danger nav-link-badge">{{ adminMsgAlerts.all }}</span>
+          </a>
+          <div class="dropdown-menu">
+            <div class="main-notification-list">
+              {% for chatMsg in adminMsgAlerts.list %}
+                <div class="media">
+                  <a class="media-body" href="{% url 'chat:chatPage' type=chatMsg.0.chat.type slug=chatMsg.0.chat.slug %}">
+                    <h4>{{ chatMsg.0.chat.title }}</h4>
+                    <span class="badge badge-danger">{{ chatMsg.count }}</span>
+                  </a>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      {% if user.is_authenticated %}
+        <div class="dropdown main-profile-menu">
+          <a class="d-flex" href="#"><span class="main-img-user"><img alt="avatar" src="/media/{{ user.photo }}" onerror="this.onerror=null;this.src='{% static '/' %}adminAssets/img/users/avatar.png';" /></span></a>
+          <div class="dropdown-menu">
+            <div class="header-navheading">
+              <h6 class="main-notification-title">{{ user.first_name }} {{ user.last_name }}</h6>
+              <p class="main-notification-text">{{ user.get_job_display }}</p>
+            </div>
+
+            <a class="dropdown-item border-top" href="{% url 'app_user:admin_profile' %}"><i class="fe fe-user"></i> پروفایل</a>
+
+            <a class="dropdown-item" href="{% url 'app_user:admin_change_pass' %}"><i class="fe fe-lock"></i> تغییر رمزعبور</a>
+
+            <a class="dropdown-item" href="{% url 'app_user:admin_logout' %}"><i class="fe fe-power"></i> خروج</a>
+          </div>
+        </div>
+      {% endif %}
+
+      <button class="navbar-toggler navresponsive-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-4" aria-controls="navbarSupportedContent-4" aria-expanded="false" aria-label="Toggle navigation"><i class="fe fe-more-vertical header-icons navbar-toggler-icon"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile-header -->
+<div class="mobile-main-header">
+  <div class="mb-1 navbar navbar-expand-lg nav nav-item navbar-nav-right responsive-navbar navbar-dark">
+    <div class="collapse navbar-collapse" id="navbarSupportedContent-4">
+      <div class="d-flex order-lg-2 mr-auto">
+        <div class="dropdown">
+          <a class="nav-link icon full-screen-link">
+            <i class="fe fe-maximize fullscreen-button fullscreen header-icons"></i>
+            <i class="fe fe-minimize fullscreen-button exit-fullscreen header-icons"></i>
+          </a>
+        </div>
+
+        <div class="dropdown main-header-notification adminNotifications">
+          <a class="nav-link icon" href="#">
+            <i class="fe fe-bell header-icons"></i>
+            <span class="badge badge-danger nav-link-badge">{{ adminNotifications.all }}</span>
+          </a>
+          {% if adminNotifications.all %}
+            <div class="dropdown-menu">
+              <div class="main-notification-list">
+                {% comment %} {% if adminNotifications.suggestion %}
+                  <div class="media">
+                    <a class="media-body" href="{% url 'suggestion:index' %}?status=3">
+                      <h4>پیشنهادات تکمیل نشده</h4>
+                      <span class="badge badge-danger">{{ adminNotifications.suggestion }}</span>
+                    </a>
+                  </div>
+                {% endif %} {% endcomment %}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+
+        {% if user.is_authenticated %}
+          <div class="dropdown main-profile-menu">
+            <a class="d-flex" href="#"><span class="main-img-user"><img alt="avatar" src="/media/{{ user.photo }}" onerror="this.onerror=null;this.src='{% static '/' %}adminAssets/img/users/avatar.png';" /></span></a>
+            <div class="dropdown-menu">
+              <div class="header-navheading">
+                <h6 class="main-notification-title">{{ user.first_name }} {{ user.last_name }}</h6>
+                <p class="main-notification-text">{{ user.get_job_display }}</p>
+              </div>
+
+              <a class="dropdown-item border-top" href="{% url 'app_user:admin_profile' %}"><i class="fe fe-user"></i> پروفایل</a>
+
+              <a class="dropdown-item" href="{% url 'app_user:admin_change_pass' %}"><i class="fe fe-lock"></i> تغییر رمزعبور</a>
+
+              <a class="dropdown-item" href="{% url 'app_user:admin_logout' %}"><i class="fe fe-power"></i> خروج</a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

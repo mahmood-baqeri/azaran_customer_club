@@ -1,0 +1,40 @@
+.errorBoy{
+    background: #ffffff;
+    box-shadow: 0 0 6px #cf4c4c;
+    color: #cf4c4c;
+    text-align: center;
+    margin: 10%;
+    padding: 10%;
+    border-radius: 5px;
+}
+
+.adminNotifications{}
+.adminNotifications .media{}
+.adminNotifications .media .media-body{
+        display: flex;
+    justify-content: space-between;
+}
+.adminNotifications .media .media-body span{
+    margin: 0;
+    font-size: 13px;
+}
+.adminNotifications .media .media-body h4{
+    font-size: 14px;
+}
+
+.formMultiChoiceEl{}
+.formMultiChoiceEl .form-check{}
+.formMultiChoiceEl .form-check input{}
+.formMultiChoiceEl .form-check label{}
+.formMultiChoiceEl .form-check label:before{
+    /*    position: relative !important;*/
+    /*top: unset !important;*/
+    /*right: unset !important;*/
+}
+.formMultiChoiceEl .form-check label {
+    margin-right: 15px;
+}
+
+.formMultiChoiceEl .form-check label:after{
+    content: none !important;
+}

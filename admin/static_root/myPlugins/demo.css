@@ -1,0 +1,582 @@
+.rtl {
+    direction: rtl !important;
+}
+
+.tgr {
+    text-align: right !important;
+}
+
+.ltr {
+    direction: ltr !important;
+}
+
+.tgl {
+    text-align: left !important;
+}
+
+.cpoint {
+    cursor: pointer;
+}
+
+/*******************************   Header  */
+header .logoMd {
+    width: 100px;
+}
+
+header .nav-cart {
+    margin-right: 30px;
+}
+
+header .nav-cart svg {
+    width: 25px;
+    height: 25px;
+    margin-left: 8px;
+}
+
+header .nav-cart .cart-info {
+    width: 200px;
+}
+
+.header section.navigation-header .navigation_area {
+    padding-right: 268px;
+    padding-left: 0;
+}
+
+header section.navigation-header .navigation_area .navigation_left {
+    left: unset;
+    right: 0;
+}
+
+header .dropdown-menu > li > a {
+    text-align: right;
+}
+
+header .navigation_links_left.dropdown-menu li .fa {
+    left: 10px;
+    right: auto;
+}
+
+header .navigation_links_left.dropdown-menu > li.dropdown .dropdown-menu {
+    left: unset;
+    right: 100%;
+}
+
+header section.navigation-header .navigation_area .navigation_right .navigation_links {
+    text-align: right;
+}
+
+header .dropdown-menu {
+    right: 0;
+    left: unset;
+}
+
+header ul.navigation_links {
+    padding-right: 40px;
+    padding-left: 40px;
+}
+
+input::-webkit-input-placeholder , .iransans {
+    font-family: 'IRANSans_Num', 'IRANSans' !important
+}
+
+header .mobile-navigation.active .mobile-navigation-inner .mobile-navigation-content .mobile-top-navigation {
+    padding: 20px 1rem 2rem;
+}
+
+header .mobile-navigation-inner {
+}
+
+header section.navigation-header .navigation_area .navigation_right .navigation_links > li:first-child {
+    margin-right: 0;
+}
+
+header section.navigation-header .navigation_area .navigation_right .navigation_links > li:last-child {
+    margin-right: 40px;
+}
+
+header .cart-info .cart-content > .items .cart-right .cart-title {
+    text-align: right;
+}
+
+/*******************************   End Header  */
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/*******************************   Slider */
+.carousel-inner > .item:after {
+    content: '';
+    background: #000;
+    opacity: .5;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    position: absolute;
+    top: 0;
+}
+
+.carousel-inner > .item .slideshow-caption {
+    z-index: 1001;
+}
+
+.carousel-inner > .item > img {
+    height: 494px;
+    width: 100%;
+}
+
+body section.main-slideshow .group-home-slideshow .slideshow-caption.position-right {
+    text-align: right;
+    width: 70% !important;
+}
+
+body section.main-slideshow .group-home-slideshow .slideshow-caption .group-caption .content .title_2 {
+    font-size: 40px;
+}
+
+body section.main-slideshow .group-home-slideshow .slideshow-caption .group-caption .content .title_2,
+body section.main-slideshow .group-home-slideshow .slideshow-caption .group-caption .content .caption,
+body section.main-slideshow .group-home-slideshow .slideshow-caption .group-caption .btn {
+    color: #fff;
+}
+
+/*******************************   End Slider  */
+
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/*******************************   Products */
+
+.banner_item img {
+    height: 108px;
+    width: 100%;
+}
+
+body section.home_protab1_layout .protab1_bottom .protab1_item > .owl-controls .owl-prev,
+body section.home_protab1_layout .protab1_bottom .protab1_item > .owl-controls .owl-next {
+    right: auto;
+    left: 0;
+}
+
+body section.home_protab1_layout .protab1_bottom .protab1_item > .owl-controls .owl-next {
+    margin-left: 57px;
+}
+
+body .page-title h2, body .page-title .h2 {
+    padding-right: 30px;
+    text-align: right;
+}
+
+body section.home_protab1_layout .protab1_bottom .protab1_banner img {
+    height: 345px;
+}
+
+.product .sale_banner .sale_text {
+    padding: 4px 5px;
+    display: flex;
+}
+
+.product .hoverBorderWrapper img {
+    width: 100%;
+    height: 270px;
+}
+
+body section.home_protab1_layout .protab1_bottom .tab-content {
+
+}
+
+body section.home_protab1_layout .protab1_bottom .content_product .product .row-right {
+    text-align: right;
+}
+
+body section.home_protab1_layout .protab1_top {
+    border-top: 3px solid #dbdbdb;
+}
+
+#quick-shop-title span {
+    float: left;
+    color: #008095;
+}
+
+.limitTextLine6 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 6; /* number of lines to show */
+    line-clamp: 6;
+    -webkit-box-orient: vertical;
+}
+
+body .modal-content .modal-body .quantity-wrapper {
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+
+#featuted-image img{
+    width: 100% !important;
+    height: 278px;
+}
+
+/*******************************   End Products  */
+
+body #newsletter-popup .nl-wraper-popup {
+    padding: 20px;
+    direction: rtl;
+}
+
+body #newsletter-popup .nl-wraper-popup form {
+    text-align: right;
+}
+
+footer section.footer_newsoc_block .footer_newsoc_content .footer_newsletter_content form .btn_newsletter_send
+{
+    white-space: nowrap;
+}
+
+.eggy{
+    z-index: 1000000000000000000;
+}
+.eggy p.message{
+    font-size: 13px !important;
+    direction: rtl !important;
+    text-align: right !important;
+}
+
+@media (min-width: 768px) {
+    .col-sm-1, .col-sm-10, .col-sm-11, .col-sm-12, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9 ,
+    .col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+        float: right;
+    }
+}
+footer {
+        margin-top: 50px;
+}
+footer p{
+    line-height: 2.5;
+}
+.mt-50{
+    margin-top: 50px !important;
+}
+
+body .product-detail-content .info-detail-pro{
+    padding: 50px;
+}
+body .product-detail-content #product-information {
+    padding: 0 25px !important;
+}
+
+del{
+    color: #747373 !important;
+}
+body .product-detail-content #product-information .variants .product-options .product-price .price {
+    font-size: 25px;
+}
+body #tabs-information .information_content .panel-heading .panel-title .fa {
+    float: left;
+}
+.social-sharing.is-clean .icon-instagram{
+    color: #dd4b39;
+}.social-sharing.is-clean .fa-telegram{
+    color: #0b92db;
+}
+
+.myModal{
+    direction: rtl !important;
+}
+.myModal .modal-content{}
+.myModal .modal-header {
+    background: #e0493e;
+    color: #fff;
+    padding: 20px;
+}
+.myModal .modal-header .modal-title{    font-size: 15px;}
+.myModal .modal-header .nl-popup-close{
+        position: absolute;
+    left: 15px;
+    margin-top: -24px;
+    padding: 0 7px;
+}
+.myModal .modal-body {
+    padding: 15px 30px 0 30px;
+
+}
+.myModal .modal-body .form-group{
+        margin-bottom: 15px;
+}
+.myModal .modal-body .form-group label{
+        font-weight: 700;
+    margin-bottom: 8px;
+}
+.myModal .modal-body .form-group input{
+        height: 40px;
+    border-radius: 5px;
+}
+.myModal .modal-footer {
+        text-align: end;
+    padding: 15px 30px;
+}
+.myModal .modal-footer button{}
+
+
+
+.collection-content{}
+.collection-content .content_product .hoverBorderWrapper{}
+.collection-content .content_product .hoverBorderWrapper img{
+    height: 150px;
+}
+
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover {
+    padding: 4px 10px;
+    background-color: #e0493e;
+    border-color: #e0493e;
+}
+
+body #collection .sortBy #sortBox {
+    right: auto;
+    left: -15px;
+}
+body #collection .sortBy #sortBox ul li {
+    text-align: right;
+        padding: 5px;
+}
+body #collection .sortBy #sortBox ul li.active{
+       background-color: #e0493e;
+}
+body #collection .sortBy #sortBox ul li.active a{
+    color: #fff;
+}
+
+.d-none{
+    display: none !important;
+}
+
+body .sidebar .sidebar-title>span {
+    padding-left: 15px;
+    padding-right: 0;
+}
+
+
+.btn{
+    background-color: #e0493e !important;
+    border-color: #e0493e !important;
+    color: #fff !important;
+    -webkit-transition: all .3s;
+    -o-transition: all .3s;
+    -moz-transition: all .3s;
+    transition: all .3s;
+}
+.btn:hover{
+    background-color: #fff !important;
+    color: #e0493e !important;
+}
+
+a , span.link{
+    cursor: pointer !important;
+}
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/*******************************   price Slider */
+form.rangeSlider{}
+form.rangeSlider label{
+        padding: 5px 0;
+}
+form.rangeSlider input{
+    margin-bottom: 15px;
+    height: 34px;
+    padding: 4px;
+}
+form.rangeSlider button{
+        display: block;
+    margin-right: auto;
+    margin-left: 15px;
+}
+
+/*******************************   End price Slider  */
+
+body .faqs-content .nav-tabs>li>a{
+    text-align: right;
+}
+
+#headerUserFavorites > .row{
+        padding: 5px;
+}
+.cart-info .cart-content>.items .cart-close {
+    top: 5px;
+    left: 5px;
+}
+.cart-info .cart-content>.items .cart-left img {
+    margin-left: 5px;
+    width: 95%;
+    border-radius: 5px;
+    height: 50px;
+}
+.cart-info .cart-content>.items .cart-right .cart-title a {
+    font-size: 12px;
+}
+.cart-info .cart-content>.items .cart-right .cart-price span {
+    font-size: 11px;
+}
+
+
+/***********************************************/
+/***********************************************/
+/***********************************************/
+/*******************************  User */
+.userLayoutSection{}
+.userLayoutSection .side{}
+.userLayoutSection .side ul{}
+.userLayoutSection .side ul li{}
+.userLayoutSection .side ul li a{}
+.userLayoutSection .content {
+        background: #fff;
+    padding: 20px;
+    box-shadow: -7px 13px 20px 0 #a5a5a5;
+    border-radius: 5px;
+}
+.userLayoutSection .content form{
+    width: 100%;
+}
+.userLayoutSection .content form.form1{
+        width: 50%;
+    margin: auto;
+    padding: 20px;
+}
+.userLayoutSection .content form label{
+        font-weight: 800;
+}
+.userLayoutSection .content form input{
+    width: 100%;
+}
+.userLayoutSection .content form button{
+    margin: 0 auto 0 0;
+    display: block;
+}
+.userLayoutSection .content form button.btn2 {
+    margin: auto;
+}
+.userLayoutSection .content form .fieldWrapper{
+    min-height: 110px;
+        margin-top: 15px;
+}
+
+.liked{
+    color: #e0493e !important;
+    border-color: #e0493e !important;
+    background-color: #fff !important;
+}
+
+.item.wishlist-item img{
+    width: 100px !important;
+    height: 70px !important;
+}
+
+.userLayoutSection th , .userLayoutSection td{
+    text-align: right !important;
+}
+
+.userLayoutSection .btn1{
+    display: block;
+    width: fit-content;
+    margin-right: auto;
+    margin-bottom: 20px;
+    padding: 1px 15px;
+}
+.userLayoutSection .btn1 i{
+    color: #fff;
+}
+
+.userLayoutSection textarea{
+        width: 100%;
+}
+
+.userLayoutSection select{
+    width: 100%;
+    height: 43px;
+}
+.errorlist li{
+        color: #f55757;
+}
+
+body table.cart-items td.remove .product-remove{
+    display: flex;
+    justify-content: center;
+}
+body table.cart-items td.remove a {
+    margin: 0 2px;
+}
+.chatElement{}
+.chatElement ul{}
+.chatElement ul li{
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #d7e2fb;
+    border-radius: 5px;
+}
+.chatElement ul li:nth-child(odd){
+    background: #ebebeb;
+}
+
+
+.chatElement ul li svg{
+        width: 40px;
+    height: 40px;
+    color: #000;
+}
+.chatElement ul li .username{
+        font-size: 15px;
+    margin: 10px;
+}
+.chatElement ul li .text{
+    margin-top: 24px;
+    font-size: 12px;
+}
+.chatElement ul li .date{
+       margin-top: -30px;
+}
+
+.chatElement ul li.user{}
+.chatElement ul li.user svg{
+    float: right;
+        margin-left: 10px;
+}
+.chatElement ul li.user .username{}
+.chatElement ul li.user .text{}
+.chatElement ul li.user .date{
+        float: left;
+
+}
+
+.chatElement ul li.shop{
+        text-align: left;
+}
+.chatElement ul li.shop svg{
+        float: left;
+    margin-right: 10px;
+}
+.chatElement ul li.shop .username{}
+.chatElement ul li.shop .text{}
+.chatElement ul li.shop .date{
+        float: right;
+}
+/*******************************   End User  */
+
+#deleteModal{}
+#deleteModal p{
+font-size: 20px;
+    padding: 20px;
+    text-align: center;
+    font-weight: 900;
+}
+#deleteModal .modal-footer{
+    padding: 0 10px 10px;
+    border: none;
+}
+#deleteModal .modal-footer .b1{}
+#deleteModal .modal-footer .b2{}
+
+#quick-shop-modal .close{
+        position: absolute;
+    top: 2px;
+    left: 3px;
+}
+#quick-shop-modal .btn{
+}

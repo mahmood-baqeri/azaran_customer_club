@@ -1,0 +1,70 @@
+<div class="{{item.c}}">
+    <div class="form-group">
+        {% if item.r  %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{item.id}}">{{item.l}}</label>
+        <input type="file" class="form-control"
+               multiple
+               name="{{item.n}}"
+               placeholder="{{item.l}}"
+               id="{{item.id}}"
+               value="{{item.v}}"
+               {% if item.r  %} required {% endif %}
+                accept={{item.accept}}
+        >
+
+        <div class="fileItems d-flex">
+        {% for file in item.files %}
+            <div class="imageItem main" style="{% if item.allowDelete == 2 %} padding-right: 0 !important; {% endif %}">
+                {% if item.allowDelete == 1 %} <span class="btnRemoveFileIndex" data-itemId="{{ item.theItem.id }}" data-index="{{ forloop.counter0 }}">x</span> {% endif %}
+                <a href="/media/{{ file }}" target="_blank">مشاهده</a>
+            </div>
+        {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+
+<style>
+    .fileItems{}
+    .fileItems .imageItem{
+        margin-left: 20px;
+        padding-right: 22px;
+        position: relative;
+            margin-top: 10px;
+
+    }
+    .fileItems span{
+        position: absolute;
+        border-radius: 3px;
+        width: 15px;
+        margin-right: 2px;
+        height: 15px;
+        cursor: pointer;
+        right: 0;
+        background: white;
+        color: #f00;
+        box-shadow: 0 0 0 1px red;
+        text-align: center;
+        line-height: 1;
+    }
+</style>
+
+{% block js %}
+<script>
+     $(document).on('click', '.btnRemoveFileIndex' , function () {
+        let inputs = {
+            'itemId': $(this).attr('data-itemId'),
+            'index': $(this).attr('data-index'),
+        };
+        ajaxFunction("{{item.removeRoute}}", inputs, true).then((data) => {
+            if (data.data == 'ok')
+                $(this).parent().remove();
+            else
+                MyNotification('خطا !', data.data, 'error');
+        });
+    });
+</script>
+{% endblock %}

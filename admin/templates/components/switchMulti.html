@@ -1,0 +1,24 @@
+<div class="switchContent row w-100">
+    {% for data in item.data %}
+        <div class="{{ item.c }}">
+            <div class="form-group">
+                <label class="custom-switch" style="display: flex;flex-direction: column;align-items: flex-start;">
+                    <p class="">
+                        {% if item.r %}
+                            <span class="text-danger">*</span>
+                        {% endif %}
+
+                        {{ data.label }}
+                    </p>
+                    <p>
+                        <input type="checkbox" name="{{ item.n }}#{{ data.id }}" class="custom-switch-input"
+                                {% if item.v %}  {% if data.id in item.v %} checked {% endif %} {% endif %}
+                                {% if item.r %} required {% endif %}
+                        >
+                        <span class="custom-switch-indicator"></span>
+                    </p>
+                </label>
+            </div>
+        </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,44 @@
+<div class="{{ item.c }} formMultiChoiceEl">
+    <label for="">
+        {% if item.r  %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <b>{{ item.l }}</b>
+    </label>
+
+    <div class="d-flex">
+        {% for choice in item.choices %}
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="{{ item.n }}" {% if item.v == choice %} checked {% endif %}
+                       id="flexRadioDefault__{{ item.opID }}{{ forloop.counter }}" value="{{ choice }}" {% if item.r  %} required {% endif %}>
+                <label class="form-check-label" for="flexRadioDefault__{{ item.opID }}{{ forloop.counter }}">
+                    {{ choice }}
+                </label>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<style>
+    .formMultiChoiceEl {
+        text-align: right;
+        margin : 15px 0;
+    }
+
+    .formMultiChoiceEl > label {
+    }
+
+    .formMultiChoiceEl .form-check {
+        margin-left: 10px;
+    }
+
+    .formMultiChoiceEl .form-check input {
+        float: right;
+        margin-left: 5px;
+    }
+
+    .formMultiChoiceEl .form-check label {
+            margin-bottom: 15px;
+    }
+</style>

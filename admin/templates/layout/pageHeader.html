@@ -1,0 +1,55 @@
+{% load static %}
+<div class="page-header">
+  <div>
+    <h2 class="main-content-title tx-24 mg-b-5">{{ data.pageTitle }}</h2>
+  </div>
+  <div class="d-flex">
+    <div class="justify-content-center">
+      {% if data.exportExcel %}
+        <a href="{{ data.exportExcel }}" class="btn btn-primary btn-icon-text pt-2 mr-1" data-toggle="tooltip" title="خروجی اکسل"><i class="fe fe-download-cloud"></i></a>
+      {% endif %}
+
+      {% if data.sendNotificationInGiftOrderForAll %}
+        <a href="#sendNotificationInGiftOrderForAll" data-itemID="{{ item.id }}" title="نوتیفیکیشن" data-effect="effect-scale" data-toggle="modal" class="sendNotificationInGiftOrderForAll btn btn-info btn-icon-text"><i class="fa fa-bell"></i></a>
+      {% endif %}
+
+      {% if data.importExcel %}
+        <button class="btn btn-info btn-icon-text pt-2 mr-1 uploadDataWithExcel" data-action="{{ data.importExcel }}" data-title="{{ data.importExcelText }}" data-help="{% static '/' %}{{ data.importExcelHelp }}" title=" بارگذاری {{ data.importExcelText }} از فایل اکسل "><i class="fe fe-upload-cloud"></i></button>
+      {% endif %}
+
+      {% if data.importExcelPayslip %}
+        <button class="btn btn-warning btn-icon-text pt-2 mr-1 uploadDataWithExcel" data-action="{{ data.importExcelPayslip }}" data-title="{{ data.importExcelPayText }}" data-help="{% static '/' %}{{ data.importExcelHelpPay }}" title=" بارگذاری {{ data.importExcelPayText }} از فایل اکسل "><i class="fe fe-upload-cloud"></i></button>
+      {% endif %}
+
+      {% if data.importExcel or data.importExcelPayslip %}
+        {% include 'modal/uploadDataWithExcel.html' %}
+      {% endif %}
+
+      {% if data.importExcelScore %}
+        <button class="btn btn-warning btn-icon-text pt-2 mr-1" title=" بارگذاری از فایل اکسل " data-target="#importExcelScore" data-toggle="modal"><i class="fe fe-upload-cloud"></i></button>
+        {% include 'modal/importExcelScore.html' %}
+      {% endif %}
+
+      {% if data.referralModal %}
+        <a href="" data-target="#referralModal" data-toggle="modal" class="btn btn-info btn-icon-text pt-2 mr-1" title="ارجاع"><i class="fa fa-reply"></i></a>
+        {% include 'modal/referralModal.html' %}
+      {% endif %}
+
+      {% if data.newUrl %}
+        <a href="{{ data.newUrl }}" class="btn btn-dark btn-icon-text pt-2 mr-1" data-toggle="tooltip" title="اضافه کردن"><i class="fe fe-plus"></i></a>
+      {% endif %}
+
+      {% if data.backUrl %}
+        <a href="{{ data.backUrl }}" class="btn btn-warning btn-icon-text pt-2 mr-1" data-toggle="tooltip" title="بازگشت"><i class="fe fe-arrow-left"></i></a>
+      {% endif %}
+
+      {% if data.exportJqueryExcel %}
+        <button class="btn btn-primary btn-icon-text pt-2 mr-1" data-toggle="tooltip" title="خروجی اکسل" onclick="functionExcelReport();"><i class="fe fe-download-cloud"></i></button>
+      {% endif %}
+
+      {% if data.updatePersonFromBehko %}
+        <a href="{{ data.updatePersonFromBehko }}" class="btn btn-success btn-icon-text pt-2 mr-1" data-toggle="tooltip" title="بروزرسانی از بهکو"><i class="fa fa-users"></i></a>
+      {% endif %}
+    </div>
+  </div>
+</div>

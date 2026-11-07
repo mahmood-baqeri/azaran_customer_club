@@ -1,0 +1,19 @@
+<div class="{{item.c}}">
+    <div class="form-group">
+        {% if item.r  %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{item.id}}"><b>{{item.l}}</b></label>
+        <select class="form-control select2"
+                name="{{item.n}}" multiple="multiple"
+                id="{{item.id}}"
+                {% if item.r  %} required {% endif %}>
+            {% for key in item.data %}
+                <option value="{{key.id}}" {% if item.v %}  {% if key.id in item.v %} selected {% endif %} {% endif %}>{{key.label}}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+
+

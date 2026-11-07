@@ -1,0 +1,148 @@
+{% load static %}
+{% load customTags %}
+
+<form id="searchFormElement" class="row gx-3 gy-2 align-items-center" action="{{ data.searchUrl }}">
+
+    <div class="{% if data.filterDate %} col-sm-2 {% else %} {% if data.theFilterItems or data.sortWithMostScore %} col-sm-5  {% else %} col-sm-7 {% endif %} {% endif %} p-2">
+        <input type="text" class="form-control" id="specificSizeInputName" name="q" placeholder="جستجو ..."
+               value="{{ data.searchText }}">
+    </div>
+
+    <div class="col-sm-2 p-2">
+        <select class="form-select" id="specificSizeSelect" name="sort">
+            <option> مرتب سازی</option>
+            <option value="desc" {% if data.searchSort == 'desc' %} selected  {% endif %}>جدید ترین</option>
+            <option value="asc"  {% if data.searchSort == 'asc' %} selected  {% endif %}>قدیمی ترین</option>
+
+            {% if data.sortWithUserPersoncode %}
+                <option value="nationalCode" {% if data.searchSort == 'nationalCode' %} selected  {% endif %}>کد ملی</option>
+                <option value="personCode"  {% if data.searchSort == 'personCode' %} selected  {% endif %}>کد پرسنلی</option>
+            {% endif %}
+
+            {% if data.sortWithActiveDeactive %}
+                <option value="active" {% if data.searchSort == 'active' %} selected  {% endif %}>فعال</option>
+                <option value="deactive"  {% if data.searchSort == 'deactive' %} selected  {% endif %}>غیر فعال</option>
+            {% endif %}
+
+            {% if data.sortWithMostScore %}
+                <option value="h" {% if data.searchSort == 'h' %} selected  {% endif %}>بیشترین امتیاز</option>
+                <option value="l"  {% if data.searchSort == 'l' %} selected  {% endif %}>کمترین امتیاز</option>
+            {% endif %}
+
+            {% if data.sortWithSystemLog %}
+                {% for app in data.sortWithSystemLog %}
+                    <option value="{{ app.en }}" {% if data.searchSort == app.en %} selected  {% endif %}>{{ app.fa }}</option>
+                {% endfor %}
+            {% endif %}
+        </select>
+    </div>
+
+    <div class="col-sm-1 p-2">
+        <select class="form-select" name="count">
+            <option value="10"> تعداد نمایش</option>
+            <option value="10" {% if data.searchCount == 10 %} selected  {% endif %}> 10</option>
+            <option value="20" {% if data.searchCount == 20 %} selected  {% endif %}> 20</option>
+            <option value="30" {% if data.searchCount == 30 %} selected  {% endif %}> 30</option>
+            <option value="40" {% if data.searchCount == 40 %} selected  {% endif %}> 40</option>
+            <option value="50" {% if data.searchCount == 50 %} selected  {% endif %}> 50</option>
+        </select>
+    </div>
+
+    {% if data.filterDate %}
+        {% gregorian_to_jalali data.filterDateStart as filterDateStart %}
+        {% gregorian_to_jalali data.filterDateEnd as filterDateEnd %}
+
+        <div class="col-sm-2 p-2 --- {{ data.filterDateStart }} --- ">
+            <input type="text" class="form-control pdate" placeholder="تاریخ شروع" id="filterDateStart" value="{{filterDateStart}}">
+            <input type="hidden" id="hidden_filterDateStart" name="filterDateStart" value="{{data.filterDateStart}}">
+        </div>
+
+        <div class="col-sm-2 p-2 --- {{ data.filterDateEnd }} ---">
+            <input type="text" class="form-control pdate" placeholder="تاریخ پایان" id="filterDateEnd" value="{{filterDateEnd}}">
+            <input type="hidden" id="hidden_filterDateEnd" name="filterDateEnd" value="{{data.filterDateEnd}}">
+        </div>
+
+
+        <link rel="stylesheet" href="{% static '/' %}myPlugins/persianDateTimePicker/jspc-royal_blue.css">
+        <script type="text/javascript" src="{% static '/' %}myPlugins/persianDateTimePicker/js-persian-cal.min.js"></script>
+        <script>
+            new AMIB.persianCalendar("filterDateStart", {
+                extraInputID: "hidden_filterDateStart",
+                extraInputFormat: "YYYY-MM-DD"
+            });
+            new AMIB.persianCalendar("filterDateEnd", {
+                extraInputID: "hidden_filterDateEnd",
+                extraInputFormat: "YYYY-MM-DD"
+            });
+        </script>
+        <style>
+            a.pcalBtn{
+                border-radius: 5px 10px 10px 5px;
+                top: 9px !important;
+                width: 40px !important;
+                height: 40px !important;
+            }
+        </style>
+    {% endif %}
+
+    {% if data.sortWithMostScore %}
+        <div class="col-sm-2 p-2">
+            <select class="form-select" name="section">
+                {% for section in data.section %}
+                    <option value="{{ section.id }}" {% if data.searchSection == section.id %} selected  {% endif %}>{{ section.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
+
+    {% if data.theFilterItems %}
+        <div class="col-sm-2 p-2">
+            <select class="form-select" name="filter">
+                <option> فیلتر</option>
+                {% for item in data.theFilterItems %}
+                    <option {% if data.filter == item.0 %} selected {% endif %} value="{{ item.0 }}"> {{ item.1 }} </option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
+
+    <div class="col-sm-1 p-2">
+        <button type="submit" class="btn btn-info">جستجو</button>
+    </div>
+
+</form>
+
+<style>
+    #searchFormElement {
+        box-shadow: 0 0 7px 1px #e9e9e9;
+        margin: 0;
+        place-content: center;
+        padding: 20px 10px;
+        border-radius: 5px;
+    }
+
+    #searchFormElement > div {
+    }
+
+    #searchFormElement label {
+    }
+
+    #searchFormElement input,
+    #searchFormElement button,
+    #searchFormElement select {
+        height: 40px !important;
+        border: 1px solid black !important;
+        border-radius: 10px !important;
+        padding: 5px 11px !important;
+        font-size: 13px !important;
+        width: 100%;
+    }
+
+    #searchFormElement select {
+        background-position: 10px;
+    }
+
+    #searchFormElement button {
+        width: 100%;
+    }
+</style>

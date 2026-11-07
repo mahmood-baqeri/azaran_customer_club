@@ -1,0 +1,22 @@
+<div class="modal fade" id="chatP2PModal" aria-labelledby="chatP2PModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-end">
+      <form action="{% url 'chat:chatP2P' %}" method="post">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="chatP2PModalLabel">انتخاب مخاطب</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% for item in data.chatP2PFields %}
+            {% include 'components/'|add:item.b %}
+          {% endfor %}
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">ادامه</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+{% load static %}
+
+<div class="{{item.c}}">
+    <div class="my-4">
+        <div class="row">
+            <div class="form-group col-md-7">
+                <label for="name"> انتخاب تصویر برای استفاده در ویرایشگر </label>
+
+                <select name="" id="" class="form-control applicationsImgSelector">
+                    {% for photo in item.gallery %}
+                        <option value="/media/{{ photo.photo }}">{{ photo.title }}</option>
+                    {% endfor %}
+                </select>
+
+                <div class="applicationsImgUrl mt-4">
+                    <p class="m-2"><b>برای استفاده  باید این لینک را قسمت تصویر ویرایشگر قرار دهید</b></p>
+                    <span></span>
+                </div>
+            </div>
+
+            <div class="form-group col-md-5">
+                <img class="applicationsImgUrl w-100" src="/media/{{ item.gallery.0.photo }}" alt="" height="250" style="border-radius: 5px">
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="form-group">
+        {% if item.r  %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{item.id}}">{{item.l}}</label>
+        <textarea class="editor w-100"
+                  name="{{item.n}}"
+                  placeholder="{{item.l}}"
+                  id="{{item.id}}"
+                  {% if item.r  %} required {% endif %}
+        >{{item.v}}</textarea>
+
+    </div>
+</div>
+
+
+<script src="{% static '/' %}myPlugins/ckeditor/ckeditor.js"></script>
+<script>
+    $(function () {
+        CKEDITOR.replace(document.querySelector('.editor'));
+    });
+
+    $(document).ready(function () {
+        $('.applicationsImgSelector').on('change', function () {
+            $('img.applicationsImgUrl').attr('src', $(this).val());
+            $('.applicationsImgUrl span').text($(this).val());
+        });
+    });
+</script>
+

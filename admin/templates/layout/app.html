@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    {% load static %}
+
+    <meta name="csrf-token" content="{{ csrf_token }}" />
+
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <meta name="keywords" content="" />
+    {% comment %} <link rel="icon" href="/media/{{ sitSettings.FavIcon }}" type="image/x-icon" /> {% endcomment %}
+
+    <title>
+      {% block title %}
+
+      {% endblock %}
+    </title>
+
+    <link href="{% static '/' %}fonts/iransans/iransans.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/plugins/web-fonts/icons.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/plugins/web-fonts/font-awesome/font-awesome.min.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/plugins/web-fonts/plugin.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/style.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/skins.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/dark-style.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/colors/default.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/colors/color.css" id="theme" rel="stylesheet" media="all" />
+    <link href="{% static '/' %}adminAssets/plugins/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/css-rtl/sidemenu/sidemenu.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/plugins/multipleselect/multiple-select.css" rel="stylesheet" />
+    <link href="{% static '/' %}adminAssets/plugins/sweet-alert/sweetalert.css" rel="stylesheet" />
+    {# <link href="{% static '/' %}adminAssets/plugins/spectrum-colorpicker/spectrum.css" rel="stylesheet"> #}
+    {# <link href="{% static '/' %}adminAssets/plugins/bootstrap-datepicker/bootstrap-datepicker-rtl.css" rel="stylesheet"> #}
+    {# <link href="{% static '/' %}adminAssets/plugins/amazeui-datetimepicker/css/amazeui.datetimepicker-rtl.css" rel="stylesheet"> #}
+    {# <link href="{% static '/' %}adminAssets/plugins/ion-rangeslider/css/ion.rangeSlider.css" rel="stylesheet"> #}
+    {# <link href="{% static '/' %}adminAssets/plugins/ion-rangeslider/css/ion.rangeSlider.skinFlat.css" rel="stylesheet"> #}
+    <link href="{% static '/' %}adminAssets/demo.css" rel="stylesheet" />
+
+    <script src="{% static '/' %}adminAssets/plugins/jquery/jquery.min.js"></script>
+
+    {% block css %}
+
+    {% endblock %}
+  </head>
+
+  <body class="main-body leftmenu">
+    <div id="global-loader">
+      <img src="{% static '/' %}images/loader.svg" class="loader-img" alt="Loader" />
+    </div>
+
+    <div class="page">
+      {% include 'layout/sidebar.html' %}
+      {% include 'layout/header.html' %}
+      {% block content %}
+
+      {% endblock %}
+      {% include 'layout/footer.html' %}
+    </div>
+
+    <a href="#top" id="back-to-top"><i class="fe fe-arrow-up"></i></a>
+
+    {% include 'layout/Messages.html' %}
+
+    <script src="{% static '/' %}adminAssets/plugins/bootstrap/js/popper.min.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/bootstrap/js/bootstrap-rtl.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/perfect-scrollbar/perfect-scrollbar.min-rtl.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/sidemenu/sidemenu-rtl.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/sidebar/sidebar-rtl.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/select2/js/select2.min.js"></script>
+    <script src="{% static '/' %}adminAssets/js/select2.js"></script>
+    <script src="{% static '/' %}adminAssets/switcher/js/switcher-rtl.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/chart.js/Chart.bundle.min.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/peity/jquery.peity.min.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/raphael/raphael.min.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/morris.js/morris.min.js"></script>
+    <script src="{% static '/' %}adminAssets/js/sticky.js"></script>
+    <script src="{% static '/' %}adminAssets/js/custom.js"></script>
+    {% comment %} <script src="{% static '/' %}adminAssets/plugins/jquery-ui/ui/widgets/datepicker.js"></script> {% endcomment %}
+    {% comment %} <script src="{% static '/' %}adminAssets/plugins/jquery.maskedinput/jquery.maskedinput.js"></script> {% endcomment %}
+    {% comment %} <script src="{% static '/' %}adminAssets/plugins/spectrum-colorpicker/spectrum.js"></script> {% endcomment %}
+    {% comment %} <script src="{% static '/' %}adminAssets/plugins/ion-rangeslider/js/ion.rangeSlider.min.js"></script> {% endcomment %}
+    {% comment %} <script src="{% static '/' %}adminAssets/plugins/bootstrap-datepicker/bootstrap-datepicker.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/amazeui-datetimepicker/js/amazeui.datetimepicker.min.js"></script> {% endcomment %}
+
+    <script src="{% static '/' %}adminAssets/plugins/sweet-alert/sweetalert.min.js"></script>
+    <script src="{% static '/' %}adminAssets/plugins/sweet-alert/jquery.sweet-alert.js"></script>
+    <script src="{% static '/' %}myPlugins/xlsx.full.min.js"></script>
+
+    <script src="{% static '/' %}myPlugins/script.js"></script>
+
+    <link href="{% static '/' %}myPlugins/EggyToaster/eggy.css" rel="stylesheet" />
+    <script src="{% static '/' %}myPlugins/EggyToaster/eggy.js"></script>
+
+    {% block js %}
+
+    {% endblock %}
+    <script>
+      $('.linkElement').each(function (index, element) {
+        $(element).attr('href', Domain + $(element).attr('data-link'))
+      })
+    </script>
+  </body>
+</html>

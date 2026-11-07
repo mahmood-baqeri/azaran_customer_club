@@ -1,0 +1,136 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        <!-- Page Header -->
+        <div class="page-header">
+          <div>
+            <h2 class="main-content-title tx-24 mg-b-5">{{ data.pageTitle }}</h2>
+          </div>
+        </div>
+        <!-- End Page Header -->
+
+        <div class="row row-sm">
+          <div class="col-sm-12 col-lg-12 col-xl-12">
+            <div class="card custom-card overflow-hidden">
+              <div class="card-header border-bottom-0">
+                <div>
+                  <label class="main-content-label mb-2">نمودار گردش امتیاز</label>
+                </div>
+              </div>
+              <div class="card-body pl-0">
+                <div class>
+                  <canvas id="theUserScoreChart" class="chart-dropshadow2 ht-450"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+  <script>
+        let labels = [];
+        let plusScore = [];
+        let minesScore = [];
+
+        "{% for chartItem in data.userScoreChart %}"
+            labels.push("{{ chartItem.date }}");
+            plusScore.push(parseInt({{chartItem.plusScore}}));
+            minesScore.push(parseInt({{chartItem.minesScore}}));
+            "{% endfor %}"
+
+
+        let ctx = document.getElementById("theUserScoreChart").getContext('2d');
+        let myChart = new Chart(ctx, {
+
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'کسب امتیاز',
+                    data: plusScore,
+                    borderWidth: 3,
+                    backgroundColor: 'transparent',
+                    borderColor: '#00abf5',
+                    pointBackgroundColor: '#ffffff',
+                    pointRadius: 0,
+                    type: 'line',
+                },
+                    {
+
+                        label: 'خرج امتیاز',
+                        data: minesScore,
+                        borderWidth: 3,
+                        backgroundColor: 'transparent',
+                        borderColor: '#ff6c07',
+                        pointBackgroundColor: '#ffffff',
+                        pointRadius: 0,
+                        type: 'line',
+
+                    }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                tooltips: {
+                    enabled: true,
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            fontColor: "#c8ccdb",
+                        },
+                        barPercentage: 0.7,
+                        display: true,
+                        gridLines: {
+                            color: 'rgba(119, 119, 142, 0.2)',
+                            zeroLineColor: 'rgba(119, 119, 142, 0.2)',
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            fontColor: "#77778e",
+                        },
+                        display: true,
+                        gridLines: {
+                            color: 'rgba(119, 119, 142, 0.2)',
+                            zeroLineColor: 'rgba(119, 119, 142, 0.2)',
+                        },
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Thousands',
+                            fontColor: 'transparent'
+                        }
+                    }]
+                },
+                legend: {
+                    display: true,
+                    width: 30,
+                    height: 30,
+                    borderRadius: 50,
+                    labels: {
+                        fontColor: "#77778e"
+                    },
+                },
+            }
+
+        });
+    </script>
+{% endblock %}

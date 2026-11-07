@@ -1,0 +1,687 @@
+/* =========================================================
+   Layout & Typography
+   ========================================================= */
+.proj-body {
+     padding: 5px;
+}
+
+.proj-section-title {
+     font-size: 14px;
+     font-weight: 700;
+     color: #14306b;
+     margin: 24px 0 12px;
+}
+
+.proj-label {
+     display: block;
+     font-size: 12px;
+     color: #414040;
+     margin-bottom: 8px;
+     ;
+}
+
+/* =========================================================
+   Form Elements (Inputs & Segments)
+   ========================================================= */
+.proj-input {
+     width: 100%;
+     padding: 0 16px !important;
+     font-size: 13px !important;
+     color: #14306b !important;
+     transition: box-shadow 0.2s ease;
+}
+
+.proj-input:focus {
+     box-shadow: 0 0 0 2px rgba(20, 48, 107, 0.1);
+}
+
+.proj-input::placeholder {
+     color: #a0aec0;
+}
+
+.proj-input:disabled {
+     background: #eef1f7;
+     color: #8792a8;
+     cursor: not-allowed;
+}
+
+.rmdp-input,
+.proj-input {
+     border-radius: 8px !important;
+     height: 36px !important;
+     background: #f4f5f9 !important;
+     border: 1.5px solid rgb(231, 231, 231) !important;
+}
+
+.proj-body input[type="number"],
+.proj-body input[type="tel"] {
+     text-align: center !important;
+}
+
+.proj-row {
+     display: flex;
+     gap: 12px;
+     margin-bottom: 16px;
+}
+
+.proj-col {
+     flex: 1;
+}
+
+.proj-segment {
+     display: flex;
+     background: #f4f5f9;
+     border-radius: 12px;
+     padding: 8px;
+     margin-bottom: 20px;
+     border: 1px solid #dddddd;
+     gap: 15px
+}
+
+.proj-seg-btn {
+     flex: 1;
+     background: transparent;
+     padding: 8px;
+     border-radius: 10px;
+     color: #6b7794;
+     font-size: 13px;
+     font-weight: 700;
+     cursor: pointer;
+     transition: 0.2s;
+     border: 1px solid #4747471a;
+}
+
+.proj-seg-btn.active {
+     background: #f7f7f7;
+     color: #14306b;
+     box-shadow: 0 2px 8px rgba(20, 48, 107, 0.08);
+}
+
+.proj-body hr {
+     color: #0a387c57;
+     margin: 0;
+}
+
+/* =========================================================
+   Buttons & Banners
+   ========================================================= */
+.proj-add-colleague-btn {
+     width: 100%;
+     border-radius: 12px;
+     padding: 10px;
+     color: #14306b;
+     font-size: 13px;
+     font-weight: 700;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 8px;
+     cursor: pointer;
+     transition: 0.2s;
+     background: transparent;
+     margin-top: 4px;
+}
+
+.proj-sticky-bottom {
+     /* position: fixed;
+     bottom: 0;
+     left: 0;
+     right: 0;
+     background: #fff;
+     padding: 16px 20px 24px;
+     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.05);
+     z-index: 100; */
+}
+
+.proj-success-banner {
+     background: #e8f5e9;
+     color: #2e7d32;
+     padding: 12px 16px;
+     border-radius: 12px;
+     font-size: 12px;
+     font-weight: 700;
+     text-align: center;
+     margin-bottom: 20px;
+     border: 1px solid #c8e6c9;
+     animation: fadeIn 0.3s ease;
+}
+
+/* =========================================================
+   Upload Section
+   ========================================================= */
+.proj-error-title {
+     color: #d32f2f;
+     font-size: 13px;
+     font-weight: 700;
+     margin-bottom: 16px;
+}
+
+.upload-list {
+     display: flex;
+     flex-direction: column;
+     gap: 12px;
+}
+
+.upload-box {
+     border: 1.5px dashed #dfe4ee;
+     border-radius: 12px;
+     padding: 20px;
+     text-align: center;
+     cursor: pointer;
+     background: #f8fafd;
+     transition: 0.2s;
+}
+
+.upload-box.missing {
+     border-color: #ffcdd2;
+     background: #fff0f0;
+     color: #d32f2f;
+}
+
+.upload-box.uploaded {
+     border-color: #c8e6c9;
+     background: #f0fff4;
+     color: #2e7d32;
+     border-style: solid;
+}
+
+.upload-box-content {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 8px;
+     font-size: 13px;
+     font-weight: 700;
+}
+
+.invoice-row {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin: 24px 0 12px;
+}
+
+.proj-checkbox-row {
+     display: flex;
+     align-items: center;
+     gap: 8px;
+     font-size: 12px;
+     color: #6b7794;
+     margin-top: 24px;
+}
+
+/* =========================================================
+   Summary & History Cards
+   ========================================================= */
+.proj-summary-card {
+     background: #fff;
+     border: 1.5px solid #eef1f7;
+     border-radius: 16px;
+     padding: 16px;
+     margin-bottom: 16px;
+}
+
+.proj-summary-card h3 {
+     font-size: 13px;
+     font-weight: 800;
+     color: #14306b;
+     margin: 0 0 12px;
+}
+
+.avatars-row {
+     display: flex;
+     gap: 16px;
+     overflow-x: auto;
+}
+
+.avatar-item {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     gap: 6px;
+}
+
+.avatar-circle {
+     width: 40px;
+     height: 40px;
+     border-radius: 50%;
+     background: #e8eefc;
+     color: #14306b;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     font-weight: 800;
+     font-size: 16px;
+}
+
+.avatar-item span {
+     font-size: 10px;
+     color: #6b7794;
+}
+
+.stats-row {
+     display: flex;
+     gap: 8px;
+}
+
+.stat-box {
+     flex: 1;
+     padding: 12px;
+     border-radius: 12px;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     gap: 4px;
+}
+
+.stat-box span {
+     font-size: 18px;
+     font-weight: 800;
+}
+
+.stat-box label {
+     font-size: 10px;
+     font-weight: 700;
+}
+
+.stat-box.green {
+     background: #e8f5e9;
+     color: #2e7d32;
+}
+
+.stat-box.yellow {
+     background: #fff3e0;
+     color: #e65100;
+}
+
+.stat-box.red {
+     background: #ffebee;
+     color: #c62828;
+}
+
+.proj-history-list {
+     display: flex;
+     flex-direction: column;
+     gap: 8px;
+}
+
+.proj-history-card {
+     background: #fff;
+     border: 1.5px solid #eef1f7;
+     border-radius: 12px;
+     padding: 12px;
+     cursor: pointer;
+}
+
+.ph-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 8px;
+}
+
+.ph-title {
+     font-size: 13px;
+     font-weight: 800;
+     color: #14306b;
+}
+
+.ph-status {
+     font-size: 10px;
+     font-weight: 700;
+     padding: 4px 8px;
+     border-radius: 6px;
+}
+
+.ph-status.approved {
+     background: #e8f5e9;
+     color: #2e7d32;
+}
+
+.ph-status.pending {
+     background: #fff3e0;
+     color: #e65100;
+}
+
+.ph-status.rejected {
+     background: #ffebee;
+     color: #c62828;
+}
+
+.ph-footer {
+     display: flex;
+     justify-content: space-between;
+     font-size: 11px;
+     color: #6b7794;
+}
+
+
+/* ── Actions row ───────────────────────────── */
+.ph-actions {
+     display: flex;
+     gap: 8px;
+     margin-top: 12px;
+     padding-top: 12px;
+     border-top: 1px solid #f0f2f8;
+}
+
+.ph-btn {
+     flex: 1;
+     padding: 8px 10px;
+     border-radius: 8px;
+     border: none;
+     font-size: 13px;
+     font-weight: 500;
+     font-family: inherit;
+     cursor: pointer;
+     transition: background 0.15s, transform 0.05s;
+}
+
+.ph-btn:active:not(:disabled) {
+     transform: scale(0.98);
+}
+
+.ph-btn:disabled {
+     opacity: 0.55;
+     cursor: not-allowed;
+}
+
+.ph-btn-detail {
+     background: #eef2ff;
+     color: #4f46e5;
+}
+
+.ph-btn-detail:hover:not(:disabled) {
+     background: #e0e7ff;
+}
+
+.ph-btn-edit {
+     background: #fef3c7;
+     color: #b45309;
+}
+
+.ph-btn-edit:hover:not(:disabled) {
+     background: #fde68a;
+}
+
+.ph-btn-delete {
+     background: #fee2e2;
+     color: #dc2626;
+}
+
+.ph-btn-delete:hover:not(:disabled) {
+     background: #fecaca;
+}
+
+
+.project-btn {
+     position: relative;
+     width: 100%;
+     height: 45px;
+     border: none;
+     border-radius: 12px;
+     background: linear-gradient(135deg, #14306b 0%, #1c3f87 100%);
+     color: #fff;
+     font-size: 15px;
+     font-weight: 700;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 8px;
+     font-family: inherit;
+     overflow: hidden;
+     isolation: isolate;
+     box-shadow: 0 6px 16px -4px rgba(20, 48, 107, .35), 0 2px 4px rgba(20, 48, 107, .15), inset 0 1px 0 rgba(255, 255, 255, .15);
+     transition: transform .12s ease, box-shadow .25s ease, background .25s ease, filter .2s ease;
+     -webkit-tap-highlight-color: transparent;
+}
+
+/* =========================================================
+   Modals (Colleagues)
+   ========================================================= */
+.proj-modal-overlay {
+     position: fixed;
+     inset: 0;
+     background: rgba(0, 0, 0, 0.5);
+     z-index: 9999;
+     display: flex;
+     align-items: flex-end;
+     justify-content: center;
+}
+
+.proj-modal-sheet {
+     background: #fff;
+     width: 100%;
+     max-width: 430px;
+     border-top-left-radius: 24px;
+     border-top-right-radius: 24px;
+     animation: slideUp 0.3s ease;
+     max-height: 90vh;
+     overflow-y: auto;
+}
+
+.proj-modal-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding: 20px;
+     border-bottom: 1px solid #eef1f7;
+}
+
+.proj-modal-header h2 {
+     font-size: 16px;
+     font-weight: 800;
+     color: #14306b;
+     margin: 0;
+}
+
+.proj-modal-header .close-btn {
+     background: transparent;
+     border: none;
+     font-size: 24px;
+     color: #6b7794;
+     cursor: pointer;
+}
+
+.proj-modal-body {
+     padding: 20px;
+}
+
+.add-colleague-form {
+     display: flex;
+     gap: 8px;
+     margin-bottom: 20px;
+}
+
+.colleague-input-mobile {
+     flex: 2;
+     height: 44px !important;
+     border: 1.5px solid #dfe4ee;
+     border-radius: 10px;
+     padding: 6px 12px;
+     font-family: inherit;
+     text-align: left;
+}
+
+.colleague-input-percent {
+     flex: 1;
+     height: 39px !important;
+     border: 1.5px solid #dfe4ee;
+     border-radius: 10px;
+     padding: 0 12px !important;
+     font-family: inherit;
+     border-radius: 12px !important;
+     text-align: center;
+     border: 1px solid #ddd !important;
+}
+
+.colleague-add-btn {
+     background: #14306b;
+     color: #fff;
+     border: none;
+     border-radius: 10px;
+     padding: 9px 20px;
+     font-weight: 200;
+     font-family: inherit;
+     font-size: 12px;
+     cursor: pointer;
+}
+
+.colleagues-list {
+     display: flex;
+     flex-direction: column;
+     gap: 8px;
+}
+
+.colleague-row {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding: 12px;
+     background: #f8fafd;
+     border-radius: 12px;
+}
+
+.colleague-row.disabled {
+     opacity: 0.5;
+}
+
+.colleague-mobile {
+     font-size: 13px;
+     font-weight: 700;
+     color: #14306b;
+}
+
+.colleague-delete-btn {
+     background: #ffebee;
+     border: none;
+     width: 32px;
+     height: 32px;
+     border-radius: 8px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     cursor: pointer;
+}
+
+.colleagues-progress {
+     margin-top: 20px;
+}
+
+.progress-bar {
+     height: 8px;
+     background: #e8eefc;
+     border-radius: 4px;
+     overflow: hidden;
+}
+
+.progress-fill {
+     height: 100%;
+     background: #14306b;
+     transition: width 0.3s;
+}
+
+.progress-labels {
+     display: flex;
+     justify-content: space-between;
+     font-size: 11px;
+     color: #6b7794;
+     margin-top: 6px;
+}
+
+/* =========================================================
+   Animations
+   ========================================================= */
+@keyframes slideUp {
+     from {
+          transform: translateY(100%);
+     }
+
+     to {
+          transform: translateY(0);
+     }
+}
+
+@keyframes fadeIn {
+     from {
+          opacity: 0;
+     }
+
+     to {
+          opacity: 1;
+     }
+}
+
+
+/* =========================================================
+   دکمه حذف پیوست
+   ========================================================= */
+.upload-box {
+     position: relative;
+     /* برای قرارگیری دکمه حذف */
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     gap: 8px;
+}
+
+.attach-delete-btn {
+     background: #ffebee;
+     color: #d32f2f;
+     border: 1px solid #ffcdd2;
+     border-radius: 8px;
+     padding: 4px 12px;
+     font-size: 11px;
+     font-weight: 700;
+     font-family: inherit;
+     cursor: pointer;
+     margin-top: 4px;
+     transition: 0.2s;
+}
+
+.attach-delete-btn:hover {
+     background: #ffcdd2;
+}
+
+.attach-delete-btn:disabled {
+     opacity: 0.6;
+     cursor: not-allowed;
+}
+
+.project-file-card {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     background: rgb(255, 255, 255);
+     border: 1px solid rgb(229, 231, 235);
+     border-radius: 12px;
+     padding: 15px 12px;
+     box-shadow: rgba(0, 0, 0, 0.03) 0px 1px 2px;
+     gap: 12px;
+     height: 70px;
+}
+
+.project-file-card .--n {
+     font-size: 12px;
+     font-weight: 300;
+     color: rgb(30, 41, 59);
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     max-width: 115px;
+}
+
+.project-label-upload-file {
+     display: flex;
+     flex-direction: row-reverse;
+     align-items: center;
+     justify-content: center;
+     border: 2px dashed rgb(203, 213, 225);
+     border-radius: 12px;
+     cursor: pointer;
+     background: rgb(248, 250, 252);
+     gap: 6px;
+     height: 70px;
+}

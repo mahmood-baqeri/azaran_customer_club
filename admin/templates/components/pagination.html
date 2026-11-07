@@ -1,0 +1,53 @@
+<nav aria-label="Page navigation">
+    <ul class="pagination">
+        {% if all.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?{{data.paginateUrl}}page=1" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    <span class="sr-only">first</span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% for n in all.paginator.page_range %}
+            {% if all.number == n %}
+                <li class="page-item active">
+                    <span class="page-link">{{ n }}<span class="sr-only">(current)</span></span>
+                </li>
+            {% elif n > all.number|add:'-3' and n < all.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?{{data.paginateUrl}}page={{ n }}">{{ n }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if all.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?{{data.paginateUrl}}page={{ all.paginator.num_pages }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                    <span class="sr-only">last</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+<span style="padding: 8px;">
+    مورد یافت شده :
+        {{ data.total }}
+</span>
+
+
+
+<style>
+    .paginateSection{
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 15px;
+        padding: 5px;
+    }
+    .paginateSection > nav{}
+    .paginateSection > nav > ul{
+            margin: 0;
+    }
+    .paginateSection > nav > ul > li{}
+</style>
+

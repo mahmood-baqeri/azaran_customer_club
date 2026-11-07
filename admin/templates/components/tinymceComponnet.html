@@ -1,0 +1,138 @@
+{% load static %}
+{% load customTags %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<textarea id="{{ id }}"
+          name="{{ n }}"
+          class="tinymce w-100 {{ custom_class }}"
+          placeholder="{% trans 'Text' %}"
+          style="height: {{ height }}px;">{{ v|default_if_none:"" }}</textarea>
+
+<script src="{% static 'tinymce/tinymce.min.js' %}"></script>
+
+<!-- تنظیمات TinyMCE -->
+<script>
+    tinymce.init({
+        selector: '#{{ id }}',
+        plugins: 'directionality image link media code',
+        toolbar: 'undo redo | bold italic | ltr rtl | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media | code | customImage',
+        height: 500,
+        images_upload_url: '{% url "api:upload_image" %}',
+        automatic_uploads: true,
+        file_picker_types: 'image',
+        setup: function (editor) {
+            editor.ui.registry.addButton('customImage', {
+                text: 'Select Image',
+                onAction: function () {
+                    fetch('{% url "api:get_uploaded_images" %}')
+                        .then(response => response.json())
+                        .then(data => {
+                            let images = data.images;
+                            let imageListHtml = '<div>';
+                            images.forEach(img => {
+                                imageListHtml += `
+                                <div style="margin: 5px; position: relative; display: inline-block;">
+                                    <img src="${img.url}" width="100" style="cursor:pointer;" onclick="selectImage('${img.url}')" alt="{% trans 'Photo' %}">
+                                    <button onclick="deleteImage('${img.name}')">x</button>
+                                </div>
+                            `;
+                            });
+                            imageListHtml += '</div>';
+                            editor.windowManager.close();
+                            editor.windowManager.open({
+                                title: "{% trans 'Select' %} {% trans 'Photo' %}",
+                                body: {
+                                    type: 'panel',
+                                    items: [
+                                        {type: 'htmlpanel', html: imageListHtml}
+                                    ]
+                                },
+                                buttons: [
+                                    {
+                                        type: 'cancel',
+                                        text: '{% trans 'Close' %}'
+                                    }
+                                ]
+                            });
+                        })
+                        .catch(error => console.error('Error fetching images:', error));
+                }
+            });
+        },
+
+    });
+
+    // تابع انتخاب تصویر و افزودن آن به ویرایشگر
+    function selectImage(imageUrl) {
+        let editor = tinymce.activeEditor;
+        editor.insertContent(`<img src="${imageUrl}"  alt=""/>`);
+        editor.windowManager.close(); // بستن پنجره
+    }
+
+    // تابع حذف تصویر
+    function deleteImage(imageName) {
+        if (confirm('{% trans "Sure You Want To Delete" %}')) {
+            fetch('{% url "api:delete_image" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: `image_name=${encodeURIComponent(imageName)}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        // بعد از حذف تصویر، لیست را بازخوانی می‌کنیم
+                        tinymce.activeEditor.windowManager.close();
+                        let customImageButton = tinymce.activeEditor.ui.registry.getAll().buttons.customImage;
+                        if (customImageButton) {
+                            customImageButton.onAction(); // بازخوانی لیست تصاویر
+                        } else {
+                            console.error('customImage button is not defined');
+                        }
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => console.error('Error deleting image:', error));
+        }
+    }
+</script>
+
+<style>
+    .tox-tinymce {
+        width: 100%;
+        direction: rtl;
+        margin: 0;
+    }
+
+    .tox.tox-tinymce-aux .tox-dialog {
+        min-height: 400px;
+        max-height: 100%;
+        max-width: unset;
+        width: 50%;
+    }
+
+    .tox-dialog__body .tox-dialog__body-content .tox-form .tox-form__group > div {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .tox-dialog__body .tox-dialog__body-content .tox-form .tox-form__group > div > div,
+    .tox-dialog__body .tox-dialog__body-content .tox-form .tox-form__group > div > div img {
+        width: 80px;
+        height: 60px;
+    }
+
+    .tox-dialog__body .tox-dialog__body-content .tox-form .tox-form__group > div > div button {
+        position: absolute;
+        top: -16px;
+        right: -4px;
+        color: red;
+        cursor: pointer;
+        padding: 0 6px;
+    }
+</style>

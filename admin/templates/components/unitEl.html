@@ -1,0 +1,39 @@
+<div class="{{ item.c }}">
+    <div class="form-group">
+        {% if item.r %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{ item.id }}"><b>{{ item.l }}</b></label>
+        <select class="form-control select2"
+                name="{{ item.n }}"
+                id="{{ item.id }}"
+                {% if item.r %} required {% endif %}
+                {% if item.d %} disabled {% endif %}
+        >
+            {% for data in item.data %}
+                <option value="{{ data.id }}" {% if item.v %}  {% if data.id == item.v %} selected
+                {% endif %} {% endif %}
+                >{{ data.label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#theSectionElement').on('change', function () {
+            $("#theUnitElement option").remove();
+            let inputs = {
+                'id': $(this).val(),
+            };
+            ajaxFunction("api/section/units", inputs, true).then((data) => {
+                var toAppend = '';
+                $.each(data.data, function (key, item) {
+                    toAppend += '<option value="' + item.id + '">' + item.name + '</option>';
+                });
+                $('#theUnitElement').append(toAppend);
+            });
+        });
+    });
+</script>
+
+

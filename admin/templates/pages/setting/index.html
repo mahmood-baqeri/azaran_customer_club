@@ -1,0 +1,74 @@
+{% extends "admin\layout\app.html" %}
+{% load static %}
+
+{% block title %}
+    {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+
+    <div class="main-content side-content pt-0">
+        <div class="container-fluid">
+            <div class="inner-body">
+
+                {% include 'admin\layout\pageHeader.html' %}
+
+                <div class="card custom-card">
+                    <div class="card-body">
+
+                        <div class="table-responsive">
+                            <table class="table  text-nowrap text-md-nowrap table-striped mg-b-0" >
+                                <thead>
+                                <tr>
+                                    <th>ردیف</th>
+                                    <th>گزینه</th>
+                                    <th>داده</th>
+                                    <th></th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in data.all %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ item.get_key_display }}</td>
+
+                                            {% if item.type == 'File' %}
+                                                <td><img src="/media/{{ item.photo }}" style="width: 40px;height: 30px" alt=""></td>
+                                            {% elif item.type == 'Number' or item.type == 'Text' %}
+                                                <td>{{ item.char }}</td>
+                                            {% elif item.type == 'TextArea' or item.type == 'CkEditor' %}
+                                                <td>-</td>
+                                            {% elif item.type == 'Bollean' %}
+                                                <td>
+                                                    {% if item.char == '1' %}
+                                                        <span class="bg-success rounded px-1 text-white">فعال</span>
+                                                    {% else %}
+                                                        <span class="bg-danger rounded px-1 text-white">غیر فعال </span>
+                                                    {% endif %}
+                                                </td>
+                                            {% endif %}
+                                            <td>
+                                                <a href="{% url 'urlsSetting:update' settingID=item.id %}" data-toggle="tooltip" title="مشاهده و بروزرسانی">
+                                                    <i class="icon-note"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                            <div class="paginateSection">
+                                {% include 'admin\components\pagination.html' with all=data.all %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+
+{% block js %}
+{% endblock %}

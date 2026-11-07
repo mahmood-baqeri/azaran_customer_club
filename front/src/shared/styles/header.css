@@ -1,0 +1,376 @@
+/* src/shared/styles/header.css */
+
+/* ===== هدر ===== */
+.header-area {
+     -webkit-transition-duration: 500ms;
+     transition-duration: 500ms;
+     background-color: #ffffff;
+     width: 100%;
+     height: 3.6rem;
+     position: fixed;
+     top: 0;
+     left: 0;
+     right: 0;
+     z-index: 1000;
+     -webkit-box-shadow: 0px 0px 0.25rem 0px rgba(15, 15, 15, 0.1);
+     box-shadow: 0px 0px 0.25rem 0px rgba(15, 15, 15, 0.1);
+}
+
+.header-area--f7f8fb {
+     background-color: #f7f8fb;
+     box-shadow: none;
+}
+
+.header-area--e8eefc {
+     background-color: #e8eefc;
+     box-shadow: none;
+}
+
+.header-area--white {
+     background-color: #ffffff;
+     box-shadow: none;
+}
+
+/* ===== چیدمان سه‌ستونی ===== */
+.header-inner {
+     height: 100%;
+     display: flex;
+     align-items: center;
+     gap: 8px;
+}
+
+.header-inner-grid {
+     display: grid;
+     grid-auto-flow: column;
+}
+
+.header-side {
+     display: flex;
+     align-items: center;
+     min-width: 0;
+}
+
+.header-side--start {
+     justify-content: flex-start;
+}
+
+.header-side--end {
+     justify-content: flex-end;
+}
+
+.header-center {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     min-width: 0;
+}
+
+.header-title {
+     margin: 0;
+     font-size: 15px;
+     font-weight: 700;
+     color: #1f2333;
+     line-height: 1.2;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     max-width: 60vw;
+}
+
+/* ===== لوگو ===== */
+
+.logo-wrapper {
+     width: 100px;
+}
+
+.logo-wrapper a {
+     display: block;
+}
+
+.navbar-logo-container {
+     display: flex;
+     align-items: center;
+     gap: 12px;
+}
+
+/* ===== دکمه منو (آواتار) ===== */
+.menu-toggle {
+     border: none;
+     padding: 0;
+     cursor: pointer;
+     border-radius: 50%;
+     overflow: hidden;
+     width: 48px;
+     height: 48px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     transition: transform 0.2s ease, background 0.2s ease;
+     border: 3px solid var(--color-2);
+}
+
+
+.menu-toggle:hover {
+     transform: scale(1.05);
+}
+
+.menu-toggle:active {
+     transform: scale(0.95);
+}
+
+/* ===== دکمه بازگشت ===== */
+.back-button {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     width: 36px;
+     height: 30px;
+     border-radius: 10px;
+     border: none;
+     color: var(--primary-color);
+     cursor: pointer;
+     transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.back-button--e8eefc {
+     background: #e1ecfb;
+}
+
+.back-button--f7f8fb {
+     background: #f7f8fb;
+}
+
+.back-button--f7f8fb:hover {
+     background: #eef1f7;
+}
+
+.back-button--white {
+     background: #ffffff;
+}
+
+.back-button--white:hover {
+     background: #f7f8fb;
+}
+
+.back-button:active {
+     transform: scale(0.94);
+}
+
+.back-button a {
+     display: block;
+     color: #747794;
+     font-size: 1.5rem;
+}
+
+/* ===== امتیاز کاربر ===== */
+.my-scores {
+     display: flex;
+     flex-direction: column;
+     align-items: flex-end;
+     gap: 2px;
+}
+
+.header-area .my-scores {
+     background: #eee;
+     margin-left: 15px;
+     margin-top: 10px;
+     width: 100px;
+     padding: 2px 6px;
+     border-radius: 6px;
+}
+
+.my-scores p {
+     margin: 0;
+     font-size: 11px;
+     color: #888;
+}
+
+.header-area .my-scores p {
+     font-size: 9px;
+     margin: 0 0 1px;
+}
+
+.my-scores div {
+     display: flex;
+     align-items: center;
+     gap: 4px;
+     font-weight: 700;
+     font-size: 14px;
+}
+
+.header-area .my-scores div {
+     flex-direction: row-reverse;
+     justify-content: flex-end;
+}
+
+.my-scores img {
+     width: 18px;
+     height: 18px;
+}
+
+.header-area .my-scores div img {
+     width: 15px;
+     height: 15px;
+     margin-right: 5px;
+}
+
+.header-area .my-scores div span {
+     font-size: 10px;
+     margin-top: 2px;
+}
+
+/* ===== آواتار پروفایل (کلاس قدیمی) ===== */
+.user-profile-icon {
+     width: 2rem;
+     height: 2rem;
+     flex: 0 0 2rem;
+     max-width: 2rem;
+}
+
+.user-profile-icon a {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     width: 2rem;
+     height: 2rem;
+     border: 0.125rem solid #f1f1f2;
+     border-radius: 50%;
+}
+
+.user-profile-icon a img {
+     max-width: 24px;
+     border-radius: 50%;
+}
+
+/* ===== آیکون سبد خرید (کلاس قدیمی) ===== */
+.cart-icon-wrap a {
+     display: block;
+     position: relative;
+     z-index: 1;
+     color: #020310;
+     font-size: 1.375rem;
+     line-height: 1;
+     margin-right: 0.25rem;
+}
+
+.cart-icon-wrap a i {
+     color: #747794;
+     font-size: 1.875rem;
+}
+
+.cart-icon-wrap a img {
+     max-width: 1.625rem;
+     line-height: 1;
+}
+
+.cart-icon-wrap a span {
+     position: absolute;
+     width: 1rem;
+     height: 1rem;
+     border-radius: 50%;
+     text-align: center;
+     color: #ffffff;
+     font-size: 0.625rem;
+     background-color: #090909;
+     top: 0.75rem;
+     right: -0.375rem;
+     line-height: 1rem;
+}
+
+/* ===== توگلر قدیمی ===== */
+.suha-navbar-toggler {
+     position: absolute;
+     left: 10px;
+     top: 7px;
+     z-index: 1;
+     width: 3.4rem;
+     height: 3.4rem;
+     border-radius: 50%;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+}
+
+.suha-navbar-toggler div {
+     position: relative;
+     z-index: 1;
+}
+
+/* ===== بج‌ها ===== */
+.header-area .header-badge,
+.menuBadge {
+     position: absolute;
+     background: red;
+     color: white;
+     font-size: 10px;
+     text-align: center;
+     border-radius: 100px;
+     width: 14px;
+     height: 14px;
+     top: 0;
+     right: 0;
+     padding-top: 2px;
+}
+
+.menuBadge {
+     right: 23px;
+}
+
+/* ===== اسکلتون‌ها ===== */
+.skeleton-logo {
+     width: 90px;
+     height: 32px;
+     background: #eef1f7;
+     border-radius: 6px;
+}
+
+.skeleton-avatar {
+     width: 40px;
+     height: 40px;
+     background: #eef1f7;
+     border-radius: 50%;
+}
+
+.header-area .menu-btn {
+     display: flex;
+}
+
+.header-area .menu-btn .user-info {
+     position: relative;
+     top: 4px;
+     right: 10px;
+}
+
+.header-area .menu-btn .user-info div {
+     display: inline
+}
+
+.header-area .menu-btn .user-info h1 {
+     font-size: 13px;
+     margin: 0 0 3px 0;
+     color: var(--primary-color);
+     font-weight: bold;
+}
+
+.header-area .menu-btn .user-info .score {
+     font-size: 12px;
+     margin: 0 5px 0 3px;
+}
+
+.header-area .menu-btn .user-info .job {
+     background: var(--color-3);
+     font-size: 12px;
+     color: var(--primary-color);
+     font-weight: 500;
+     padding: 1px 5px;
+     border-radius: 7px;
+     margin-left: 6px;
+}
+
+.header-action-btn {
+     margin-right: auto;
+     padding: 7px 20px;
+     border-radius: 15px;
+     background: #dce8fa;
+}

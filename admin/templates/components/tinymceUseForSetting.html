@@ -1,0 +1,9 @@
+{% load customTags %}
+<div class="{{ item.c }}">
+    {% render_tinymce name=item.n value=item.v id=item.id height=500 custom_class='col-12' %}
+    <style>
+        .tox-tinymce{
+            margin: 0 !important;
+        }
+    </style>
+</div>

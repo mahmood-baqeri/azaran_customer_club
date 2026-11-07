@@ -1,0 +1,230 @@
+{% load static %}
+{% load customTags %}
+
+<table class="table text-nowrap text-md-nowrap table-striped mg-b-0" id="theMainTabelElement">
+  <thead>
+    <tr>
+      <th>ردیف</th>
+      {% for title in data.faFields %}
+        {% if title != '' %}
+          <th>{{ title }}</th>
+        {% endif %}
+      {% endfor %}
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for item in data.all %}
+      <tr>
+        <td>
+          {% if data.searchCount %}
+            {% paginationIndex forloop.counter data.searchCount data.all.number as number %}
+            {{ number }}
+          {% else %}
+            {{ forloop.counter }}
+          {% endif %}
+        </td>
+
+        {% for field in data.EnFields %}
+          {% if field == 'user' %}
+            <td>
+              <a href="{% url 'app_user:updateUser' id=item.user.id %}" data-toggle="tooltip" title="مشاهده کاربر">{{ item.user }}</a>
+            </td>
+          {% elif field == 'showUser' %}
+            <td>{{ item.user }}</td>
+          {% elif field == 'admin' %}
+            <td>
+              <a href="{% url 'app_user:updateUser' id=item.admin.id %}" data-toggle="tooltip" title="مشاهده مدیر">{{ item.admin }}</a>
+            </td>
+          {% elif field == 'manager' %}
+            <td>{{ item.manager }}</td>
+          {% elif field == 'logModel' %}
+            <td>{{ item.get_model_display }}</td>
+          {% elif field == 'day' %}
+            <td>
+              {% if item.day %}
+                {% gregorian_to_jalali item.day as day %} {{ day }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          {% elif field == 'date' %}
+            <td>
+              {% if item.date %}
+                {% gregorian_to_jalali item.date as date %} {{ date }}
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          {% elif field == 'created' %}
+            <td>
+              {% gregorian_to_jalali item.created as created %}{{ created }}
+            </td>
+          {% elif field == 'giftDate' %}
+            <td>
+              {% gregorian_to_jalali item.created as created %}{{ created }}
+            </td>
+          {% elif field == 'updated' %}
+            <td>
+              {% gregorian_to_jalali item.updated as updated %}{{ updated }}
+            </td>
+          {% elif field == 'start' %}
+            <td>
+              {% gregorian_to_jalali item.start as start %}{{ start }}
+            </td>
+          {% elif field == 'end' %}
+            <td>
+              {% gregorian_to_jalali item.end as end %}{{ end }}
+            </td>
+          {% elif field == 'photo' %}
+            <td>
+              <img src="/media/{{ item.photo }}" alt="photo" style="width: 80px; height: 60px" onerror="this.src='{% static '/' %}images/none.png'" />
+            </td>
+          {% elif field == 'banner' %}
+            <td>
+              <img src="/media/{{ item.banner }}" alt="banner" style="width: 80px; height: 60px" onerror="this.src='{% static '/' %}images/none.png'" />
+            </td>
+          {% elif field == 'file' %}
+            <td>
+              {% if item.file %}
+                <a href="/media/{{ item.file }}" target="_blank">مشاهده</a>
+              {% endif %}
+            </td>
+          {% elif field == 'parent' %}
+            <td>
+              {% if item.parent %}{{ item.parent.title }}{% endif %}
+            </td>
+          {% elif field == 'category' %}
+            <td>
+              {% if item.category %}{{ item.category.title }}{% endif %}
+            </td>
+          {% elif field == 'status' %}
+            <td>
+              <span class="statusItems rounded px-3 py-1 text-white
+                            {% if item.status == 0 %}
+                  
+                             
+                     bg-warning
+
+
+                {% elif item.status == 1 %}
+                  
+                  
+                     bg-info
+
+
+                {% elif item.status == 2 %}
+                  
+                  
+                     bg-success
+
+
+                {% elif item.status == 3 %}
+                  
+                  
+                     bg-secondary
+
+
+                {% else %}
+                  
+                  
+                      bg-primary
+
+
+                {% endif %}">
+                {{ item.get_status_display }}
+              </span>
+            </td>
+          {% elif field == 'is_active' or field == 'active' %}
+            <td>
+              {% if item.is_active or item.active == 1 %}
+                <span class="bg-success rounded px-1 text-white">فعال</span>
+              {% else %}
+                <span class="bg-danger rounded px-1 text-white">غیر فعال</span>
+              {% endif %}
+            </td>
+          {% elif field == 'amount' %}
+            <td>
+              {% currencyFormat item.amount as formated %}{{ formated }}
+            </td>
+          {% elif field == 'point' %}
+            <td>
+              {% currencyFormat item.point as formated %}{{ formated }} امتیاز
+            </td>
+          {% elif field == 'price' %}
+            <td>
+              {% currencyFormat item.price as formated %}{{ formated }}
+            </td>
+          {% elif field == 'salary' %}
+            <td>
+              {% currencyFormat item.salary as formated %}{{ formated }} تومان
+            </td>
+          {% elif field == 'offer' %}
+            <td>
+              {% currencyFormat item.offer as formated %}{{ formated }}
+            </td>
+          {% else %}
+            {% tableField item field as show %}
+            <td>
+              {% if field == 'title' and data.editUrl %}
+                {% if data.handelUrl2 == True %}
+                  {% handelUrl2 data.editUrl item.user_id item.id as editUrl %}
+                {% else %}
+                  {% handelUrl data.editUrl item.id as editUrl %}
+                {% endif %}
+
+                <a href="{{ editUrl }}" data-toggle="tooltip" title="مشاهده و بروزرسانی">{{ show }}</a>
+              {% else %}
+                {{ show }}
+              {% endif %}
+            </td>
+          {% endif %}
+        {% endfor %}
+
+        <td>
+          {% if data.editUrl %}
+            {% if data.handelUrl2 == True %}
+              {% handelUrl2 data.editUrl item.user_id item.id as editUrl %}
+            {% else %}
+              {% handelUrl data.editUrl item.id as editUrl %}
+            {% endif %}
+
+            <a href="{{ editUrl }}" data-toggle="tooltip" title="مشاهده و بروزرسانی"><i class="fa fa-edit"></i></a>
+          {% endif %}
+
+          {% if data.deleteUrl %}
+            {% if data.handelUrl2 == True %}
+              {% handelUrl2 data.deleteUrl item.user_id item.id as deleteUrl %}
+            {% else %}
+              {% handelUrl data.deleteUrl item.id as deleteUrl %}
+            {% endif %}
+
+            <a href="" data-toggle="tooltip" data-original-title="حذف" class="deleteRecordFromTable" data-deleteId="{{ item.id }}"><i class="fa fa-trash"></i></a>
+            <form id="deleteRecordForm_{{ item.id }}" action="{{ deleteUrl }}" method="post" style="display: none;">
+              {% csrf_token %}
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<style>
+  table.table td {
+    white-space: normal;
+    max-width: 500px;
+  }
+</style>
+
+{% if data.applicationsStoreFields or data.personSendScoreApplication %}
+  {% include 'modal/givingPoints.html' %}
+{% endif %}
+
+{% if data.sendNotificationInGiftOrderForOne %}
+  {% include 'modal/notification_for_one.html' %}
+{% endif %}
+
+{% if data.sendNotificationInGiftOrderForAll %}
+  {% include 'modal/notification_for_all.html' %}
+{% endif %}

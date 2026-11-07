@@ -1,0 +1,102 @@
+{% load static %}
+
+<div class="modal" id="uploadUsersWithExcel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content modal-content-demo">
+      <form action="{{ data.importExcel }}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="modal-header">
+          <h6 class="modal-title">بارگذاری پرسنل از فایل اکسل</h6>
+          <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <h6>توجه !</h6>
+          <p class="mb-4">
+            <span>حتما ستون های فایل اکسل باید طبق فایل اکسل نمونه باشد.</span>
+            <a href="{% static '/' %}userExcel.xlsx">اکسل نمونه</a>
+          </p>
+
+          <b>انتخاب اکسل</b>
+          <input type="file" name="excel" class="form-control" accept=".xlsx" />
+        </div>
+        <div class="modal-footer">
+          <button class="btn ripple btn-primary" type="submit">بارگذاری</button>
+          <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">بستن</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% if data.applicationsStoreFields %}
+  <div class="modal" id="modalApplicationsStoreScore">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content modal-content-demo">
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h6 class="modal-title">دادن امتیاز</h6>
+            <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            {% for item in data.applicationsStoreFields %}
+              {% include 'components/'|add:item.b %}
+            {% endfor %}
+          </div>
+
+          {# <input type="hidden" name="redirectUrl" value="{{ request.path }}"> #}
+          <input type="hidden" name="userID" value="" />
+
+          <div class="modal-footer">
+            <button class="btn ripple btn-primary" type="submit">ذخیره</button>
+            <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">بستن</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $('.modalApplicationsStoreScore').on('click', function () {
+      $('#modalApplicationsStoreScore form').attr('action', $(this).attr('data-href'))
+      $('#modalApplicationsStoreScore [name=userID]').val($(this).attr('data-userID'))
+    })
+  </script>
+{% endif %}
+
+{{ data.applicationsStoreFieldsForAll }}
+{% if data.applicationsStoreFieldsForAll %}
+  <div class="modal" id="modalApplicationsStoreScoreForAll">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content modal-content-demo">
+        <form action="" method="post">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h6 class="modal-title">دادن امتیاز</h6>
+            <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            {% for item in data.applicationsStoreFieldsForAll %}
+              {% include 'components/'|add:item.b %}
+            {% endfor %}
+          </div>
+
+          <input type="hidden" name="itemID" value="" />
+
+          <div class="modal-footer">
+            <button class="btn ripple btn-primary" type="submit">ذخیره</button>
+            <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">بستن</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $('.modalApplicationsStoreScoreForAll').on('click', function () {
+      $('#modalApplicationsStoreScoreForAll form').attr('action', $(this).attr('data-href'))
+      $('#modalApplicationsStoreScoreForAll [name=itemID]').val($(this).attr('data-itemID'))
+    })
+  </script>
+{% endif %}

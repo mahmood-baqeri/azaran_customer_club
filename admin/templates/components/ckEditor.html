@@ -1,0 +1,30 @@
+{% load static %}
+
+<div class="{{item.c}}">
+    <div class="form-group">
+        {% if item.r  %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{item.id}}"><b>{{item.l}}</b></label>
+        <textarea class="editor w-100"
+                  name="{{item.n}}"
+                  placeholder="{{item.l}}"
+                  id="{{item.id}}"
+                  {% if item.r  %} required {% endif %}
+        >{{item.v}}</textarea>
+
+    </div>
+</div> 
+
+
+{% block js %}
+<script src="{% static '/' %}myPlugins/ckeditor/ckeditor.js"></script>
+<script src="{% static '/' %}myPlugins/ckeditor/config.js"></script>
+<script>
+    $(function () {
+        CKEDITOR.replace(document.querySelector('#{{ item.id }}'));
+    });
+</script>
+
+
+{% endblock %}

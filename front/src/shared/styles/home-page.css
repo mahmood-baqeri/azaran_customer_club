@@ -1,0 +1,42 @@
+/* رنگ زرد/طلایی مشابه عکس */
+.bg-warning {
+     background-color: #f6c82e !important;
+}
+
+/* استایل کارت‌های بالایی */
+.action-card {
+     box-shadow: 0 4px 12px rgba(246, 200, 46, 0.2);
+     cursor: pointer;
+     transition: transform 0.2s ease;
+}
+
+.action-card:hover {
+     transform: translateY(-2px);
+}
+
+/* آیکون‌های داخل کارت‌های زرد */
+.icon-wrapper {
+     width: 36px;
+     height: 36px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+}
+
+/* رنگ پس‌زمینه آبی روشن برای دکمه‌ها */
+.bg-light-blue {
+     background-color: #e8f0fe !important;
+     transition: background-color 0.2s;
+}
+
+.bg-light-blue:hover {
+     background-color: #d2e3fc !important;
+}
+
+
+.chalaneg-date {
+     background: #fff;
+     border-radius: 20px;
+     padding: 0px 8px;
+     color: var(--primary-color);
+}

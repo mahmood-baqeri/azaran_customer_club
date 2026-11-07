@@ -1,0 +1,33 @@
+{% if data.sendNotificationInGiftOrderForOne %}
+  <div class="modal fade" id="sendNotificationInGiftOrderForOne">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content modal-content-demo">
+        <form action="{% url 'gift:sendNotificationInGiftOrderForOne' %}" method="post">
+          {% csrf_token %}
+          <div class="modal-header">
+            <h6 class="modal-title">ارسال نوتیفیکیشن</h6>
+            <button aria-label="Close" class="close" data-dismiss="modal" type="button"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body py-2 px-0">
+            {% for item in data.sendNotificationInGiftOrderForOneFields %}
+              {% include 'components/'|add:item.b %}
+            {% endfor %}
+          </div>
+
+          <input type="hidden" name="itemID" value="" />
+
+          <div class="modal-footer">
+            <button class="btn ripple btn-primary" type="submit">ارسال</button>
+            <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">بستن</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $('.sendNotificationInGiftOrderForOne').on('click', function () {
+      $('#sendNotificationInGiftOrderForOne [name=itemID]').val($(this).attr('data-itemID'))
+    })
+  </script>
+{% endif %}

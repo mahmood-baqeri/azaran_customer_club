@@ -1,0 +1,12 @@
+{% load customTags %}
+
+
+<div class="row">
+    <div class="form-group">
+        {% if item.r  %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{item.id}}"><b>{{item.l}}</b></label>
+        {% render_tinymce name=item.n value=item.v id=item.id height=500 custom_class=item.c %}
+    </div>
+</div>

@@ -1,0 +1,78 @@
+{% block js %}
+
+    <script>
+        $(document).ready(function () {
+            $('#settingSelectedTheItem').on('change', function () {
+                handelSettingSwitch($(this).val())
+            })
+        });
+
+        function handelLoadFirst() {
+            setTimeout(function () {
+                handelSettingSwitch($('#settingSelectedTheItem').val())
+            }, 1000)
+        }
+
+        handelLoadFirst();
+
+        function handelSettingSwitch($val) {
+            if ($('[name="theValue"]').length)
+                $('[name="theValue"]').attr('name', '');
+
+            handelDisplaySetting();
+            switch ($val) {
+                case 'Logo':
+                case 'FavIcon':
+                    setTimeout(function () {
+                        $('#thePhotoElement').attr('name', 'theValue').parents('.theSettingItemRoot').removeClass('d-none');
+                    }, 200)
+                    break;
+
+                case 'SiteName':
+                case 'SiteURL':
+                case 'MoneyFlag':
+                    setTimeout(function () {
+                        $('#theTextElement').attr('name', 'theValue').parents('.theSettingItemRoot').removeClass('d-none');
+                    }, 200)
+                    break;
+
+                case 'GiftOrderStartDay':
+                case 'GiftOrderEndDay':
+                    setTimeout(function () {
+                        $('#theNumberElement').attr('name', 'theValue').parents('.theSettingItemRoot').removeClass('d-none');
+                    }, 200)
+                    break;
+
+                case 'Address':
+                case 'Location':
+                    setTimeout(function () {
+                        $('#theTextAreaElement').attr('name', 'theValue').parents('.theSettingItemRoot').removeClass('d-none');
+                    }, 200)
+                    break;
+
+                case 'FooterText':
+                case 'AboutUs':
+                    setTimeout(function () {
+                        $('#theCkEditorElement').attr('name', 'theValue').parents('.theSettingItemRoot').removeClass('d-none');
+                    }, 200)
+                    break;
+
+                case 'ActiveContent':
+                    setTimeout(function () {
+                        $('#theBooleanElement').attr('name', 'theValue').parents('.theSettingItemRoot').removeClass('d-none');
+                    }, 200)
+                    break;
+            }
+        }
+
+        function handelDisplaySetting() {
+            $(".theSettingItemRoot").each(function () {
+                if (!$(this).hasClass("d-none"))
+                    $(this).addClass('d-none');
+            });
+        }
+
+        //theBooleanElement
+    </script>
+
+{% endblock %}

@@ -1,0 +1,31 @@
+{% load static %}
+
+<div class="input-group clockpicker m-0" data-placement="top" data-align="top" data-autoclose="true">
+    <input type="text" class="form-control" placeholder="00:00" name="{{ name }}" value="{{ value }}">
+</div>
+
+
+{% block js %}
+
+    <link href="{% static '/' %}myPlugins/bootstrap/clockpicker/clockpicker.min.css" rel="stylesheet" type="text/css"/>
+    <script src="{% static '/' %}myPlugins/bootstrap/clockpicker/clockpicker.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.clockpicker').clockpicker();
+        });
+    </script>
+
+    <style>
+        .popover {
+            z-index: 10000000 !important;
+        }
+    </style>
+
+{% endblock %}
+
+
+
+
+
+

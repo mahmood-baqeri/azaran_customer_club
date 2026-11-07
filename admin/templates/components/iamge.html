@@ -1,0 +1,10 @@
+{% load static %}
+
+<div class="{{item.c}}">
+    <div class="form-group">
+        <center>
+            <img style="width: 90%;border: 1px solid; border-radius: 5px;margin: 20px 0;height: 200px;" src="/media/{{item.v}}"
+                 onerror="this.src='{% static '/' %}images/banner.png'"/>
+        </center>
+    </div>
+</div>

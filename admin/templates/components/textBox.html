@@ -1,0 +1,16 @@
+<div class="{{item.c}}">
+    <div class="form-group">
+        {% if item.r  %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{item.id}}"><b>{{item.l}}</b></label>
+        <input type="text" class="form-control"
+               name="{{item.n}}"
+               placeholder="{{item.l}}"
+               id="{{item.id}}"
+               {% if item.v %}value="{{item.v}}"{% endif %}
+               {% if item.r  %} required {% endif %}
+               {% if item.d  %} disabled {% endif %}
+        >
+    </div>
+</div>

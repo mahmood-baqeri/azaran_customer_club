@@ -1,0 +1,108 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'myPlugins/sweetalert2/sweetalert2.min.css' %}" />
+{% endblock %}
+
+{% block javascript %}
+  <script src="{% static 'myPlugins/sweetalert2/sweetalert2.min.js' %}"></script>
+  <script src="{% static 'adminAssets/page/script.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content">
+    <div class="content container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">{{ data.pageTitle }}</h5>
+            </div>
+            <div class="card-body">
+              {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                  {% for error in form.non_field_errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <form method="post" novalidate>
+                {% csrf_token %}
+
+                <div class="row">
+                  <div class="col-md-8">
+                    <div class="mb-3">
+                      <label class="form-label">عنوان <span class="text-danger">*</span></label>
+                      {{ form.title }}
+                      {% if form.title.errors %}
+                        <div class="errorlist">{{ form.title.errors }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="col-md-4">
+                    <div class="mb-3">
+                      <label class="form-label">اسلاگ</label>
+                      <input type="text" class="form-control" value="{{ form.instance.slug|default:'— به‌صورت خودکار تولید می‌شود —' }}" disabled />
+                      <div class="help-text">از عنوان ساخته می‌شود و قابل ویرایش نیست</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">دسته والد</label>
+                      {{ form.parent }}
+                      <div class="help-text">اختیاری — اگر خالی باشد، دسته اصلی است</div>
+                      {% if form.parent.errors %}
+                        <div class="errorlist">{{ form.parent.errors }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="mb-3">
+                      <label class="form-label">وضعیت</label>
+                      <div class="form-check form-switch mt-2">
+                        {{ form.is_active }}
+                        <label class="form-check-label" for="{{ form.is_active.id_for_label }}">فعال</label>
+                      </div>
+                      {% if form.is_active.errors %}
+                        <div class="errorlist">{{ form.is_active.errors }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">توضیحات</label>
+                  {{ form.description }}
+                  {% if form.description.errors %}
+                    <div class="errorlist">{{ form.description.errors }}</div>
+                  {% endif %}
+                </div>
+
+                <div class="mt-4">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    {% if data.is_edit %}
+                      بروزرسانی
+                    {% else %}
+                      ذخیره
+                    {% endif %}
+                  </button>
+                  <a href="{% url 'categorymanagement:admin_category_list' %}" class="btn btn-secondary"><i class="fas fa-times"></i> انصراف</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

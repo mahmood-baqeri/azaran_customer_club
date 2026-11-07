@@ -1,0 +1,230 @@
+{% load static %}
+<div class="col-md-12 itemPlusEl">
+    <div class="row m--0">
+        <h2>موارد اضافی</h2>
+    </div>
+    <div class="row items">
+        {% for data in item.data %}
+            {% if data.type == 'text' %}
+                <div class="col-12 col-md-12 ckEditorBox elementBox">
+                    <i class="fa fa-times removeItem" data-id="{{ data.id }}"></i>
+                    <textarea class="w-100 plusElement" id="el_ckeditor_{{ data.id }}">{{ data.text }}</textarea>
+                </div>
+            {% elif data.type == 'photo' %}
+                <div class="col-12 col-md-12 mediaBox elementBox">
+                    <div class="row">
+                        <div class="col-md-4 col-12">
+                            <i class="fa fa-times removeItem" data-id="{{ data.id }}"></i>
+                            <div class="form-group">
+                                <label class="mg-b-10 label" style="width: 100%;padding: 8px;border-radius: 5px;background: white;border: 1px solid #eee">
+                                    <span>انتخاب تصویر</span>
+                                    <i class="fa fa-plus-circle"></i>
+                                </label>
+                                <input type="file" class="form-control border-left-0 browse-file d-none plusElement"
+                                       accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <img src="/media/{{ data.photo }}" alt="" style="height: 200px;width: 100%;">
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="row addSection">
+        <div class="col-12 col-md-12 mb-2 mt-2"><p class="title">اضافه کردن مورد جدید</p></div>
+        <div class="col-8 col-md-4">
+            <div class="form-group m-0">
+                <select class="form-control" id="itemPlusSelectEl">
+                    {% for key in item.types %}
+                        <option value="{{ key.id }}">{{ key.label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="col-4 col-md-4">
+            <button class="btn btn-outline-info" id="itemPlusNewBrnEl" type="button">افزودن</button>
+        </div>
+    </div>
+
+    <input type="hidden" name="priority" id="priority" value="">
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        $('#itemPlusNewBrnEl').on('click', function () {
+            let selected = $('#itemPlusSelectEl').find(":selected").val();
+            let itemID = makeid();
+            //CKEDITOR
+            if (selected == 'text') {
+                let newClone = $(".ckEditorNew").clone();
+                newClone.removeClass('d-none ckEditorNew');
+                newClone.find('textarea').attr('id', itemID).attr('name', "text").attr('data-type', 'text');
+                newClone.appendTo(".itemPlusEl .items");
+                handelCKEDITOR(itemID);
+            } else {
+                let newClone = $(".mediaNew").clone();
+                newClone.removeClass('d-none mediaNew');
+                newClone.find('.label').attr('for', itemID);
+
+                // Photo
+                if (selected == 'photo') {
+                    let accept = ".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*";
+                    newClone.find('input').attr('id', itemID).attr('name', "photo").attr('accept', accept).attr('data-type', 'photo');
+                    newClone.find('label').find('span').text('انتخاب تصویر');
+                    newClone.appendTo(".itemPlusEl .items");
+                }
+                // video
+                else if (selected == 'video') {
+                    let accept = "video/mp4,video/x-m4v,video/*";
+                    newClone.find('input').attr('id', itemID).attr('name', "video").attr('accept', accept).attr('data-type', 'video');
+                    newClone.find('label').find('span').text('انتخاب فایل ویدیویی');
+                    newClone.appendTo(".itemPlusEl .items");
+                }
+                // audio
+                else if (selected == 'audio') {
+                    let accept = "audio/mp3,audio/*;capture=microphone";
+                    newClone.find('input').attr('id', itemID).attr('name', "audio").attr('accept', accept).attr('data-type', 'audio');
+                    newClone.find('label').find('span').text('انتخاب فایل صوتی');
+                    newClone.appendTo(".itemPlusEl .items");
+                }
+            }
+            handelPriority();
+        });
+
+        $('body').on('click', '.removeItem', function () {
+            if ($(this).attr('data-id')) {
+                let inputs = {
+                    'id': $(this).attr('data-id'),
+                };
+                ajaxFunction("{{ item.deleteUrl }}", inputs, true).then((data) => {
+                    $(this).parents('.elementBox').remove();
+                });
+            } else
+                $(this).parents('.elementBox').remove();
+            handelPriority();
+        });
+
+    });
+
+    function handelPriority() {
+        let priority = [];
+        $('.itemPlusEl .plusElement').each(function () {
+            priority.push($(this).attr('data-type'));
+        });
+        $('#priority').val(priority);
+    }
+
+    function makeid(length = 25) {
+        let result = '';
+        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        const charactersLength = characters.length;
+        let counter = 0;
+        while (counter < length) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            counter += 1;
+        }
+        return result;
+    }
+</script>
+
+
+<style>
+    .itemPlusEl {
+        padding: 10px 0;
+        margin: 23px 1%;
+        max-width: 98%;
+        box-shadow: 0 0 8px #ddd;
+        border-radius: 10px;
+    }
+
+    .itemPlusEl h2 {
+        display: block;
+        margin: 20px;
+        font-weight: 700;
+        padding: 15px;
+        font-size: 25px;
+        box-shadow: 0px 10px 16px #ddd;
+    }
+
+    .itemPlusEl .items {
+        margin: 0;
+    }
+
+    .itemPlusEl .items > div {
+        border-bottom: 1px solid #ddd;
+    }
+
+    .elementBox {
+        padding: 50px 15px 10px;
+    }
+
+    .removeItem {
+        position: absolute;
+        left: 15px;
+        color: red;
+        top: 18px;
+        box-shadow: 0 0 4px red;
+        padding: 8px 15px;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .mediaBox .removeItem {
+        top: -32px;
+    }
+
+    .addSection {
+        margin: 0;
+        padding: 20px;
+    }
+
+    .addSection p.title {
+        box-shadow: 0px 10px 16px #ddd;
+        width: auto;
+        display: inline-flex;
+        padding: 15px;
+        font-weight: 900;
+        font-size: 15px;
+    }
+</style>
+
+{# PHOTO #}
+<div class="col-12 col-md-12 d-none mediaNew mediaBox elementBox">
+    <div class="row">
+        <div class="col-12 col-md-4 ">
+            <i class="fa fa-times removeItem"></i>
+            <div class="form-group">
+                <label class="mg-b-10 label" style="width: 100%;padding: 8px;border-radius: 5px;background: white;border: 1px solid #eee">
+                    <span></span>
+                    <i class="fa fa-plus-circle"></i>
+                </label>
+                <input type="file" class="form-control border-left-0 browse-file d-none plusElement"
+                       accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
+            </div>
+        </div>
+        <div class="col-12 col-md-4"></div>
+    </div>
+</div>
+
+{# CKEDITOR #}
+<script src="{% static '/' %}myPlugins/ckeditor/ckeditor.js"></script>
+<script>
+    function handelCKEDITOR(classCKEDITOR) {
+        CKEDITOR.replace(document.getElementById(classCKEDITOR));
+    }
+
+    {% for data in item.data %}
+        CKEDITOR.replace("el_ckeditor_{{ data.id }}");
+    {% endfor %}
+</script>
+<div class="col-12 d-none ckEditorNew ckEditorBox elementBox">
+    <i class="fa fa-times removeItem"></i>
+    <textarea class="w-100 plusElement"></textarea>
+</div>
+
+
+

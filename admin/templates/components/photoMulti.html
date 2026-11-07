@@ -1,0 +1,93 @@
+{% load static %}
+<div class="{{item.c}}">
+    <div class="form-group photoElementBox">
+        {% if item.r  %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label><b>انتخاب تصویر</b></label>
+        <label class="mg-b-10 mainLabel" for="{{item.id}}" style="width: 100%;padding: 8px;border-radius: 5px;background: white;border: 1px solid #eee">{{item.l}}
+            <i class="fa fa-plus-circle"></i>
+        </label>
+        <input type="file" class="form-control border-left-0 browse-file d-none" multiple
+               name="{{item.n}}"
+               id="{{item.id}}"
+               data-viewer="#viewerMulti_{{item.id}}"
+               data-show=".viewerBoxMulti_{{item.id}}"
+               {% if item.r  %} required {% endif %}
+               accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*"
+        >
+        <center class="viewerBoxMulti_{{item.id}} {% if item.v == '' %} d-none {% endif %} d-flex">
+           <div style="width: 200px;margin-left: 10px;" class="imageItem main d-none">
+                <span class="removePhotoBtnMulti"  style="position: absolute;border-radius: 0 5px 0 5px; width: 19px;  margin-right: 2px;height: 19px;margin-top: 22px; cursor: pointer; background: white;color: #f00; box-shadow: 0 0 0 2px red;">x</span>
+                <img style="width: 90%;border: 1px solid; border-radius: 5px;margin: 20px 0;height: 200px;"
+                     id="viewerMulti_{{item.id}}"
+                     {% if item.v %} src="/media/{{item.v}}" {% endif %}
+                     onerror="this.src='{% static '/' %}images/banner.png'"
+                />
+           </div>
+
+
+            {% for img in item.photos %}
+                <div style="width: 200px;margin-left: 5px;" class="imageItem main">
+                    <span class="removePhotoBtnMulti" style="position: absolute;border-radius: 0 5px 0 5px; width: 19px;  margin-right: 2px;height: 19px;margin-top: 22px; cursor: pointer; background: white;color: #f00; box-shadow: 0 0 0 2px red;" data-itemId="{{ item.theItem.id }}" data-galleryIndex="{{ forloop.counter0 }}">x</span>
+                    <img style="width: 100%;border: 1px solid; border-radius: 5px;margin: 20px 0;height: 200px;" id="viewerMulti_{{ item.id }}" src="/media/{{ img }}" onerror="this.src='{% static '/' %}images/banner.png'"/>
+                </div>
+            {% endfor %}
+
+        </center>
+    </div>
+</div>
+
+
+{% block js %}
+<script>
+    id = "{{item.id}}";
+    function readURLMulti(input) {
+        if (input.files) {
+            for(let i=0; i< input.files.length; i++){
+                let file = input.files[i];
+
+                let newItem = $(".imageItem.main.d-none").clone();
+                newItem.removeClass('main d-none');
+
+                let reader = new FileReader();
+                reader.onload = function (e) {
+                    newItem.find('img').attr('src', e.target.result);
+                }
+                reader.readAsDataURL(file);
+
+                newItem.appendTo('.viewerBoxMulti_{{item.id}}')
+            }
+        }
+    }
+
+    $("#" + id).change(function () {
+        $($(this).attr('data-show')).removeClass('d-none');
+        readURLMulti(this, $(this).attr('data-viewer'));
+    });
+
+
+     $(document).on('click', '.removePhotoBtnMulti' , function () {
+         if ($(this).attr('data-itemId')) {
+            let inputs = {
+                'itemId': $(this).attr('data-itemId'),
+                'galleryIndex': $(this).attr('data-galleryIndex'),
+            };
+            ajaxFunction("{{item.removeRoute}}", inputs, true).then((data) => {
+                if (data.data == 'ok')
+                    complexRemove($(this))
+                else
+                    MyNotification('خطا !', data.data, 'error');
+            });
+        }
+        else
+            complexRemove($(this))
+
+    });
+
+     function complexRemove(element){
+        element.next().attr('src', '');
+        element.parent().addClass('d-none').siblings('input').val('');
+     }
+</script>
+{% endblock %}

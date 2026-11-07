@@ -1,0 +1,370 @@
+<div class="col-md-12  formComponentElement">
+
+    <h2>سوالات</h2>
+
+    <div class="items" id="sortableQuestions">
+
+        {% for question in item.questions %}
+            <div class="newQuestion" data-id="{{ question.id }}">
+                <input type="hidden" class="questionID" value="{{ question.id }}">
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <label>سوال</label>
+                        <input type="text" class="form-control question"
+                               value="{{ question.question }}">
+                    </div>
+
+                    <div class="col-md-1">
+                        <label>نوع</label>
+                        <select class="form-control type">
+                            {% for key in item.types %}
+                                <option value="{{ key.id }}" {% if question.type == key.id %}selected{% endif %}>
+                                    {{ key.label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-1">
+                        <label>امتیاز</label>
+                        <input type="number" class="form-control score" value="{{ question.score }}">
+                    </div>
+
+                    <div class="col-md-1">
+                        <label>اجباری</label><br>
+                        <input type="checkbox" class="require" {% if question.require %}checked{% endif %}>
+                    </div>
+
+                    <div class="col-md-1 text-center">
+                        <i class="fa fa-times removeItem"></i>
+                    </div>
+
+                    <div class="col-md-12 multiAnswerSection {% if not question.multiAnswer %}d-none{% endif %}">
+                        <input type="text" class="form-control"
+                               value="{{ question.multiAnswer }}"
+                               placeholder="گزینه‌ها با # جدا شوند">
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+
+    </div>
+
+    <button id="addQuestion" type="button" class="btn btn-outline-info mt-2 mb-5">افزودن سوال</button>
+
+</div>
+
+<!-- TEMPLATE -->
+<div id="question-template" class="newQuestion d-none">
+    <input type="hidden" class="questionID">
+    <div class="row">
+        <div class="col-md-8">
+            <label>سوال</label>
+            <input type="text" class="form-control question">
+        </div>
+        <div class="col-md-1">
+            <label>نوع</label>
+            <select class="form-control type">
+                {% for key in item.types %}
+                    <option value="{{ key.id }}">{{ key.label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-1">
+            <label>امتیاز</label>
+            <input type="number" class="form-control score" value="0">
+        </div>
+        <div class="col-md-1">
+            <label>اجباری</label><br>
+            <input type="checkbox" class="require">
+        </div>
+        <div class="col-md-1 text-center">
+            <i class="fa fa-times removeItem"></i>
+        </div>
+        <div class="col-md-12 multiAnswerSection d-none">
+            <input type="text" class="form-control"
+                   placeholder="گزینه‌ها با # جدا شوند">
+        </div>
+    </div>
+</div>
+
+<script>
+(function loadJqueryUI(callback) {
+    if (typeof $.ui !== 'undefined') {
+        callback();
+        return;
+    }
+
+    // load css
+    let css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css';
+    document.head.appendChild(css);
+
+    // load js
+    let script = document.createElement('script');
+    script.src = 'https://code.jquery.com/ui/1.13.2/jquery-ui.min.js';
+    script.onload = callback;
+    document.body.appendChild(script);
+
+})(function () {
+    // 👇 اینجا sortable رو صدا بزن
+    $("#sortableQuestions").sortable({
+        update: function () {
+            updateNames();
+        }
+    });
+});
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#addQuestion').click(function () {
+            let clone = $('#question-template').clone();
+            clone.removeAttr('id').removeClass('d-none');
+            $('#sortableQuestions').append(clone);
+            updateNames();
+        });
+
+        $('body').on('click', '.removeItem', function () {
+            $(this).closest('.newQuestion').remove();
+            updateNames();
+        });
+
+        $('body').on('change', '.type', function () {
+            let box = $(this).closest('.newQuestion').find('.multiAnswerSection');
+            $(this).val() == 8 ? box.removeClass('d-none') : box.addClass('d-none');
+        });
+
+        updateNames();
+    });
+
+    function updateNames() {
+        $('#sortableQuestions .newQuestion').each(function (index) {
+            $(this).find('.question').attr('name', `question__${index}`);
+            $(this).find('.type').attr('name', `type__${index}`);
+            $(this).find('.score').attr('name', `score__${index}`);
+            $(this).find('.require').attr('name', `require__${index}`);
+            $(this).find('.multiAnswerSection input').attr('name', `multiAnswer__${index}`);
+            $(this).find('.questionID').attr('name', `questionID__${index}`);
+        });
+    }
+
+
+</script>
+
+
+<style>
+    .newQuestion {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 10px;
+        background: #fff;
+        cursor: move;
+    }
+
+    .newQuestion.ui-sortable-helper {
+        box-shadow: 0 0 10px #aaa;
+    }
+
+    .removeItem {
+        color: red;
+        cursor: pointer;
+        margin-top: 30px;
+    }
+
+</style>
+
+
+{#{% load static %}#}
+{#<div class="col-md-12 formComponentElement">#}
+{#    <div class="row m--0">#}
+{#        <h2>سوالات</h2>#}
+{#    </div>#}
+{#    <div class="row items">#}
+{#        {% for question in item.questions %}#}
+{#            <div class="col-12 newQuestion">#}
+{#                <div class="row">#}
+{#                    <input type="hidden" value="{{ question.id }}" name="questionID__{{ forloop.counter0  }}">#}
+{#                    <div class="col-md-8 col-12 px-2">#}
+{#                        <div class="form-group">#}
+{#                            <label for="">سوال</label>#}
+{#                            <input type="text" class="form-control question" value="{{ question.question }}" name="question__{{ forloop.counter0 }}">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="col-md-1 col-6 px-1">#}
+{#                        <div class="form-group">#}
+{#                            <label for="">نوع</label>#}
+{#                            <select class="form-control p-1 type" name="type__{{ forloop.counter0 }}">#}
+{#                                {% for key in item.types %}#}
+{#                                    <option value="{{ key.id }}" {% if question.type == key.id %} selected {% endif %}>{{ key.label }}</option>#}
+{#                                {% endfor %}#}
+{#                            </select>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="col-md-1 col-6 px-2">#}
+{#                        <div class="form-group">#}
+{#                            <label for="">امتیاز</label>#}
+{#                            <input type="number" class="form-control score" value="{{ question.score }}" name="score__{{ forloop.counter0 }}">#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="col-md-1 col-6 px-2">#}
+{#                        <div class="form-group">#}
+{#                            <label for="">اجباری بودن</label>#}
+{#                            <label class="custom-switch" style="display: flex;flex-direction: column;align-items: flex-start;">#}
+{#                                <input type="checkbox" class="custom-switch-input require" {% if question.require == 1 %} checked {% endif %} name="require__{{ forloop.counter0 }}">#}
+{#                                <span class="custom-switch-indicator"></span>#}
+{#                            </label>#}
+{#                        </div>#}
+{#                    </div>#}
+{#                    <div class="col-md-1 col-6 px-2 text-center">#}
+{#                        <i class="fa fa-times removeItem" data-id="{{ question.id }}"></i>#}
+{#                    </div>#}
+{#                    <div class="col-md-12 col-12 px-2 multiAnswerSection {% if question.multiAnswer == '' %} d-none {% endif %}">#}
+{#                        <input type="text" class="form-control" placeholder="گزینه ها باید با # از هم جدا شوند" value="{{ question.multiAnswer }}" name="multiAnswer__{{ forloop.counter0 }}">#}
+{#                    </div>#}
+{#                </div>#}
+{#            </div>#}
+{#        {% endfor %}#}
+{#    </div>#}
+{##}
+{#    <div class="row addSection">#}
+{#        <div class="col-4 col-md-4">#}
+{#            <button class="btn btn-outline-info" id="itemPlusNewBrnEl" type="button">افزودن</button>#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+{##}
+{#<div class="col-12 col-md-12 d-none newQuestion">#}
+{#    <div class="row">#}
+{#        <div class="col-md-8 col-12 px-2">#}
+{#            <div class="form-group">#}
+{#                <label for="">سوال</label>#}
+{#                <input type="text" class="form-control question">#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="col-md-1 col-6 px-1">#}
+{#            <div class="form-group">#}
+{#                <label for="">نوع</label>#}
+{#                <select class="form-control p-1 type">#}
+{#                    {% for key in item.types %}#}
+{#                        <option value="{{ key.id }}">{{ key.label }}</option>#}
+{#                    {% endfor %}#}
+{#                </select>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="col-md-1 col-6 px-2">#}
+{#            <div class="form-group">#}
+{#                <label for="">امتیاز</label>#}
+{#                <input type="number" class="form-control score">#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="col-md-1 col-6 px-2">#}
+{#            <div class="form-group">#}
+{#                <label for="">اجباری بودن</label>#}
+{#                <label class="custom-switch" style="display: flex;flex-direction: column;align-items: flex-start;">#}
+{#                    <input type="checkbox" class="custom-switch-input require" id="">#}
+{#                    <span class="custom-switch-indicator"></span>#}
+{#                </label>#}
+{#            </div>#}
+{#        </div>#}
+{#        <div class="col-md-1 col-6 px-2 text-center">#}
+{#            <i class="fa fa-times removeItem"></i>#}
+{#        </div>#}
+{##}
+{#        <div class="col-md-12 col-12 px-2 d-none multiAnswerSection">#}
+{#            <input type="text" class="form-control" placeholder="گزینه ها باید با # از هم جدا شوند">#}
+{#        </div>#}
+{#    </div>#}
+{#</div>#}
+{##}
+{#<script>#}
+{#    $(document).ready(function () {#}
+{#        $('#itemPlusNewBrnEl').on('click', function () {#}
+{#            let newClone = $(".formComponentElement + .newQuestion").clone();#}
+{#            newClone.removeClass('d-none');#}
+{#            newClone.appendTo(".formComponentElement .items");#}
+{#            handelPriority();#}
+{#        });#}
+{##}
+{#        $('body').on('click', '.removeItem', function () {#}
+{#            if ($(this).attr('data-id')) {#}
+{#                let inputs = {#}
+{#                    'id': $(this).attr('data-id'),#}
+{#                };#}
+{#                ajaxFunction("{{ item.deleteUrl }}", inputs, true).then((data) => {#}
+{#                    $(this).parents('.newQuestion').remove();#}
+{#                });#}
+{#            } else#}
+{#                $(this).parents('.newQuestion').remove();#}
+{#            handelPriority();#}
+{#        });#}
+{##}
+{#        $('body').on('change', '.formComponentElement .type', function () {#}
+{#            let el = $(this).parents('.newQuestion').find('.multiAnswerSection');#}
+{#            if ($(this).find(":selected").val() == 8)#}
+{#                el.removeClass('d-none');#}
+{#            else#}
+{#                el.addClass('d-none');#}
+{#        });#}
+{#    });#}
+{##}
+{#    function handelPriority() {#}
+{#        $('.formComponentElement .items .newQuestion').each(function (index, element) {#}
+{#            $(element).find('.question').attr('name', "question__" + index).attr('require', true)#}
+{#            $(element).find('.type').attr('name', "type__" + index)#}
+{#            $(element).find('.score').attr('name', "score__" + index).attr('require', true)#}
+{#            $(element).find('.require').attr('name', "require__" + index)#}
+{#            $(element).find('.multiAnswerSection input').attr('name', "multiAnswer__" + index)#}
+{#        });#}
+{#    }#}
+{#</script>#}
+{##}
+{#<style>#}
+{#    .formComponentElement {#}
+{#        padding: 10px 0;#}
+{#        margin: 23px 1%;#}
+{#        max-width: 98%;#}
+{#        box-shadow: 0 0 8px #ddd;#}
+{#        border-radius: 10px;#}
+{#    }#}
+{##}
+{#    .formComponentElement h2 {#}
+{#        display: block;#}
+{#        margin: 20px;#}
+{#        font-weight: 700;#}
+{#        padding: 15px;#}
+{#        font-size: 25px;#}
+{#        box-shadow: 0px 10px 16px #ddd;#}
+{#    }#}
+{##}
+{#    .formComponentElement .items {#}
+{#        margin: 0;#}
+{#    }#}
+{##}
+{#    .formComponentElement .items > div {#}
+{#        border-bottom: 1px solid #ddd;#}
+{#        padding: 20px 15px;#}
+{#    }#}
+{##}
+{#    .removeItem {#}
+{#        position: relative;#}
+{#        left: 15px;#}
+{#        color: red;#}
+{#        top: 25px;#}
+{#        box-shadow: 0 0 4px red;#}
+{#        padding: 8px 15px;#}
+{#        border-radius: 3px;#}
+{#        cursor: pointer;#}
+{#    }#}
+{##}
+{#    .mediaBox .removeItem {#}
+{#        top: -32px;#}
+{#    }#}
+{##}
+{#    .addSection {#}
+{#        margin: 0;#}
+{#        padding: 20px 0;#}
+{#    }#}
+{#</style>#}

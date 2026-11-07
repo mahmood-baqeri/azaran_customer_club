@@ -1,0 +1,35 @@
+{% load static %}
+{#  بارگذاری داده از فایل اکسل  #}
+<div class="modal fade" id="uploadDataWithExcel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content modal-content-demo">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="modal-header">
+                    <h6 class="modal-title"><span>بارگذاری</span> <span class="m-title"></span> <span>از فایل اکسل</span></h6>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="help d-none">
+                        <h6>توجه !</h6>
+                        <p class="mb-4">
+                            <span> حتما ستون های فایل اکسل باید طبق فایل اکسل نمونه باشد.</span>
+                            <a href="">اکسل نمونه</a>
+                        </p>
+                    </div>
+
+                    <b>انتخاب اکسل</b>
+                    <input type="file" name="excel" class="form-control" accept=".xlsx">
+
+                </div>
+                <div class="modal-footer">
+                    <button class="btn ripple btn-primary" type="submit">بارگذاری</button>
+                    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">بستن</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

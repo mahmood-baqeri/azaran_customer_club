@@ -1,0 +1,73 @@
+{% load customTags %}
+{% sections_units as manage %}
+
+<div class="col-md-12"></div>
+<div class="col-md-4">
+  <div class="form-group">
+    <label class="mg-b-10" for="theSectionElement"><b>بخش</b></label>
+    <select class="form-control select2" name="section" id="theSectionElement">
+      {% for data in manage.sections %}
+        <option value="{{ data.id }}">{{ data.label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+<div class="col-md-4">
+  <div class="form-group">
+    <label class="mg-b-10" for="theUnitElement"><b>واحد</b></label>
+    <select class="form-control select2" name="unit" id="theUnitElement">
+      {% for data in manage.units %}
+        <option value="{{ data.id }}">{{ data.label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+</div>
+
+<div id="selectedUsersContainer"></div>
+{% include 'datatables/select-users.html' with selectedUsers=item.forUsers %}
+
+<script>
+  $(document).ready(function () {
+    $('.sectionSelectAllUsers input').on('change', function () {
+      let checked = $(this).prop('checked')
+      $('.theUsersSectionBox input').each(function () {
+        $(this).attr('checked', checked)
+      })
+    })
+  
+    //  Handel Users
+    $(document).on('change', '#theSectionElement', function () {
+      $('#theUnitElement option').remove()
+      ajaxFunction('api/section/units', { id: $(this).val() }, true).then((data) => {
+        var toAppend = ''
+        $.each(data.data, function (key, item) {
+          toAppend += '<option value="' + item.id + '">' + item.name + '</option>'
+        })
+        $('#theUnitElement').append(toAppend)
+      })
+  
+      // 3️⃣ بگو جدول دیتاتیبل (که در فایل users.html هست) رفرش بشه
+      if (window.userDataTableElement) {
+        window.userDataTableElement.ajax.reload()
+      }
+    })
+  
+    //  Handel Unit Users
+    $('#theUnitElement').on('change', function () {
+      // 3️⃣ بگو جدول دیتاتیبل (که در فایل users.html هست) رفرش بشه
+      if (window.userDataTableElement) {
+        window.userDataTableElement.ajax.reload()
+      }
+    })
+  })
+</script>
+
+<style>
+  .d-none {
+    display: none !important;
+  }
+  
+  .select2-selection.select2-selection--multiple {
+    padding: 3px 10px 0 !important;
+  }
+</style>

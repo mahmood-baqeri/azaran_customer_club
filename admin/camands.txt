@@ -1,0 +1,29 @@
+####################################
+##     run Asgi for Django        ##
+####################################
+# python -m daphne -b 0.0.0.0 -p 8000 config.asgi:application
+# daphne -b 0.0.0.0 -p 8000 config.asgi:application           ============================= > run websocket server
+
+
+
+####################################
+##          Redirect              ##
+####################################
+return redirect(request.META.get('HTTP_REFERER'))           =========================== >   redirect back
+return redirect(reverse('chat:userChatPage', kwargs={'slug': chat.slug}))
+python manage.py shell -c "from django.core.cache import cache; cache.clear()"
+
+####################################
+##         Requirements          ##
+####################################
+pip freeze > requirements.txt
+pip install -r requirements.txt
+
+
+####################################
+##            Venv                ##
+#################################### 
+python -m venv .venv  # ایجاد مجدد محیط مجازی
+#source venv\Scripts\activate.bat  # فعال کردن محیط مجازی
+.venv\Scripts\Activate
+source venv/bin/activate

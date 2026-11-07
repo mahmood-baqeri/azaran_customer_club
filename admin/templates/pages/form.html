@@ -1,0 +1,50 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            <form action="{{ data.storeUrl }}" enctype="multipart/form-data" method="post">
+              {% csrf_token %}
+              <div class="row row-sm">
+                {% for item in data.items %}
+                  {% include 'components/'|add:item.b %}
+                {% endfor %}
+
+                <div class="col-md-12" style="display: flex;justify-content: flex-end;">
+                  {% if data.forgetPass %}
+                    <a class="btn ripple btn-info pd-x-30 mg-l-5" href="{% url 'app_user:forgetPass' %}">فراموشی رمزعبور</a>
+                  {% endif %}
+
+                  {% if data.storeUrl %}
+                    <button class="btn ripple btn-primary pd-x-30 mg-l-5" type="submit">
+                      {% if data.submitBtnText %}
+                        {{ data.submitBtnText }}
+                      {% else %}
+                        ذخیره
+                      {% endif %}
+                    </button>
+                  {% endif %}
+                  {# <button class="btn ripple btn-secondary pd-x-30" onclick="history.back()">بازگشت</button> #}
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

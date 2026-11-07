@@ -1,0 +1,176 @@
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<style>
+    table.dataTable thead th, table.dataTable thead td, table.dataTable tfoot th, table.dataTable tfoot td {
+        text-align: right;
+    }
+</style>
+
+<div class="col-12">
+    <table id="datatable-element" class="display" style="width:100%">
+        <thead>
+        <tr>
+            <th><input type="checkbox" id="masterCheck"></th>
+            <th>نام</th>
+            <th>نام خانوادگی</th>
+            <th>کد پرسنلی</th>
+            <th>موبایل</th>
+            <th>کد ملی</th>
+            <th>بخش</th>
+            <th>واحد</th>
+            <th></th>
+        </tr>
+        </thead>
+    </table>
+
+    <script>
+        let selectedUsers = new Set({{ selectedUsers|safe }});
+        window.userDataTableElement = null;
+
+        $(document).ready(function () {
+            window.userDataTableElement = $('#datatable-element').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{% url 'app_user:select_users' %}",
+                    type: "POST",
+                    headers: {
+                        "X-CSRFToken": $('meta[name="csrf-token"]').attr('content')
+                    },
+                    data: function (d) {
+                        d.section_id = $('#theSectionElement').val();
+                        d.unit_id = $('#theUnitElement').val();
+                        d.selected_ids = Array.from(selectedUsers);
+                    }
+                },
+                columns: [
+                    {   // ستون چک‌باکس
+                        data: "id",
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row) {
+                            const checked = selectedUsers.has(row.id) ? 'checked' : '';
+                            return `<input type="checkbox" class="row-check" data-id="${row.id}" ${checked}>`;
+                        }
+                    },
+                    {data: "first_name"},
+                    {data: "last_name"},
+                    {data: "personCode"},
+                    {data: "mobile"},
+                    {data: "nationalCode"},
+                    {data: "section"},
+                    {data: "unit"},
+                    {data: "actions"},
+                ],
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/fa.json"
+                },
+                order: [[1, 'asc']], // از ستون نام مرتب‌سازی کن، چون ستون 0 چک‌باکسه
+
+                {#// ✅ اضافه کردن گزینه‌های تعداد نمایش#}
+                lengthMenu: [
+                    [10, 25, 50, 100, 500, 1000], // مقادیر واقعی
+                    [10, 25, 50, 100, 500, 1000] // متن نمایش داده شده
+                ],
+                pageLength: 10 // مقدار پیش‌فرض
+            });
+
+            // ✅ انتخاب همه / لغو انتخاب همه
+            $('#masterCheck').on('change', function () {
+                const checked = $(this).prop('checked');
+                $('#datatable-element .row-check').each(function () {
+                    $(this).prop('checked', checked).trigger('change');
+                });
+            });
+
+            // ✅ انتخاب تکی
+            $('#datatable-element').on('change', '.row-check', function () {
+                const id = $(this).data('id');
+                if ($(this).prop('checked')) {
+                    selectedUsers.add(id);
+                } else {
+                    selectedUsers.delete(id);
+                }
+
+                const allChecked = $('#datatable-element .row-check').length === $('#datatable-element .row-check:checked').length;
+                $('#masterCheck').prop('checked', allChecked);
+
+                updateHiddenInputs();
+            });
+
+            // ✅ ساختن input مخفی برای ارسال به فرم
+            function updateHiddenInputs() {
+                const container = $('#selectedUsersContainer');
+                container.empty();
+                selectedUsers.forEach(id => {
+                    container.append(`<input type="hidden" name="selected_users" value="${id}">`);
+                });
+            }
+
+            // ✅ بعد از هر بار لود شدن دیتا، تیک‌ها دوباره تنظیم بشن
+            $('#datatable-element').on('draw.dt', function () {
+                $('#datatable-element .row-check').each(function () {
+                    const userId = $(this).data('id');
+                    if (selectedUsers.has(userId)) {
+                        $(this).prop('checked', true);
+                    }
+                });
+
+                const allChecked = $('#datatable-element .row-check').length > 0 &&
+                    $('#datatable-element .row-check').length === $('#datatable-element .row-check:checked').length;
+                $('#masterCheck').prop('checked', allChecked);
+            });
+
+            updateHiddenInputs();
+        });
+
+
+        $(document).ready(function () {
+            // دریافت توکن CSRF به صورت پویا از متادیتای صفحه
+            const csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+            // 4. پیاده‌سازی منطق حذف با AJAX (روش استاندارد و امن)
+            $('#datatable-element').on('click', '.btnDleteRecordFromTable', function (e) {
+                e.preventDefault();
+
+                const userId = $(this).data('id'); // گرفتن ID از data-id
+                const deleteUrl = '{% url 'app_user:deleteUser' id=0 %}'.replace('0', userId); // فرض می‌کنیم URL حذف شما 'user-delete' است
+
+                swal({
+                    title: "آیا مطمئن هستید؟",
+                    text: "بعد از حذف دیگر قابلیت بازگردانی وجود ندارد.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonText: 'بله حذف شود',
+                    cancelButtonText: 'نه لغو شود',
+                    closeOnConfirm: false
+                }, function () {
+                    $.ajax({
+                        url: deleteUrl,
+                        type: 'POST',
+                        data: {
+                            'csrfmiddlewaretoken': csrfToken, // ارسال توکن CSRF
+                            'id': userId, // ارسال ID کاربر
+                            // اگر endpoint شما نیاز به پارامتر دیگری دارد، اینجا اضافه کنید
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                swal('موفقیت!', 'کاربر با موفقیت حذف شد.', 'success');
+                                // رفرش کردن جدول برای نمایش نتایج جدید
+                                userTable.ajax.reload(null, false);
+                            } else {
+                                swal('خطا در حذف', response.error || 'خطایی در سرور رخ داد.', 'error');
+                            }
+                        },
+                        error: function (xhr) {
+                            console.error(xhr.responseText);
+                            swal('خطا در ارتباط', 'خطایی در ارسال درخواست حذف رخ داد.', 'error');
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</div>

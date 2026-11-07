@@ -1,0 +1,15 @@
+<div class="{{item.c}}">
+    <div class="form-group">
+        {% if item.r  %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{item.id}}"><b>{{item.l}}</b></label>
+        <input type="number" class="form-control"
+               name="{{item.n}}"
+               placeholder="{{item.l}}"
+               id="{{item.id}}"
+               value="{{item.v}}"
+               {% if item.r  %} required {% endif %}
+        >
+    </div>
+</div>

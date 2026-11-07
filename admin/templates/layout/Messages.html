@@ -1,0 +1,33 @@
+ {% load customTags %}
+
+ <div id="django-messages" style="display: none !important;">
+    {% for message in messages %}
+      {% with message.message|parseJson as msg %}
+        <div class="message {{ message.tags }}" data-modal="{{ msg.activeModal }}">{{ msg.text }}</div>
+      {% endwith %}
+    {% endfor %}
+  </div>
+
+<script>
+        $(document).ready(function () {
+        const messages = $('#django-messages .message')
+
+        messages.each(function () {
+          const message = $(this)
+          const messageText = message.text().trim()
+          const messageType = message.attr('class').split(' ')[1]
+          const modalId = message.data('modal')
+
+          setTimeout(function () {
+             MyNotification('', messageText, messageType);
+          }, 1000);
+
+          // اگر پیام دارای ID مودال بود، مودال را باز کنید
+          setTimeout(function () {
+              if (modalId) {
+                $(`#${modalId}`).modal('show')
+              }
+          }, 1500);
+        })
+      })
+</script>

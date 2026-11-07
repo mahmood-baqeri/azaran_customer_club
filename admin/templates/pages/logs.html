@@ -1,0 +1,340 @@
+{% extends "layout/app.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ data.pageTitle }}{% endblock %}
+
+{% block content %}
+
+<div class="main-content side-content pt-0">
+     <div class="container-fluid py-3" dir="rtl">
+
+     <!-- ============================ Header ============================ -->
+     <div class="d-flex justify-content-between align-items-center mb-3">
+     <h5 class="mb-0"><i class="bi bi-list-check me-2"></i>{{ data.pageTitle }}</h5>
+     <span class="text-muted small">مجموع: <b>{{ data.total|intcomma }}</b> رکورد</span>
+     </div>
+
+     <!-- ============================ Stats ============================ -->
+     <div class="row g-2 mb-3">
+     <div class="col-6 col-md-2">
+          <div class="card border-0 shadow-sm">
+          <div class="card-body py-2">
+               <div class="text-muted small">کل</div>
+               <div class="fs-5 fw-bold">{{ data.stats.total|intcomma }}</div>
+          </div>
+          </div>
+     </div>
+     <div class="col-6 col-md-2">
+          <div class="card border-0 shadow-sm">
+          <div class="card-body py-2">
+               <div class="text-muted small">امروز</div>
+               <div class="fs-5 fw-bold text-primary">{{ data.stats.today|intcomma }}</div>
+          </div>
+          </div>
+     </div>
+     <div class="col-6 col-md-2">
+          <div class="card border-0 shadow-sm">
+          <div class="card-body py-2">
+               <div class="text-muted small">۷ روز اخیر</div>
+               <div class="fs-5 fw-bold text-info">{{ data.stats.week|intcomma }}</div>
+          </div>
+          </div>
+     </div>
+     <div class="col-6 col-md-2">
+          <div class="card border-0 shadow-sm">
+          <div class="card-body py-2">
+               <div class="text-muted small">خطاها</div>
+               <div class="fs-5 fw-bold text-danger">{{ data.stats.errors|intcomma }}</div>
+          </div>
+          </div>
+     </div>
+     <div class="col-6 col-md-2">
+          <div class="card border-0 shadow-sm">
+          <div class="card-body py-2">
+               <div class="text-muted small">مهمان</div>
+               <div class="fs-5 fw-bold text-secondary">{{ data.stats.guests|intcomma }}</div>
+          </div>
+          </div>
+     </div>
+     </div>
+
+     <!-- ============================ Filters ============================ -->
+     <form method="get" class="card border-0 shadow-sm mb-3">
+     <div class="card-body">
+          <div class="row g-2 align-items-end">
+          <div class="col-md-3">
+               <label class="form-label small">جستجو</label>
+               <input type="text" name="q" value="{{ data.searchText }}"
+                    class="form-control form-control-sm"
+                    placeholder="کاربر، IP، مسیر، خطا...">
+          </div>
+          <div class="col-md-2">
+               <label class="form-label small">متد</label>
+               <select name="method" class="form-select form-select-sm form-control form-control-sm">
+               <option value="">— همه —</option>
+               {% for m in data.methods %}
+               <option value="{{ m }}" {% if data.searchMethod == m %}selected{% endif %}>{{ m }}</option>
+               {% endfor %}
+               </select>
+          </div>
+          <div class="col-md-2">
+               <label class="form-label small">ماژول</label>
+               <select name="module" class="form-select form-select-sm form-control form-control-sm">
+               <option value="">— همه —</option>
+               {% for m in data.modules %}
+               <option value="{{ m }}" {% if data.searchModule == m %}selected{% endif %}>{{ m }}</option>
+               {% endfor %}
+               </select>
+          </div>
+          <div class="col-md-1">
+               <label class="form-label small">وضعیت</label>
+               <select name="success" class="form-select form-select-sm form-control form-control-sm">
+               <option value="">—</option>
+               <option value="1" {% if data.searchSuccess == "1" %}selected{% endif %}>موفق</option>
+               <option value="0" {% if data.searchSuccess == "0" %}selected{% endif %}>ناموفق</option>
+               </select>
+          </div>
+          <div class="col-md-1">
+               <label class="form-label small">از</label>
+               <input type="date" name="from" value="{{ data.searchFrom }}" class="form-control form-control-sm">
+          </div>
+          <div class="col-md-1">
+               <label class="form-label small">تا</label>
+               <input type="date" name="to" value="{{ data.searchTo }}" class="form-control form-control-sm">
+          </div>
+          <div class="col-md-1">
+               <label class="form-label small">تعداد</label>
+               <select name="count" class="form-select form-select-sm form-control form-control-sm">
+               {# 👇 اصلاح شد: جای split از data.countOptions استفاده کن #}
+               {% for n in data.countOptions %}
+               <option value="{{ n }}" {% if data.searchCount == n %}selected{% endif %}>{{ n }}</option>
+               {% endfor %}
+               </select>
+          </div>
+          <div class="col-md-1 d-grid">
+               <button class="btn btn-sm btn-primary"><i class="bi bi-funnel"></i> فیلتر</button>
+          </div>
+          </div>
+     </div>
+     </form>
+
+     <!-- ============================ Table ============================ -->
+     <div class="card border-0 shadow-sm">
+     <div class="table-responsive">
+          <table class="table table-sm table-hover align-middle mb-0 table-striped">
+          <thead class="table-light">
+               <tr>
+               <th width="40">#</th>
+               <th>کاربر</th>
+               <th>تاریخ</th>
+               <th>متد</th>
+               <th>مسیر</th>
+               <th>ماژول / ویو</th>
+               <th>وضعیت</th>
+               <th>IP</th>
+               <th>مرورگر</th>
+               <th>سیستم‌عامل</th>
+               <th>دستگاه</th>
+               <th>مدت</th>
+               <th width="60"></th>
+               </tr>
+          </thead>
+          <tbody>
+               {% for row in data.rows %}
+               <tr class="{% if not row.success %}table-danger-subtle{% endif %}">
+               <td class="text-muted small">{{ forloop.counter0|add:data.all.start_index }}</td>
+
+               <td>
+                    {% if row.is_authenticated %}
+                    <a href="#" class="text-decoration-none"
+                         onclick="showUserLogs({{ row.user_id }});return false;">
+                         <i class="bi bi-person-circle text-primary me-1"></i>{{ row.user }}
+                    </a>
+                    {% else %}
+                    <span class="badge bg-secondary-subtle text-secondary">
+                         <i class="bi bi-person-dash me-1"></i>مهمان
+                    </span>
+                    {% endif %}
+               </td>
+
+               <td class="text-nowrap small">
+                    {{ row.created|date:"Y/m/d H:i:s" }}
+               </td>
+
+               <td>
+                    <span class="badge
+                    {% if row.method == 'GET' %}bg-info-subtle text-info
+                    {% elif row.method == 'POST' %}bg-success-subtle text-success
+                    {% elif row.method == 'PUT' or row.method == 'PATCH' %}bg-warning-subtle text-warning
+                    {% elif row.method == 'DELETE' %}bg-danger-subtle text-danger
+                    {% else %}bg-secondary-subtle text-secondary{% endif %}">
+                    {{ row.method }}
+                    </span>
+               </td>
+
+               <td class="small text-truncate" style="max-width:220px" title="{{ row.full_path }}">
+                    <code class="text-body">{{ row.path }}</code>
+                    {% if row.query %}
+                    <i class="bi bi-question-circle text-muted" title="{{ row.query }}"></i>
+                    {% endif %}
+               </td>
+
+               <td class="small">
+                    <div>{{ row.module }}</div>
+                    <div class="text-muted text-truncate" style="max-width:180px" title="{{ row.view_name }}">
+                    {{ row.view_name }}
+                    </div>
+               </td>
+
+               <td>
+                    <span class="badge bg-{{ row.statusCls }}-subtle text-{{ row.statusCls }}">
+                    {{ row.status|default:"—" }} {{ row.statusFa }}
+                    </span>
+               </td>
+
+               <td class="small"><code>{{ row.ip }}</code></td>
+               <td class="small">{{ row.browser }}</td>
+               <td class="small">{{ row.os }}</td>
+               <td class="small">{{ row.device }}</td>
+               <td class="small text-muted">
+                    {% if row.duration %}{{ row.duration }}ms{% else %}—{% endif %}
+               </td>
+               <td>
+                    <button class="btn btn-sm btn-outline-secondary"
+                         onclick='showDetails({{ row.obj.id }})'
+                         title="جزئیات">
+                    <i class="bi bi-eye"></i>
+                    </button>
+               </td>
+               </tr>
+               {% empty %}
+               <tr>
+               <td colspan="13" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                    رکوردی یافت نشد
+               </td>
+               </tr>
+               {% endfor %}
+          </tbody>
+          </table>
+     </div>
+
+     <!-- ============================ Pagination ============================ -->
+     <div class="card-footer bg-white d-flex justify-content-between align-items-center">
+          <div class="small text-muted"> صفحه {{ data.all.number }} از {{ data.all.paginator.num_pages }} </div>
+          <nav>
+          <ul class="pagination pagination-sm mb-0">
+               {% if data.all.has_previous %}
+               <li class="page-item">
+               <a class="page-link" href="?{{ data.paginateUrl }}page={{ data.all.previous_page_number }}">قبلی</a>
+               </li>
+               {% endif %}
+               {% for num in data.all.paginator.page_range %}
+               {% if num == data.all.number %}
+               <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+               {% elif num > data.all.number|add:-3 and num < data.all.number|add:3 %}
+               <li class="page-item">
+                    <a class="page-link" href="?{{ data.paginateUrl }}page={{ num }}">{{ num }}</a>
+               </li>
+               {% endif %}
+               {% endfor %}
+               {% if data.all.has_next %}
+               <li class="page-item">
+               <a class="page-link" href="?{{ data.paginateUrl }}page={{ data.all.next_page_number }}">بعدی</a>
+               </li>
+               {% endif %}
+          </ul>
+          </nav>
+     </div>
+     </div>
+     </div>
+</div>
+
+<!-- ============================ Details Modal ============================ -->
+<div class="modal fade" id="detailsModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title"><i class="bi bi-info-circle me-1"></i>جزئیات درخواست</h6>
+        <button type="button" class="btn btn-close" data-dismiss="modal">x</button>
+      </div>
+      <div class="modal-body" id="detailsBody">
+        <div class="text-center text-muted py-4">
+          <div class="spinner-border spinner-border-sm"></div>
+          در حال بارگذاری...
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+function showDetails(id) {
+  const modal = new bootstrap.Modal(document.getElementById('detailsModal'));
+  const body = document.getElementById('detailsBody');
+  body.innerHTML = '<div class="text-center text-muted py-4"><div class="spinner-border spinner-border-sm"></div> در حال بارگذاری...</div>';
+  modal.show();
+
+  // 👇 اصلاح شد: url درست
+  fetch(`/manager/log/details/${id}/`)
+    .then(r => r.json())
+    .then(d => {
+      body.innerHTML = renderDetails(d);
+    })
+    .catch(() => {
+      body.innerHTML = '<div class="alert alert-danger">خطا در دریافت جزئیات</div>';
+    });
+}
+
+function renderDetails(d) {
+  const kv = (k, v) => v !== null && v !== undefined && v !== '' && v !== '-'
+    ? `<tr><th class="text-muted small" style="width:150px">${k}</th><td class="small">${v}</td></tr>`
+    : '';
+
+  const jsonBlock = (label, obj) => {
+    if (!obj || Object.keys(obj).length === 0) return '';
+    return `<div class="mt-2">
+      <div class="text-muted small mb-1">${label}</div>
+      <pre class="bg-light p-2 rounded small mb-0" style="max-height:200px;overflow:auto">${JSON.stringify(obj, null, 2)}</pre>
+    </div>`;
+  };
+
+  return `
+    <table class="table table-sm mb-0">
+      ${kv('کاربر', d.user)}
+      ${kv('احراز هویت', d.is_authenticated ? 'بله' : 'خیر (مهمان)')}
+      ${kv('متد', d.method)}
+      ${kv('مسیر', `<code>${d.path}</code>`)}
+      ${kv('مسیر کامل', `<code class="text-break">${d.full_path}</code>`)}
+      ${kv('نام ویو', d.view_name)}
+      ${kv('ماژول', d.module)}
+      ${kv('اکشن', d.action)}
+      ${kv('کد وضعیت', d.status_code)}
+      ${kv('موفق', d.success ? '<span class="text-success">✔</span>' : '<span class="text-danger">✘</span>')}
+      ${kv('خطا', d.error_message)}
+      ${kv('IP', `<code>${d.ip || '-'}</code>`)}
+      ${kv('مرورگر', d.browser)}
+      ${kv('سیستم‌عامل', d.os)}
+      ${kv('دستگاه', d.device)}
+      ${kv('AJAX', d.is_ajax ? 'بله' : 'خیر')}
+      ${kv('API', d.is_api ? 'بله' : 'خیر')}
+      ${kv('Referer', d.referer)}
+      ${kv('Session', d.session_key)}
+      ${kv('زمان', d.created)}
+      ${kv('مدت (ms)', d.duration_ms)}
+    </table>
+    ${jsonBlock('Query Params', d.query_params)}
+    ${jsonBlock('Body Params', d.body_params)}
+  `;
+}
+
+function showUserLogs(userId) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('q', userId);
+  window.location.href = url.toString();
+}
+</script>
+{% endblock %}

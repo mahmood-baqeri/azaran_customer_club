@@ -1,0 +1,186 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'myPlugins/sweetalert2/sweetalert2.min.css' %}" />
+{% endblock %}
+
+{% block javascript %}
+  <script src="{% static 'myPlugins/sweetalert2/sweetalert2.min.js' %}"></script>
+  <script src="{% static 'myPlugins/ckeditor/ckeditor.js' %}"></script>
+  <script src="{% static 'adminAssets/page/script.js' %}"></script>
+  <script src="{% static 'adminAssets/page/page.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content">
+    <div class="content container-fluid">
+      <div class="row">
+        <div class="col-sm-12">
+          j<div class="card">
+            <div class="card-header">
+              <h5 class="card-title">{{ data.pageTitle }}</h5>
+            </div>
+            <div class="card-body">
+              {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                  {% for error in form.non_field_errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+
+                <!-- اطلاعات اصلی -->
+                <div class="form-section">
+                  <div class="form-section-title">
+                    <i class="fas fa-info-circle"></i> اطلاعات اصلی
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label">دسته‌بندی</label>
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                          <div class="errorlist">{{ form.category.errors }}</div>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label">نوع صفحه</label>
+                        {{ form.type }}
+                        {% if form.type.errors %}
+                          <div class="errorlist">{{ form.type.errors }}</div>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label">اسلاگ</label>
+                        <input type="text" class="form-control" value="{{ form.instance.slug|default:'— به‌صورت خودکار تولید می‌شود —' }}" disabled />
+                        <div class="help-text">پس از ذخیره، به‌صورت خودکار از عنوان ساخته می‌شود و قابل ویرایش نیست.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- محتوا -->
+                <div class="form-section">
+                  <div class="form-section-title">
+                    <i class="fas fa-edit"></i> محتوا
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="mb-3">
+                        <label class="form-label">عنوان <span class="text-danger">*</span></label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                          <div class="errorlist">{{ form.title.errors }}</div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="mb-3">
+                        <label class="form-label">متن کوتاه</label>
+                        {{ form.summer }}
+                        {% if form.summer.errors %}
+                          <div class="errorlist">{{ form.summer.errors }}</div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="mb-3">
+                        <label class="form-label">متن اصلی</label>
+                        {{ form.text }}
+                        {% if form.text.errors %}
+                          <div class="errorlist">{{ form.text.errors }}</div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- تصاویر -->
+                <div class="form-section">
+                  <div class="form-section-title">
+                    <i class="fas fa-images"></i> تصاویر
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label class="form-label">تصویر صفحه</label>
+                        {{ form.photo }}
+                        {% if form.photo.errors %}
+                          <div class="errorlist">{{ form.photo.errors }}</div>
+                        {% endif %}
+                        {% if data.page.photo %}
+                          <div class="mt-2">
+                            <img src="{{ data.page.photo.url }}" class="preview-image" alt="Current" style="max-height:200px" />
+                          </div>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label class="form-label">گالری تصاویر</label>
+                        <div id="galleryDropZone" class="gallery-drop-zone border rounded p-4 text-center mb-3">
+                          <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                          <h5>تصاویر را اینجا بکشید و رها کنید</h5>
+                          <label class="btn btn-primary">
+                            <i class="fas fa-plus"></i> انتخاب تصاویر
+                            {{ form.gallery_images }}
+                          </label>
+                        </div>
+                        <div id="galleryPreview" class="row g-2 mb-3" style="display:none"></div>
+                        <div id="uploadProgress" style="display:none"></div>
+                        {{ form.gallery }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- وضعیت -->
+                <div class="form-section">
+                  <div class="form-section-title">
+                    <i class="fas fa-toggle-on"></i> وضعیت
+                  </div>
+                  <div class="form-check form-switch">
+                    {{ form.is_active }}
+                    <label class="form-check-label" for="{{ form.is_active.id_for_label }}">فعال</label>
+                  </div>
+                  {% if form.is_active.errors %}
+                    <div class="errorlist">{{ form.is_active.errors }}</div>
+                  {% endif %}
+                </div>
+
+                <!-- دکمه‌ها -->
+                <div class="mt-4">
+                  <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i>
+                    {% if data.is_edit %}
+                      بروزرسانی
+                    {% else %}
+                      ذخیره
+                    {% endif %}
+                  </button>
+                  <a href="{% url 'pagemanagement:admin_page_list' %}" class="btn btn-secondary"><i class="fas fa-times"></i> انصراف</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

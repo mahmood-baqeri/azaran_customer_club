@@ -1,0 +1,20 @@
+<div class="{{ item.c }}">
+    <div class="form-group">
+        {% if item.r %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{ item.id }}">{{ item.l }}</label>
+        <input type="file" class="form-control"
+               name="{{ item.n }}"
+               placeholder="{{ item.l }}"
+               id="{{ item.id }}"
+               value="{{ item.v }}"
+                {% if item.r %} required {% endif %}
+               accept={{ item.accept }}
+        >
+
+        {% if item.v %}
+            <a href="/media/{{ item.v }}" class="mt-5" target="_blank">مشاهده</a>
+        {% endif %}
+    </div>
+</div>

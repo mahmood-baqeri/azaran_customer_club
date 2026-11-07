@@ -1,0 +1,42 @@
+{% comment %} templates/components/date.html {% endcomment %}
+
+
+{% load static %}
+{% load customTags %}
+{% gregorian_to_jalali item.v as created %}
+
+<div class="{{item.c}}">
+    <div class="form-group">
+        {% if item.r  %}
+            <span class="text-danger">*</span>
+        {% endif %}
+        <label class="mg-b-10" for="{{item.id}}"><b>{{item.l}}</b></label>
+        <input type="text" class="form-control pdate"
+               placeholder="{{item.l}}" 
+               id="{{item.id}}"
+               value="{{created}}"
+                {% if item.d  %} disabled {% endif %}
+               {% if item.r  %} required {% endif %}
+        >
+        <input type="hidden" id="hidden_{{item.id}}" name="{{item.n}}" value="{{item.v|date:'Y-m-d' }}">
+    </div>
+</div>
+
+
+<link rel="stylesheet" href="{% static '/' %}myPlugins/persianDateTimePicker/jspc-royal_blue.css">
+<script type="text/javascript" src="{% static '/' %}myPlugins/persianDateTimePicker/js-persian-cal.min.js"></script>
+<script>
+    new AMIB.persianCalendar("{{item.id}}", {
+        extraInputID: "hidden_{{item.id}}",
+        extraInputFormat: "YYYY-MM-DD"
+    });
+
+</script>
+<style>
+    a.pcalBtn{
+        top: 32px !important;
+        width: 38px !important;
+        height: 38px !important;
+    }
+</style>
+
