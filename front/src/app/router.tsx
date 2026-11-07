@@ -14,6 +14,7 @@ import { GIFT_ROUTES } from "../modules/gift_module/routes";
 import { PROMOTION_ROUTES } from "../modules/promotion_module/routes";
 import { FAQ_ROUTES } from "../modules/faq_module/routes";
 import { PROJECT_ROUTES } from "../modules/project_module/routes";
+import { FACTOR_ROUTES } from "../modules/factor_module/routes";
 
 const LoginScreen = lazy(() => import("../modules/auth_module/screens/login.screen"));
 const OtpScreen = lazy(() => import("../modules/auth_module/screens/otp.screen"));
@@ -47,6 +48,11 @@ const UploadAttachmentsScreen = lazy(() => import("../modules/project_module/scr
 const ProjectsListScreen = lazy(() => import("../modules/project_module/screen/projects_list.screen"));
 const ProjectDetailScreen = lazy(() => import("../modules/project_module/screen/project_detail.screen"));
 const ColleaguesScreen = lazy(() => import("../modules/project_module/screen/colleagues.screen"));
+
+
+const CreateFactorScreen = lazy(() => import("../modules/factor_module/screen/create_factor.screen"));
+const EditFactorScreen = lazy(() => import("../modules/factor_module/screen/edit_factor.screen"));
+const FactorsListScreen = lazy(() => import("../modules/factor_module/screen/factors_list.screen"));
 
 
 export default function AppRouter() {
@@ -103,6 +109,10 @@ export default function AppRouter() {
                               <Route path={PROJECT_ROUTES.edit(":id")} element={<EditProjectScreen />} />
                               <Route path={PROJECT_ROUTES.detail(":id")} element={<ProjectDetailScreen />} />
                               <Route path={PROJECT_ROUTES.colleagues(":id")} element={<ColleaguesScreen />} />
+
+                              <Route path={FACTOR_ROUTES.list} element={<FactorsListScreen />} />
+                              <Route path={FACTOR_ROUTES.create} element={<CreateFactorScreen />} />
+                              <Route path={FACTOR_ROUTES.edit(":id")} element={<EditFactorScreen />} />
 
                          </Route>
                     </Route>

@@ -8,6 +8,7 @@ import { GIFT_ROUTES } from "../../gift_module/routes";
 import { PROMOTION_ROUTES } from "../../promotion_module/routes";
 import { FAQ_ROUTES } from "../../faq_module/routes";
 import { PROJECT_ROUTES } from "../../project_module/routes";
+import { FACTOR_ROUTES } from "../../factor_module/routes";
 
 export default function HomeScreen() {
      return (
@@ -74,6 +75,7 @@ const EarnPointsSection = () => {
           { title: 'گالری مجریان', icon: ICONS.gallery, bg: 'bg-light-blue', class: "img20_20", href: "" },
           { title: 'معرفی همکاران', icon: ICONS.user, bg: 'bg-light-blue', class: "img25_25", href: "" },
           { title: 'نظرسنجی', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: "" },
+          { title: 'ثبت فاکتور', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: FACTOR_ROUTES.list },
      ];
 
      return (
