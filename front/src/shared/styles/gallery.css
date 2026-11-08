@@ -1,0 +1,186 @@
+/* src/shared/styles/gallery.css */
+
+.gallery-body {
+     padding: 16px 20px;
+}
+
+/* --- تب‌های فیلتر --- */
+.gallery-tabs {
+     display: flex;
+     gap: 8px;
+     margin-bottom: 16px;
+}
+
+.gallery-tab {
+     flex: 1;
+     padding: 6px;
+     background: #fff;
+     border: 1px solid #dfe4ee;
+     border-radius: 10px;
+     font-size: 11px;
+     font-weight: 500;
+     color: #6b7794;
+     cursor: pointer;
+     transition: 0.2s;
+     font-family: inherit;
+}
+
+.gallery-tab.active {
+     background: #e8eefc;
+     color: #14306b;
+}
+
+/* --- گرید تصاویر --- */
+.gallery-grid {
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     gap: 12px;
+}
+
+.gallery-card {
+     cursor: pointer;
+     border-radius: 12px;
+     overflow: hidden;
+     background: #e1ecfb;
+}
+
+.gallery-img-wrapper {
+     width: 100%;
+     height: 100%;
+     position: relative;
+}
+
+.gallery-img-wrapper img.gallery {
+     width: 100%;
+     height: 150px;
+     object-fit: cover;
+     background: #e1ecfb;
+     border-radius: 10px;
+}
+
+.gallery-card-overlay {
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     padding: 6px;
+     color: var(--primary-color);
+}
+
+.gallery-user-info {
+     display: flex;
+     flex-direction: column;
+     gap: 2px;
+     margin-bottom: 6px;
+}
+
+.g-name {
+     font-size: 11px;
+     font-weight: 700;
+}
+
+.g-loc {
+     font-size: 10px;
+     display: flex;
+     align-items: center;
+     gap: 4px;
+}
+
+.gallery-like-badge {
+     display: flex;
+     align-items: center;
+     gap: 4px;
+     font-size: 11px;
+     flex-direction: row-reverse;
+}
+
+/* --- فرم آپلود --- */
+.gallery-upload-box {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     width: 100%;
+     height: 200px;
+     border: 2px dashed #b8c0d2;
+     border-radius: 16px;
+     background: #f4f6fa;
+     cursor: pointer;
+     overflow: hidden;
+     transition: 0.2s;
+}
+
+.gallery-upload-box:hover {
+     border-color: #14306b;
+     background: #e8eefc;
+}
+
+.gallery-preview-img {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+}
+
+.gallery-upload-title {
+     font-size: 13px;
+     font-weight: 800;
+     color: #14306b;
+     margin-bottom: 4px;
+}
+
+.gallery-upload-hint {
+     font-size: 11px;
+     color: #6b7794;
+}
+
+/* --- جزئیات --- */
+.gallery-detail-image {
+     width: 100%;
+     aspect-ratio: 3 / 4;
+     border-radius: 16px;
+     overflow: hidden;
+     margin-bottom: 20px;
+     background: #f4f5f9;
+}
+
+.gallery-detail-image img {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+}
+
+.gallery-detail-title {
+     font-size: 16px;
+     font-weight: 800;
+     color: #14306b;
+     margin: 0 0 16px;
+     line-height: 1.6;
+}
+
+.gallery-detail-footer {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     border-top: 1px solid #eef1f7;
+     padding-top: 16px;
+}
+
+.gallery-detail-user {
+     display: flex;
+     flex-direction: column;
+     gap: 4px;
+     font-size: 13px;
+     font-weight: 700;
+     color: #14306b;
+}
+
+.gallery-like-btn {
+     display: flex;
+     align-items: center;
+     gap: 6px;
+     background: transparent;
+     border: none;
+     cursor: pointer;
+     font-size: 16px;
+     font-weight: 800;
+     font-family: inherit;
+}

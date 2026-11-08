@@ -11,6 +11,7 @@ import { PROJECT_ROUTES } from "../../project_module/routes";
 import { FACTOR_ROUTES } from "../../factor_module/routes";
 import SupportModal from "../components/SupportModal";
 import { useCallback, useMemo, useState } from "react";
+import { GALLERY_ROUTES } from "../../gallery_module/routes";
 
 export default function HomeScreen() {
      return (
@@ -77,7 +78,7 @@ const TopActionCards = () => {
 const EarnPointsSection = () => {
      const items = [
           { title: 'پرسش از اهل فن', icon: ICONS.question, bg: 'bg-light-blue', class: "img20_20", href: FAQ_ROUTES.list },
-          { title: 'گالری مجریان', icon: ICONS.gallery, bg: 'bg-light-blue', class: "img20_20", href: "" },
+          { title: 'گالری مجریان', icon: ICONS.gallery, bg: 'bg-light-blue', class: "img20_20", href: GALLERY_ROUTES.list },
           { title: 'معرفی همکاران', icon: ICONS.user, bg: 'bg-light-blue', class: "img25_25", href: "" },
           { title: 'نظرسنجی', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: "" },
           { title: 'ثبت فاکتور', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: FACTOR_ROUTES.list },
@@ -105,7 +106,7 @@ const EarnPointsSection = () => {
 
 // ==========================================
 // ۳. کامپوننت سکشن «هدایا»
-// ==========================================
+// ========================================== 
 const GiftsSection = () => {
      return (
           <div className="mb-4 rtl">

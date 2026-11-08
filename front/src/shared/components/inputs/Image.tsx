@@ -178,7 +178,7 @@ export const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
                accept = "image/*",
                maxSize = 5 * 1024 * 1024,
                errorMessages,
-               label = "گرفتن عکس فاکتور",
+               label = "گرفتن عکس",
                hint,
                height = 120,
                borderRadius = 12,
@@ -573,7 +573,7 @@ export const ImageUpload = forwardRef<ImageUploadRef, ImageUploadProps>(
                               /* ---------- حالت خالی ---------- */
                               <>
                                    <CameraIcon />
-                                   <span>{isDragging ? "رها کنید تا آپلود شود" : label}</span>
+                                   <span className="fw-500 fs-11">{isDragging ? "رها کنید تا آپلود شود" : label}</span>
                                    {hint && (
                                         <span
                                              style={{

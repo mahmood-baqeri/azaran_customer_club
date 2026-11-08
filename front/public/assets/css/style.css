@@ -1381,14 +1381,6 @@ input[type="radio"] {
   height: 400px !important;
 }
 
-.btn___add {
-  font-size: 10px;
-  background: #0a387c;
-  color: #fff;
-  padding: 4px 8px;
-  border-radius: 5px;
-}
-
 .mr-auto {
   margin-right: auto !important;
 }
@@ -1493,6 +1485,30 @@ img.img40_40 {
   border: 1px solid;
   border-color: var(--color-info);
 }
+
+.btn___main {
+  position: relative;
+  width: 100%;
+  height: 45px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #14306b 0%, #1c3f87 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 6px 16px -4px rgba(20, 48, 107, .35), 0 2px 4px rgba(20, 48, 107, .15), inset 0 1px 0 rgba(255, 255, 255, .15);
+  transition: transform .12s ease, box-shadow .25s ease, background .25s ease, filter .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
 
 .btn___success {
   background: #fff;

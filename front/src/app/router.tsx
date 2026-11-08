@@ -16,6 +16,8 @@ import { FAQ_ROUTES } from "../modules/faq_module/routes";
 import { PROJECT_ROUTES } from "../modules/project_module/routes";
 import { FACTOR_ROUTES } from "../modules/factor_module/routes";
 import { SUPPORT_ROUTES } from "../modules/support_module/routes";
+import { GALLERY_ROUTES } from "../modules/gallery_module/routes";
+
 
 const LoginScreen = lazy(() => import("../modules/auth_module/screens/login.screen"));
 const OtpScreen = lazy(() => import("../modules/auth_module/screens/otp.screen"));
@@ -57,7 +59,11 @@ const FactorsListScreen = lazy(() => import("../modules/factor_module/screen/fac
 const CreateTicketScreen = lazy(() => import("../modules/support_module/screens/create_ticket.screen"));
 const TicketsListScreen = lazy(() => import("../modules/support_module/screens/tickets_list.screen"));
 
-// درو
+const GalleriesListScreen = lazy(() => import("../modules/gallery_module/screen/galleries_list.screen"));
+const CreateGalleryScreen = lazy(() => import("../modules/gallery_module/screen/create_gallery.screen"));
+const GalleryDetailScreen = lazy(() => import("../modules/gallery_module/screen/gallery_detail.screen"));
+
+
 
 export default function AppRouter() {
      const navigate = useNavigate();
@@ -124,6 +130,10 @@ export default function AppRouter() {
                               <Route path={SUPPORT_ROUTES.list} element={<TicketsListScreen />} />
                               <Route path={SUPPORT_ROUTES.create} element={<CreateTicketScreen />} />
 
+                              {/* GALLERY Routes */}
+                              <Route path={GALLERY_ROUTES.list} element={<GalleriesListScreen />} />
+                              <Route path={GALLERY_ROUTES.create} element={<CreateGalleryScreen />} />
+                              <Route path={GALLERY_ROUTES.detail(":id")} element={<GalleryDetailScreen />} />
                          </Route>
                     </Route>
                </Routes>

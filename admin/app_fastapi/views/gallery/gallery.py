@@ -208,3 +208,29 @@ def _toggle_like_db(gallery_id, user_id):
             "is_liked": is_liked,
             "likes_count": GalleryLike.objects.filter(gallery_id=gallery_id).count()
         }
+
+
+# ═══════════════════════════════════════════════════════════
+# ۵. جزئیات یک تصویر
+# ═══════════════════════════════════════════════════════════
+@router.get("/{gallery_id}/")
+async def get_gallery_detail(
+    gallery_id: int,
+    user: User = Depends(get_current_user),
+):
+    data = await _get_gallery_db(gallery_id, user.id)
+    if not data:
+        return error_response("تصویر یافت نشد یا دسترسی ندارید", status_code=404)
+    return success_response("جزئیات تصویر", data)
+
+@sync_to_async
+def _get_gallery_db(gallery_id, user_id):
+    g = Gallery.objects.select_related("user").filter(id=gallery_id).first()
+    if not g:
+        return None
+    
+    # اگر عکس تایید نشده باشد، فقط صاحبش می‌تواند ببیند
+    if g.status != Gallery.Status.APPROVED and g.user_id != user_id:
+        return None
+        
+    return _serialize_gallery(g, user_id, full=True)
