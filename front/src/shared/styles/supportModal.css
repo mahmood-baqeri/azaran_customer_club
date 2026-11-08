@@ -1,0 +1,115 @@
+/* =========================================
+   Header
+========================================= */
+.support-modal-header {
+     text-align: right;
+     margin-bottom: 20px;
+}
+
+.support-modal-title {
+     font-size: 16px;
+     font-weight: 800;
+     color: #1a365d;
+     margin: 0 0 6px 0;
+}
+
+.support-modal-subtitle {
+     font-size: 12px;
+     color: #718096;
+     margin: 0;
+}
+
+/* =========================================
+   Body & Action Cards
+========================================= */
+.support-modal-body {
+     display: flex;
+     flex-direction: column;
+     gap: 12px;
+}
+
+.support-action-card {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     border: 1px solid #e2e8f0;
+     border-radius: 12px;
+     padding: 10px;
+     cursor: pointer;
+     background-color: #ffffff;
+     transition: all 0.2s ease;
+}
+
+.support-action-card:hover {
+     background-color: #f8fafc;
+     border-color: #cbd5e1;
+     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.support-action-content {
+     display: flex;
+     align-items: center;
+     gap: 12px;
+}
+
+.support-icon-box {
+     width: 44px;
+     height: 44px;
+     background-color: #eef2f9;
+     color: #3b5998;
+     border-radius: 10px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     flex-shrink: 0;
+}
+
+/* استایل برای تصاویر داخل آیکون‌ها */
+.support-icon-img {
+     width: 20px;
+     height: 20px;
+     object-fit: contain;
+}
+
+.support-action-texts {
+     display: flex;
+     flex-direction: column;
+     align-items: flex-start;
+}
+
+.support-action-title {
+     font-size: 13px;
+     font-weight: 700;
+     color: #1a365d;
+     margin-bottom: 4px;
+}
+
+.support-action-subtitle {
+     font-size: 11px;
+     color: #718096;
+}
+
+.support-action-chevron {
+     color: #a0aec0;
+}
+
+/* =========================================
+   Cancel Button
+========================================= */
+.support-cancel-btn {
+     width: 100%;
+     background-color: #cbd5e1;
+     color: #ffffff;
+     border: none;
+     border-radius: 12px;
+     padding: 14px;
+     font-size: 14px;
+     font-weight: 700;
+     cursor: pointer;
+     margin-top: 8px;
+     transition: background-color 0.2s ease;
+}
+
+.support-cancel-btn:hover {
+     background-color: #b0bec5;
+}

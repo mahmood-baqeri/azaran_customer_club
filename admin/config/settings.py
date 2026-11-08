@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'applications.factor.apps.config',
     'applications.project.apps.config',
     'applications.support.apps.config',
+    'applications.gallery.apps.config',
 ]
 
 ####################################

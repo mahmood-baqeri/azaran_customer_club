@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // src/modules/factor_module/components/FactorForm.tsx
 
 import { useState, useEffect } from "react";

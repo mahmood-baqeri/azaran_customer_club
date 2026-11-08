@@ -15,6 +15,7 @@ import { PROMOTION_ROUTES } from "../modules/promotion_module/routes";
 import { FAQ_ROUTES } from "../modules/faq_module/routes";
 import { PROJECT_ROUTES } from "../modules/project_module/routes";
 import { FACTOR_ROUTES } from "../modules/factor_module/routes";
+import { SUPPORT_ROUTES } from "../modules/support_module/routes";
 
 const LoginScreen = lazy(() => import("../modules/auth_module/screens/login.screen"));
 const OtpScreen = lazy(() => import("../modules/auth_module/screens/otp.screen"));
@@ -49,11 +50,14 @@ const ProjectsListScreen = lazy(() => import("../modules/project_module/screen/p
 const ProjectDetailScreen = lazy(() => import("../modules/project_module/screen/project_detail.screen"));
 const ColleaguesScreen = lazy(() => import("../modules/project_module/screen/colleagues.screen"));
 
-
 const CreateFactorScreen = lazy(() => import("../modules/factor_module/screen/create_factor.screen"));
 const EditFactorScreen = lazy(() => import("../modules/factor_module/screen/edit_factor.screen"));
 const FactorsListScreen = lazy(() => import("../modules/factor_module/screen/factors_list.screen"));
 
+const CreateTicketScreen = lazy(() => import("../modules/support_module/screens/create_ticket.screen"));
+const TicketsListScreen = lazy(() => import("../modules/support_module/screens/tickets_list.screen"));
+
+// درو
 
 export default function AppRouter() {
      const navigate = useNavigate();
@@ -99,10 +103,11 @@ export default function AppRouter() {
                               <Route path={PROMOTION_ROUTES.success(":id")} element={<SuccessfulOrderScreen type="promotion" />} />
                               <Route path={PROMOTION_ROUTES.orderDetail(":id")} element={<PromotionOrderDetailScreen />} />
 
+                              {/* FAQ Routes */}
                               <Route path={FAQ_ROUTES.list} element={<FaqListScreen />} />
                               <Route path={FAQ_ROUTES.detail(":id")} element={<FaqDetailScreen />} />
 
-
+                              {/* PROJECT Routes */}
                               <Route path={PROJECT_ROUTES.list} element={<ProjectsListScreen />} />
                               <Route path={PROJECT_ROUTES.create} element={<CreateProjectScreen />} />
                               <Route path={PROJECT_ROUTES.upload(":id")} element={<UploadAttachmentsScreen />} />
@@ -110,9 +115,14 @@ export default function AppRouter() {
                               <Route path={PROJECT_ROUTES.detail(":id")} element={<ProjectDetailScreen />} />
                               <Route path={PROJECT_ROUTES.colleagues(":id")} element={<ColleaguesScreen />} />
 
+                              {/* FACTOR Routes */}
                               <Route path={FACTOR_ROUTES.list} element={<FactorsListScreen />} />
                               <Route path={FACTOR_ROUTES.create} element={<CreateFactorScreen />} />
                               <Route path={FACTOR_ROUTES.edit(":id")} element={<EditFactorScreen />} />
+
+                              {/* SUPPORT Routes */}
+                              <Route path={SUPPORT_ROUTES.list} element={<TicketsListScreen />} />
+                              <Route path={SUPPORT_ROUTES.create} element={<CreateTicketScreen />} />
 
                          </Route>
                     </Route>

@@ -1,0 +1,209 @@
+/* src/shared/styles/support.css */
+
+.support-body {
+     padding: 5px;
+}
+
+.support-title {
+     font-size: 14px;
+     font-weight: 600;
+     color: #14306b;
+     margin: 0 0 6px;
+}
+
+.support-subtitle {
+     font-size: 12px;
+     color: #6b7794;
+     margin: 0 0 24px;
+}
+
+.support-section-title {
+     font-size: 12px;
+     font-weight: 600;
+     color: #14306b;
+     margin: 24px 0 12px;
+}
+
+/* --- دکمه‌های دسته‌بندی --- */
+.support-categories {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 8px;
+}
+
+.support-pill {
+     padding: 8px 16px;
+     border-radius: 20px;
+     background: #e8eefc;
+     color: #14306b;
+     font-size: 11px;
+     border: none;
+     cursor: pointer;
+     transition: 0.2s;
+     font-family: inherit;
+}
+
+.support-pill.active {
+     background: #14306b;
+     color: #fff;
+}
+
+/* --- تکست‌اریا --- */
+.support-textarea {
+     width: 100%;
+     min-height: 200px;
+     background: #ffffff;
+     border: 1px solid #dfe4ee;
+     border-radius: 12px;
+     padding: 16px;
+     font-size: 11px;
+     color: #14306b;
+     font-family: inherit;
+     outline: none;
+     resize: vertical;
+     transition: border-color 0.2s;
+}
+
+.support-textarea:focus {
+     border-color: #14306b;
+}
+
+.support-textarea::placeholder {
+     color: #a0aec0;
+}
+
+/* --- آپلود فایل --- */
+.support-file-upload {
+     display: flex;
+     justify-content: flex-start;
+     border: 1.5px dashed #dfe4ee;
+     border-radius: 12px;
+     padding: 12px 16px;
+     margin-top: 5px;
+     cursor: pointer;
+     background: #fff;
+     transition: 0.2s;
+     flex-direction: row;
+}
+
+.support-file-upload:hover {
+     background: #f8fafd;
+     border-color: #14306b;
+}
+
+.support-file-content {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+}
+
+.support-file-text {
+     display: flex;
+     flex-direction: column;
+     gap: 4px;
+}
+
+.support-file-text strong {
+     font-size: 13px;
+     color: #14306b;
+}
+
+.support-file-text span {
+     font-size: 11px;
+     color: #8792a8;
+}
+
+.support-file-name {
+     font-size: 11px;
+     color: #2e7d32;
+     margin-top: 8px;
+     font-weight: 700;
+     direction: ltr;
+     text-align: left;
+     max-width: 150px;
+}
+
+/* --- دکمه ثبت --- */
+.support-submit-btn {
+     width: 100%;
+     height: 52px;
+     background: #14306b;
+     color: #fff;
+     border: none;
+     border-radius: 12px;
+     font-size: 14px;
+     font-weight: 700;
+     margin-top: 32px;
+     cursor: pointer;
+     font-family: inherit;
+     transition: 0.2s;
+}
+
+.support-submit-btn:disabled {
+     background: #c5cee0;
+     cursor: not-allowed;
+}
+
+/* --- لیست تیکت‌ها --- */
+.support-tickets-list {
+     display: flex;
+     flex-direction: column;
+     gap: 12px;
+}
+
+.support-ticket-card {
+     background: #fff;
+     border: 1.5px solid #eef1f7;
+     border-radius: 14px;
+     padding: 14px;
+     cursor: pointer;
+}
+
+.st-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 12px;
+}
+
+.st-subject {
+     font-size: 13px;
+     font-weight: 800;
+     color: #14306b;
+}
+
+.st-status {
+     font-size: 10px;
+     font-weight: 700;
+     padding: 4px 8px;
+     border-radius: 6px;
+}
+
+.st-status.open {
+     background: #e8f5e9;
+     color: #2e7d32;
+}
+
+.st-status.in_progress {
+     background: #fff3e0;
+     color: #e65100;
+}
+
+.st-status.resolved {
+     background: #e3f2fd;
+     color: #1565c0;
+}
+
+.st-status.closed {
+     background: #f5f5f5;
+     color: #757575;
+}
+
+.st-footer {
+     display: flex;
+     justify-content: space-between;
+     font-size: 11px;
+     color: #6b7794;
+     padding-top: 10px;
+     border-top: 1px dashed #eef1f7;
+}

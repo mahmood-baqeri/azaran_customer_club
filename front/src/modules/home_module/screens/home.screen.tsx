@@ -9,6 +9,8 @@ import { PROMOTION_ROUTES } from "../../promotion_module/routes";
 import { FAQ_ROUTES } from "../../faq_module/routes";
 import { PROJECT_ROUTES } from "../../project_module/routes";
 import { FACTOR_ROUTES } from "../../factor_module/routes";
+import SupportModal from "../components/SupportModal";
+import { useCallback, useMemo, useState } from "react";
 
 export default function HomeScreen() {
      return (
@@ -35,34 +37,37 @@ export default function HomeScreen() {
 // ==========================================
 const TopActionCards = () => {
      return (
-          <div className="row g-3 mb-4 rtl">
-               {/* چالش روز */}
-               <div className="col-6">
-                    <div className="action-card bg-warning text-dark h-90 p-3 rounded-4 d-flex flex-column justify-content-between">
-                         <div className="d-flex justify-content-between align-items-start mb-2">
-                              <MyImage src={ICONS.calendar} def="/assets/none.png" alt="photo" width={30} />
+          <>
+               <div className="row g-3 mb-4 rtl">
+                    {/* چالش روز */}
+                    <div className="col-6">
+                         <div className="action-card bg-warning text-dark h-90 p-3 rounded-4 d-flex flex-column justify-content-between">
+                              <div className="d-flex justify-content-between align-items-start mb-2">
+                                   <MyImage src={ICONS.calendar} def="/assets/none.png" alt="photo" width={30} />
 
-                              <div className="chalaneg-date">
-                                   <MyImage src={ICONS.fire} def="/assets/none.png" alt="photo" width={10} />
-                                   <span className="fs-10 me-2">5 روز پیاپی</span>
+                                   <div className="chalaneg-date">
+                                        <MyImage src={ICONS.fire} def="/assets/none.png" alt="photo" width={10} />
+                                        <span className="fs-10 me-2">5 روز پیاپی</span>
+                                   </div>
                               </div>
+                              <h6 className="fw-bold mb-2 fs-12">چالش روز</h6>
+                              <p className="small mb-0 opacity-75 fs-11">هر روز امتیاز بگیر</p>
                          </div>
-                         <h6 className="fw-bold mb-2 fs-12">چالش روز</h6>
-                         <p className="small mb-0 opacity-75 fs-11">هر روز امتیاز بگیر</p>
+                    </div>
+
+                    {/* ثبت پروژه */}
+                    <div className="col-6">
+                         <a href={PROJECT_ROUTES.list} className="action-card bg-warning text-dark h-90 p-3 rounded-4 d-flex flex-column justify-content-between">
+                              <div className="d-flex justify-content-between align-items-start mb-2">
+                                   <MyImage src={ICONS.project} def="/assets/none.png" alt="photo" width={30} />
+                              </div>
+                              <h6 className="fw-bold mb-2 fs-12">ثبت پروژه</h6>
+                              <p className="small mb-0 opacity-75 fs-11 fw-400">پروژه‌ات را ثبت کن</p>
+                         </a>
                     </div>
                </div>
 
-               {/* ثبت پروژه */}
-               <div className="col-6">
-                    <a href={PROJECT_ROUTES.list} className="action-card bg-warning text-dark h-90 p-3 rounded-4 d-flex flex-column justify-content-between">
-                         <div className="d-flex justify-content-between align-items-start mb-2">
-                              <MyImage src={ICONS.project} def="/assets/none.png" alt="photo" width={30} />
-                         </div>
-                         <h6 className="fw-bold mb-2 fs-12">ثبت پروژه</h6>
-                         <p className="small mb-0 opacity-75 fs-11 fw-400">پروژه‌ات را ثبت کن</p>
-                    </a>
-               </div>
-          </div>
+          </>
      );
 };
 
@@ -135,31 +140,72 @@ const GiftsSection = () => {
 // ۴. کامپوننت سکشن «پشتیبانی»
 // ==========================================
 const SupportSection = () => {
-     const items = [
-          { title: 'پشتیبانی', icon: ICONS.support_2, class: "img20_20" },
-          { title: 'راهنمای باشگاه', icon: ICONS.help, class: "img20_20" },
-     ];
+     const [showGuideModal, setShowGuideModal] = useState(false);
+
+     const openSupportChat = useCallback(() => {
+          setShowGuideModal(true)
+     }, []);
+
+     const openGuide = useCallback(() => setShowGuideModal(true), []);
+
+     const items = useMemo(
+          () => [
+               {
+                    title: 'پشتیبانی',
+                    icon: ICONS.support_2,
+                    imgClass: 'img20_20',
+                    onClick: openSupportChat,
+               },
+               {
+                    title: 'راهنمای باشگاه',
+                    icon: ICONS.help,
+                    imgClass: 'img20_20',
+                    onClick: openGuide,
+               },
+          ],
+          [openSupportChat, openGuide],
+     );
 
      return (
-          <div className="mb-4">
-               <h6 className="fw-bold mb-0 fs-15 mb-3">پشتیبانی</h6>
-               <div className="bg-white rounded-4 shadow-sm overflow-hidden">
-                    {items.map((item, index) => (
-                         <div
-                              key={index}
-                              className={`d-flex align-items-center justify-content-between p-3 ${index !== items.length - 1 ? 'border-bottom' : ''
-                                   }`}
-                              style={{ cursor: 'pointer' }}
-                         >
-                              <div className="d-flex align-items-center justify-content-between gap-3">
-                                   <MyImage src={item.icon} def="/assets/none.png" alt="photo" className={item.class} />
-                                   <span className="fs-12 color-primary">{item.title}</span>
-
+          <>
+               <div className="mb-4">
+                    <h6 className="fw-bold fs-15 mb-3">پشتیبانی</h6>
+                    <div className="bg-white rounded-4 shadow-sm overflow-hidden">
+                         {items.map((item, index) => (
+                              <div
+                                   key={item.title}
+                                   role="button"
+                                   tabIndex={0}
+                                   className={`d-flex align-items-center justify-content-between p-3 ${index !== items.length - 1 ? 'border-bottom' : ''
+                                        }`}
+                                   style={{ cursor: 'pointer' }}
+                                   onClick={item.onClick}
+                                   onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                             e.preventDefault();
+                                             item.onClick();
+                                        }
+                                   }}
+                              >
+                                   <div className="d-flex align-items-center gap-3">
+                                        <MyImage
+                                             src={item.icon}
+                                             def="/assets/none.png"
+                                             alt={item.title}
+                                             className={item.imgClass}
+                                        />
+                                        <span className="fs-12 color-primary">{item.title}</span>
+                                   </div>
+                                   <FaChevronLeft className="text-muted" size={14} />
                               </div>
-                              <FaChevronLeft className="text-muted" size={14} />
-                         </div>
-                    ))}
+                         ))}
+                    </div>
                </div>
-          </div>
+
+               <SupportModal
+                    isOpen={showGuideModal}
+                    onClose={() => setShowGuideModal(false)}
+               />
+          </>
      );
 };

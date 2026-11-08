@@ -44,6 +44,7 @@ from app_fastapi.views.faq import router as faq_router
 from app_fastapi.views.project.project import router as project_router
 from app_fastapi.views.factor.factor import router as factor_router
 from app_fastapi.views.support.support import router as support_router
+from app_fastapi.views.gallery.gallery import router as gallery_router
 
 
 # ============================================================
@@ -277,6 +278,7 @@ app.include_router(faq_router,prefix="/v1/faq")
 app.include_router(project_router,prefix="/v1/projects")
 app.include_router(factor_router,prefix="/v1/factors")
 app.include_router(support_router,prefix="/v1/support")
+app.include_router(gallery_router,prefix="/v1/gallery")
 
 # ============================================================
 # Static Files

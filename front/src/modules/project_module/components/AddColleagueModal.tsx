@@ -7,6 +7,7 @@ import { projectRepository } from "../repository/project.repository";
 import { MyNotification } from "../../../shared/utils/notification";
 import MobileNumberInput from "../../../shared/components/inputs/Mobile";
 import NumberInput from "../../../shared/components/inputs/Number";
+import GlobalModal from "../../../shared/components/GlobalModal";
 
 interface Props {
      isOpen: boolean;
@@ -103,8 +104,9 @@ export default function AddColleagueModal({
      };
 
      return (
-          <div className="proj-modal-overlay" onClick={onClose}>
-               <div className="proj-modal-sheet" onClick={(e) => e.stopPropagation()}>
+          < GlobalModal isOpen={isOpen} onClose={onClose} >
+
+               <div onClick={(e) => e.stopPropagation()}>
                     <div className="proj-modal-header">
                          <h2>افزودن همکار</h2>
                          <button className="close-btn" onClick={onClose}>
@@ -233,6 +235,7 @@ export default function AddColleagueModal({
                          )}
                     </div>
                </div>
-          </div>
+
+          </GlobalModal>
      );
 }
