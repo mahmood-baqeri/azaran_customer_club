@@ -5,7 +5,7 @@ import type { ProjectType, Project } from "../interface/project.types";
 import { PersianDatePicker } from "../../../shared/utils/persianDatePicker";
 import MyImage from "../../../shared/components/image-show";
 import { ICONS } from "../../../shared/constants/icons";
-import { PhoneInput } from "../../../shared/components/inputs/Phone";
+import { MobileNumberInput } from "../../../shared/components/inputs/Mobile";
 import TextInput from "../../../shared/components/inputs/Text";
 import NumberInput from "../../../shared/components/inputs/Number";
 
@@ -134,7 +134,7 @@ export default function ProjectForm({ initialData, onChange }: Props) {
                />
 
                <label className="proj-label mt-1">تلفن مالک/پیمانکار</label>
-               <PhoneInput
+               <MobileNumberInput
                     value={ownerMobile}
                     className="proj-input"
                     onValidityChange={setValidMobile}

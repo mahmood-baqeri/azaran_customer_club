@@ -37,10 +37,10 @@ export default function EditFactorScreen() {
 
                if (formData.invoice_number) fd.append("invoice_number", formData.invoice_number);
                if (formData.invoice_issue_at) fd.append("invoice_issue_at", formData.invoice_issue_at.toISOString());
-               if (formData.amount) fd.append("amount", formData.amount);
-               if (formData.number_water_taps) fd.append("number_water_taps", formData.number_water_taps);
-               if (formData.number_connections) fd.append("number_connections", formData.number_connections);
-               if (formData.pipe_length) fd.append("pipe_length", formData.pipe_length);
+               if (formData.amount) fd.append("amount", formData.amount.toString());
+               if (formData.number_water_taps) fd.append("number_water_taps", formData.number_water_taps.toString());
+               if (formData.number_connections) fd.append("number_connections", formData.number_connections.toString());
+               if (formData.pipe_length) fd.append("pipe_length", formData.pipe_length.toString());
                if (formData.shop_name) fd.append("shop_name", formData.shop_name);
                if (formData.seller_phone) fd.append("seller_phone", convertPersianToEnglish(formData.seller_phone));
                if (formData.seller_address) fd.append("seller_address", formData.seller_address);

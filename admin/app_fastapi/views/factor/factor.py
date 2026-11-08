@@ -20,6 +20,7 @@ router = APIRouter()
 
 _EDIT_LOCKED_MSG = "تنها تا قبل از تایید فاکتور امکان ویرایش یا حذف وجود دارد"
 
+
 def _serialize_factor(f: Factor, *, full: bool = False) -> dict:
     data = {
         "id": f.id,
@@ -65,12 +66,13 @@ async def create_factor_endpoint(
         return error_response("تصویر فاکتور الزامی است")
 
     try:
-        saved_name = handle_save_file(photo)
+        saved_name = await sync_to_async(handle_save_file)(photo)
     except Exception:
         logger.exception("photo save failed")
         return error_response("خطا در ذخیره تصویر")
 
     try:
+        # اجرای create_factor + serialize هر دو در thread pool
         factor = await sync_to_async(create_factor)(
             user,
             photo_file_name=saved_name,
@@ -84,9 +86,10 @@ async def create_factor_endpoint(
             seller_phone=form.get("seller_phone"),
             seller_address=form.get("seller_address"),
         )
+        factor_data = await sync_to_async(_serialize_factor)(factor, full=True)
         return success_response(
             "فاکتور ثبت شد و در انتظار تأیید است",
-            _serialize_factor(factor, full=True),
+            factor_data,
         )
     except FactorError as e:
         return error_response(str(e), status_code=400)
@@ -108,13 +111,14 @@ async def update_factor_endpoint(
     try:
         saved_name = None
         if photo:
-            saved_name = handle_save_file(photo)
+            saved_name = await sync_to_async(handle_save_file)(photo)
 
+        # _update_factor_db از قبل @sync_to_async است → مستقیم await
         result = await _update_factor_db(factor_id, user.id, form, saved_name)
         if result.get("error"):
             return error_response(result["error"], status_code=400)
-            
-        return success_response("فاکتور با موفقیت ویرایش شد", _serialize_factor(result["data"], full=True))
+
+        return success_response("فاکتور با موفقیت ویرایش شد", result["data"])
     except Exception:
         logger.exception("update_factor failed")
         return error_response("خطا در ویرایش فاکتور")
@@ -123,50 +127,56 @@ async def update_factor_endpoint(
 @sync_to_async
 def _update_factor_db(factor_id, user_id, form, saved_name):
     with transaction.atomic():
-        f = Factor.objects.select_for_update().filter(id=factor_id, user_id=user_id).first()
+        f = (
+            Factor.objects
+            .select_for_update()
+            .select_related("user")   # جلوگیری از lazy-load در serialize
+            .filter(id=factor_id, user_id=user_id)
+            .first()
+        )
         if not f:
             return {"error": "فاکتور یافت نشد"}
         if f.status != Factor.Status.PENDING:
             return {"error": _EDIT_LOCKED_MSG}
 
         update_fields = []
-        
+
         if saved_name:
             f.photo = saved_name
             update_fields.append("photo")
-            
+
         if "amount" in form:
             f.amount = _to_int(form.get("amount"))
             update_fields.append("amount")
-            
+
         if "invoice_number" in form:
             f.invoice_number = form.get("invoice_number")
             update_fields.append("invoice_number")
-            
+
         if "invoice_issue_at" in form:
             f.invoice_issue_at = _to_datetime(form.get("invoice_issue_at"))
             update_fields.append("invoice_issue_at")
-            
+
         if "number_water_taps" in form:
             f.number_water_taps = _to_int(form.get("number_water_taps"))
             update_fields.append("number_water_taps")
-            
+
         if "number_connections" in form:
             f.number_connections = _to_int(form.get("number_connections"))
             update_fields.append("number_connections")
-            
+
         if "pipe_length" in form:
             f.pipe_length = _to_int(form.get("pipe_length"))
             update_fields.append("pipe_length")
-            
+
         if "shop_name" in form:
             f.shop_name = form.get("shop_name")
             update_fields.append("shop_name")
-            
+
         if "seller_phone" in form:
             f.seller_phone = form.get("seller_phone")
             update_fields.append("seller_phone")
-            
+
         if "seller_address" in form:
             f.seller_address = form.get("seller_address")
             update_fields.append("seller_address")
@@ -174,9 +184,10 @@ def _update_factor_db(factor_id, user_id, form, saved_name):
         if update_fields:
             f.save(update_fields=update_fields)
 
-        # رفرش از دیتابیس برای برگرداندن اطلاعات جدید
         f.refresh_from_db()
-        return {"data": f}
+
+        # serialize داخل کانتکست sync انجام می‌شود
+        return {"data": _serialize_factor(f, full=True)}
 
 
 # ═══════════════════════════════════════════════════════════
@@ -200,12 +211,17 @@ async def delete_factor_endpoint(
 @sync_to_async
 def _delete_factor_db(factor_id, user_id):
     with transaction.atomic():
-        f = Factor.objects.select_for_update().filter(id=factor_id, user_id=user_id).first()
+        f = (
+            Factor.objects
+            .select_for_update()
+            .filter(id=factor_id, user_id=user_id)
+            .first()
+        )
         if not f:
             return {"error": "فاکتور یافت نشد"}
         if f.status != Factor.Status.PENDING:
             return {"error": _EDIT_LOCKED_MSG}
-        
+
         f.delete()
         return {"success": True}
 
@@ -215,7 +231,8 @@ def _delete_factor_db(factor_id, user_id):
 # ═══════════════════════════════════════════════════════════
 @router.get("/list/")
 async def list_my_factors(user: User = Depends(get_current_user)):
-    data = await sync_to_async(_list_my)(user.id)
+    # ✅ اصلاح: _list_my از قبل @sync_to_async است → مستقیم await
+    data = await _list_my(user.id)
     return success_response("فاکتورهای من", data)
 
 
@@ -232,7 +249,8 @@ def _list_my(user_id):
 
 @router.get("/{factor_id}/")
 async def get_factor(factor_id: int, user: User = Depends(get_current_user)):
-    data = await sync_to_async(_get_one)(factor_id, user.id)
+    # ✅ اصلاح: _get_one از قبل @sync_to_async است → مستقیم await
+    data = await _get_one(factor_id, user.id)
     if not data:
         return error_response("فاکتور یافت نشد", status_code=404)
     return success_response("جزئیات فاکتور", data)

@@ -34,10 +34,10 @@ export interface Factor {
 export interface FactorFormData {
   invoice_number: string;
   invoice_issue_at: Date | null;
-  amount: string;
-  number_water_taps: string;
-  number_connections: string;
-  pipe_length: string;
+  amount: number | null;
+  number_water_taps: number | null;
+  number_connections: number | null;
+  pipe_length: number | null;
   shop_name: string;
   seller_phone: string;
   seller_address: string;

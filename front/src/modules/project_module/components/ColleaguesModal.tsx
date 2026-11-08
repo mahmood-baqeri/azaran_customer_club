@@ -5,7 +5,7 @@ import axios from "axios";
 import { useProjectDetail } from "../hooks/use-project-detail";
 import { projectRepository } from "../repository/project.repository";
 import { MyNotification } from "../../../shared/utils/notification";
-import PhoneInput from "../../../shared/components/inputs/Phone";
+import MobileNumberInput from "../../../shared/components/inputs/Mobile";
 import NumberInput from "../../../shared/components/inputs/Number";
 import MyImage from "../../../shared/components/image-show";
 import { ICONS } from "../../../shared/constants/icons";
@@ -147,7 +147,7 @@ export default function ColleaguesModal({ isOpen, onClose, projectId }: Props) {
                                         }}
                                    >
                                         <div className="w-50">
-                                             <PhoneInput
+                                             <MobileNumberInput
                                                   value={mobile}
                                                   className="colleague-input-mobile w_100 h__40"
                                                   onValidityChange={setMobileValid}
