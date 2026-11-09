@@ -11,7 +11,7 @@ import SidebarMenu from "./sidebar-menu";
 import "../../shared/styles/header.css";
 import { ICONS } from "../../shared/constants/icons";
 
-type MenuBg = "white" | "f7f8fb" | "e8eefc";
+type MenuBg = "white" | "f7f8fb" | "e8eefc" | "transparent";
 type ButtonBg = "f7f8fb" | "white" | "e8eefc";
 
 interface HeaderProps {

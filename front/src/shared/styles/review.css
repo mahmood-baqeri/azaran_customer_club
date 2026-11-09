@@ -1,0 +1,222 @@
+/* src/shared/styles/review.css */
+
+.review-body {
+     padding: 15px;
+     display: flex;
+     flex-direction: column;
+     position: relative;
+     top: -35px;
+     margin-bottom: -20px;
+     background: var(--bg-1);
+     border-radius: 25px 25px 0 0;
+}
+
+/* --- اسلایدر (نوار پیشرفت) --- */
+.review-progress-container {
+     position: relative;
+     width: 80%;
+     height: 4px;
+     margin: 10px auto 30px;
+}
+
+.rp-track {
+     position: absolute;
+     inset: 0;
+     /* خط‌چین کردن خط پس‌زمینه */
+     background-image: linear-gradient(to right, #cbd5e1 50%, transparent 50%);
+     background-size: 10px 100%;
+     background-repeat: repeat-x;
+}
+
+.rp-fill {
+     position: absolute;
+     top: 0;
+     right: 0;
+     /* چون راست‌چین است، از راست پر می‌شود */
+     height: 100%;
+     background: #14306b;
+     transition: width 0.3s ease-in-out;
+     border-radius: 4px;
+}
+
+/* --- لیست سوالات --- */
+.review-questions-list {
+     display: flex;
+     flex-direction: column;
+     gap: 16px;
+}
+
+.review-card {
+     background: var(--bg-1);
+     padding: 13px;
+     border-bottom: 1px solid #cdcdcd;
+}
+
+.review-card:last-child {
+     border-bottom: none;
+}
+
+.review-question-header {
+     display: flex;
+     align-items: center;
+     gap: 8px;
+     margin-bottom: 20px;
+     justify-content: flex-start;
+     /* راست‌چین کردن سوال */
+}
+
+.rq-arrow {
+     color: #9dafcb;
+     font-size: 10px;
+}
+
+.rq-text {
+     font-size: 13px;
+     font-weight: 800;
+     color: #14306b;
+     margin: 0;
+     text-align: right;
+}
+
+/* --- ایموجی‌ها --- */
+.review-options {
+     display: flex;
+     justify-content: space-between;
+     align-items: flex-start;
+     gap: 4px;
+}
+
+.review-option {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     gap: 8px;
+     cursor: pointer;
+     flex: 1;
+}
+
+.ro-icon {
+     border-radius: 50%;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     transition: all 0.2s ease;
+}
+
+.review-option.selected .ro-icon {
+     border-color: transparent;
+     transform: scale(1.05);
+}
+
+.ro-label {
+     font-size: 9px;
+     font-weight: 600;
+     color: #6b7794;
+     text-align: center;
+}
+
+.review-option.selected .ro-label {
+     color: #14306b;
+     font-weight: 800;
+}
+
+/* --- دکمه‌های پایین صفحه --- */
+.review-actions {
+     padding: 16px 20px 24px;
+     display: flex;
+     justify-content: center;
+     gap: 30px;
+     max-width: 430px;
+     margin: 0 auto;
+}
+
+.review-btn {
+     height: 34px;
+     border-radius: 38px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 7px;
+     font-size: 14px;
+     font-weight: 700;
+     font-family: inherit;
+     cursor: pointer;
+     transition: 0.2s;
+     padding: 0px 22px;
+}
+
+.review-btn.primary {
+     background: #14306b;
+     color: #fff;
+     border: none;
+}
+
+.review-btn.primary:disabled {
+     background: #c5cee0;
+     cursor: not-allowed;
+}
+
+.review-btn.secondary {
+     background: #fff;
+     color: #14306b;
+     border: 1.5px solid #14306b;
+}
+
+.review-btn.secondary:disabled {
+     border-color: #e2e8f0;
+     color: #c5cee0;
+     cursor: not-allowed;
+}
+
+/* --- حالت خالی --- */
+.review-empty-state {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     padding: 60px 20px;
+     text-align: center;
+}
+
+.res-icon {
+     font-size: 48px;
+     margin-bottom: 16px;
+}
+
+.review-empty-state h2 {
+     font-size: 18px;
+     color: #14306b;
+     margin: 0 0 8px;
+}
+
+.review-empty-state p {
+     font-size: 13px;
+     color: #6b7794;
+     margin: 0;
+}
+
+
+/* =========================================================
+   اسلایدر تکه‌تکه (Segmented Progress)
+   ========================================================= */
+.review-progress-segments {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     gap: 5px;
+     width: 90%;
+     margin: 10px auto 25px;
+}
+
+.rp-segment {
+     flex: 1;
+     height: 5px;
+     border-radius: 10px;
+     background-color: #d5d5d5;
+     transition: background-color 0.3s ease;
+}
+
+.rp-segment.active {
+     background-color: #14306b;
+     /* رنگ آبی تیره (فعال) */
+}

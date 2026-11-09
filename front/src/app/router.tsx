@@ -18,6 +18,7 @@ import { FACTOR_ROUTES } from "../modules/factor_module/routes";
 import { SUPPORT_ROUTES } from "../modules/support_module/routes";
 import { GALLERY_ROUTES } from "../modules/gallery_module/routes";
 import { VISIT_ROUTES } from "../modules/visit_module/routes";
+import { REVIEW_ROUTES } from "../modules/review_module/routes.ts";
 
 
 const LoginScreen = lazy(() => import("../modules/auth_module/screens/login.screen"));
@@ -67,6 +68,8 @@ const GalleryDetailScreen = lazy(() => import("../modules/gallery_module/screen/
 const VisitsListScreen = lazy(() => import("../modules/visit_module/screen/visits_list.screen.tsx"));
 const CreateVisitScreen = lazy(() => import("../modules/visit_module/screen/create_visit.screen.tsx"));
 const VisitDetailScreen = lazy(() => import("../modules/visit_module/screen/visit_detail.screen.tsx"));
+
+const ReviewScreen = lazy(() => import("../modules/review_module/screen/review.screen.tsx"));
 
 
 export default function AppRouter() {
@@ -138,6 +141,9 @@ export default function AppRouter() {
                               <Route path={GALLERY_ROUTES.list} element={<GalleriesListScreen />} />
                               <Route path={GALLERY_ROUTES.create} element={<CreateGalleryScreen />} />
                               <Route path={GALLERY_ROUTES.detail(":id")} element={<GalleryDetailScreen />} />
+
+                              {/* REVIEW Routes */}
+                              <Route path={REVIEW_ROUTES.main} element={<ReviewScreen />} />
 
                               {/* VISIT Routes */}
                               <Route path={VISIT_ROUTES.list} element={<VisitsListScreen />} />

@@ -651,6 +651,11 @@ fieldset:disabled {
   margin-top: 58px;
 }
 
+.page-content-wrapper.review-active-wrapper {
+  margin-top: 0 !important;
+  padding: 0 !important;
+}
+
 .page-nav {
   position: relative;
   z-index: 1;

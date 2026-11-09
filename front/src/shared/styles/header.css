@@ -31,6 +31,11 @@
      box-shadow: none;
 }
 
+.header-area--transparent {
+     background-color: #ffffff00;
+     box-shadow: none;
+}
+
 /* ===== چیدمان سه‌ستونی ===== */
 .header-inner {
      height: 100%;

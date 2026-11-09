@@ -10,6 +10,7 @@ import VisitCard from "../components/VisitCard";
 import { visitRepository } from "../repository/visit.repository";
 import { DeleteModal } from "../../../shared/components/modal/deleteModal";
 import { useState } from "react";
+import { VISIT_ROUTES } from "../routes";
 
 export default function VisitDetailScreen() {
      const { id } = useParams<{ id: string }>();
@@ -89,7 +90,7 @@ export default function VisitDetailScreen() {
 
                     {/* ۵. دکمه‌های عملیات */}
                     <div style={{ marginTop: 24 }}>
-                         {visit.status === "rejected" && <button className="btn___main">درخواست برای دوشنبه‌ی دیگر</button>}
+                         {visit.status === "rejected" && <a href={VISIT_ROUTES.create} className="btn___main">درخواست برای دوشنبه‌ی دیگر</a>}
                          {visit.status === "pending" && <button className="btn w-100 h__40 btn___danger" onClick={() => setIsCancelModalOpen(true)} disabled={isDeleting}>لغو درخواست</button>}
                     </div>
                </div>

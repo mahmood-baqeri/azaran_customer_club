@@ -13,8 +13,11 @@ import OrderCheckoutModal from "../../../shared/components/modal/order/checkout-
 import "../../../shared/styles/gift.css";
 import "../../../shared/styles/gift-detail.css";
 import { PROFILE_ROUTES } from "../../user_module/routes";
+import { usePageContentClass } from "../../../shared/hooks/use-page-content-class";
 
 export default function GiftDetailScreen() {
+     usePageContentClass("review-active-wrapper");
+
      const { id } = useParams<{ id: string }>();
      const giftId = id ? Number(id) : null;
      const navigate = useNavigate();
