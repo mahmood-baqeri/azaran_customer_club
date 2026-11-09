@@ -12,6 +12,7 @@ import { FACTOR_ROUTES } from "../../factor_module/routes";
 import SupportModal from "../components/SupportModal";
 import { useCallback, useMemo, useState } from "react";
 import { GALLERY_ROUTES } from "../../gallery_module/routes";
+import { VISIT_ROUTES } from "../../visit_module/routes";
 
 export default function HomeScreen() {
      return (
@@ -82,6 +83,7 @@ const EarnPointsSection = () => {
           { title: 'معرفی همکاران', icon: ICONS.user, bg: 'bg-light-blue', class: "img25_25", href: "" },
           { title: 'نظرسنجی', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: "" },
           { title: 'ثبت فاکتور', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: FACTOR_ROUTES.list },
+          { title: 'درخواست بازدید کارخانه', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: VISIT_ROUTES.list },
      ];
 
      return (

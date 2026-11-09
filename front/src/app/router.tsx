@@ -17,6 +17,7 @@ import { PROJECT_ROUTES } from "../modules/project_module/routes";
 import { FACTOR_ROUTES } from "../modules/factor_module/routes";
 import { SUPPORT_ROUTES } from "../modules/support_module/routes";
 import { GALLERY_ROUTES } from "../modules/gallery_module/routes";
+import { VISIT_ROUTES } from "../modules/visit_module/routes";
 
 
 const LoginScreen = lazy(() => import("../modules/auth_module/screens/login.screen"));
@@ -63,6 +64,9 @@ const GalleriesListScreen = lazy(() => import("../modules/gallery_module/screen/
 const CreateGalleryScreen = lazy(() => import("../modules/gallery_module/screen/create_gallery.screen"));
 const GalleryDetailScreen = lazy(() => import("../modules/gallery_module/screen/gallery_detail.screen"));
 
+const VisitsListScreen = lazy(() => import("../modules/visit_module/screen/visits_list.screen.tsx"));
+const CreateVisitScreen = lazy(() => import("../modules/visit_module/screen/create_visit.screen.tsx"));
+const VisitDetailScreen = lazy(() => import("../modules/visit_module/screen/visit_detail.screen.tsx"));
 
 
 export default function AppRouter() {
@@ -134,6 +138,11 @@ export default function AppRouter() {
                               <Route path={GALLERY_ROUTES.list} element={<GalleriesListScreen />} />
                               <Route path={GALLERY_ROUTES.create} element={<CreateGalleryScreen />} />
                               <Route path={GALLERY_ROUTES.detail(":id")} element={<GalleryDetailScreen />} />
+
+                              {/* VISIT Routes */}
+                              <Route path={VISIT_ROUTES.list} element={<VisitsListScreen />} />
+                              <Route path={VISIT_ROUTES.create} element={<CreateVisitScreen />} />
+                              <Route path={VISIT_ROUTES.detail(":id")} element={<VisitDetailScreen />} />
                          </Route>
                     </Route>
                </Routes>

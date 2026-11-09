@@ -1,6 +1,6 @@
 // src/shared/components/modal/DeleteModal.tsx
-import React, { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import React from "react";
+import GlobalModal from "../GlobalModal"; // 👈 ایمپورت مودال عمومی
 
 interface TheProps {
     isOpen: boolean;
@@ -17,102 +17,53 @@ export const DeleteModal: React.FC<TheProps> = ({
     onClose,
     onApply,
     id,
-    title = "حذف پروژه",
+    title = "حذف آیتم",
     h1 = "آیا از حذف آیتم مورد نظر اطمینان دارید؟",
     p = "بعد از حذف، دیگر قابلیت بازگردانی وجود نخواهد داشت",
 }) => {
-    // برای انیمیشن ورود/خروج، کمی دیرتر unmount می‌کنیم
-    const [render, setRender] = useState(isOpen);
-    const [show, setShow] = useState(isOpen);
-
-    useEffect(() => {
-        if (isOpen) {
-            setRender(true);
-            // یک فریم صبر می‌کنیم تا transition اجرا شود
-            const raf = requestAnimationFrame(() => setShow(true));
-            return () => cancelAnimationFrame(raf);
-        } else {
-            setShow(false);
-            const t = setTimeout(() => setRender(false), 300);
-            return () => clearTimeout(t);
-        }
-    }, [isOpen]);
-
-    // قفل اسکرول body هنگام باز بودن
-    useEffect(() => {
-        if (!render) return;
-        const prev = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-        return () => {
-            document.body.style.overflow = prev;
-        };
-    }, [render]);
-
-    // بستن با ESC
-    useEffect(() => {
-        if (!isOpen) return;
-        const onKey = (e: KeyboardEvent) => {
-            if (e.key === "Escape") onClose();
-        };
-        window.addEventListener("keydown", onKey);
-        return () => window.removeEventListener("keydown", onKey);
-    }, [isOpen, onClose]);
-
-    if (!render) return null;
-
     const handleApply = () => {
         onApply(Number(id));
         onClose();
     };
 
-    return createPortal(
-        <>
-            <div
-                className={`offcanvas-backdrop fade ${show ? "show" : ""}`}
-                onClick={onClose}
-            />
-            <div
-                className={`offcanvas offcanvas-bottom custom-offcanvas deleteModal h__300 smooth-offcanvas ${show ? "show" : ""}`}
-                tabIndex={-1}
-                id={`deleteModal-${id}`}
-                aria-labelledby={`deleteModal-${id}Label`}
-                role="dialog"
-                aria-modal="true"
-                style={{ visibility: "visible" }}
-            >
-                <div className="offcanvas-header">
-                    <h5 className="offcanvas-title" id={`deleteModal-${id}Label`}>
+    return (
+        // 👈 استفاده از مودال عمومی به جای کدهای بوت‌استرپ
+        <GlobalModal isOpen={isOpen} onClose={onClose}>
+            <div style={{ padding: '24px 20px' }} dir="rtl">
+
+                {/* هدر مودال */}
+                <div className="d-flex justify-content-between align-items-center mb-3">
+                    <h5 className="fs-15 fw-700 m-0" style={{ color: '#1e293b' }}>
                         {title}
                     </h5>
-                    <button
-                        type="button"
-                        className="btn-close text-reset m-0 me-auto"
-                        onClick={onClose}
-                        aria-label="بستن"
-                    />
                 </div>
-                <div className="offcanvas-body">
-                    <div className="row row-sm">
-                        <h1 className="fs-16 fw-bold mb-2">{h1}</h1>
-                        <p className="text-muted fs-13">{p}</p>
-                    </div>
+
+                {/* بدنه مودال */}
+                <div className="mb-4 text-right">
+                    <h1 className="fs-13 fw-600 mb-2" style={{ color: '#1e293b' }}>
+                        {h1}
+                    </h1>
+                    <p className="text-muted fs-12 m-0" style={{ lineHeight: 1.6 }}>
+                        {p}
+                    </p>
                 </div>
-                <div className="offcanvas-footer d-flex gap-2">
+
+                {/* دکمه‌ها */}
+                <div className="d-flex gap-2">
                     <button
-                        className="btn d-block w__100 h__40 btn___info"
+                        className="btn d-block w-100 h__45 btn___info rounded-3"
                         onClick={handleApply}
                     >
-                        بله
+                        بله، مطمئنم
                     </button>
                     <button
-                        className="btn d-block w__100 h__40 btn___warning"
+                        className="btn d-block w-100 h__45 btn___warning rounded-3"
                         onClick={onClose}
                     >
-                        خیر
+                        خیر، انصراف
                     </button>
                 </div>
             </div>
-        </>,
-        document.body
+        </GlobalModal>
     );
 };

@@ -162,6 +162,66 @@ textarea:invalid {
   }
 }
 
+
+.box___main {
+  background: #f4f7fc !important;
+  border: 1.5px dashed #dfe4ee !important;
+  border-radius: 12px !important;
+  padding: 16px !important;
+  margin-bottom: 20px !important;
+}
+
+.label___main {
+  font-size: 12px !important;
+  color: var(--primary-color) !important;
+}
+
+.input___main {
+  width: 100%;
+  height: 37px !important;
+  border-radius: 7px !important;
+  border: 1px solid #e9ecf1 !important;
+}
+
+.btn___main {
+  position: relative;
+  width: 100%;
+  height: 45px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #14306b 0%, #1c3f87 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: inherit;
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 6px 16px -4px rgba(20, 48, 107, .35), 0 2px 4px rgba(20, 48, 107, .15), inset 0 1px 0 rgba(255, 255, 255, .15);
+  transition: transform .12s ease, box-shadow .25s ease, background .25s ease, filter .2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+.status.pending {
+  background-color: #fff1d6 !important;
+  color: #9b7335 !important;
+}
+
+.status.approved {
+  background-color: #d3eae2 !important;
+  color: #3aad71 !important;
+}
+
+.status.rejected {
+  background-color: #ffd9d9 !important;
+  color: #fe0c0d !important;
+}
+
 .nice-select {
   border-radius: 0.5rem;
   width: 100% !important;
@@ -1486,30 +1546,6 @@ img.img40_40 {
   border-color: var(--color-info);
 }
 
-.btn___main {
-  position: relative;
-  width: 100%;
-  height: 45px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #14306b 0%, #1c3f87 100%);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-family: inherit;
-  overflow: hidden;
-  isolation: isolate;
-  box-shadow: 0 6px 16px -4px rgba(20, 48, 107, .35), 0 2px 4px rgba(20, 48, 107, .15), inset 0 1px 0 rgba(255, 255, 255, .15);
-  transition: transform .12s ease, box-shadow .25s ease, background .25s ease, filter .2s ease;
-  -webkit-tap-highlight-color: transparent;
-}
-
-
 .btn___success {
   background: #fff;
   border-color: var(--color-success);
@@ -1574,7 +1610,7 @@ img.img40_40 {
   background: #fff;
   border-color: var(--color-warning);
   box-shadow: inset 0 0 0 0 var(--color-warning);
-  color: var(--color-warning);
+  color: #b18700;
   font-weight: 500;
 }
 
