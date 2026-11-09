@@ -14,6 +14,8 @@ import { useCallback, useMemo, useState } from "react";
 import { GALLERY_ROUTES } from "../../gallery_module/routes";
 import { VISIT_ROUTES } from "../../visit_module/routes";
 import { REVIEW_ROUTES } from "../../review_module/routes";
+import { useNavigate } from "react-router-dom";
+import { LEARN_ROUTES } from "../../learn_module/routes";
 
 export default function HomeScreen() {
      return (
@@ -146,25 +148,37 @@ const GiftsSection = () => {
 // ==========================================
 const SupportSection = () => {
      const [showGuideModal, setShowGuideModal] = useState(false);
+     const navigate = useNavigate();
 
      const openSupportChat = useCallback(() => {
-          setShowGuideModal(true)
+          setShowGuideModal(true);
      }, []);
 
-     const openGuide = useCallback(() => setShowGuideModal(true), []);
+     const openGuide = useCallback(() => {
+          // 🔍 دیباگ — بعد از حل مشکل پاکش کن
+          console.log("LEARN_ROUTES:", LEARN_ROUTES);
+          console.log("Target path:", LEARN_ROUTES?.list);
+
+          const path = LEARN_ROUTES?.list;
+          if (typeof path !== "string" || path.length === 0) {
+               console.error("❌ LEARN_ROUTES.list معتبر نیست:", path);
+               return;
+          }
+          navigate(path);
+     }, [navigate]);   // 👈 navigate در deps
 
      const items = useMemo(
           () => [
                {
-                    title: 'پشتیبانی',
+                    title: "پشتیبانی",
                     icon: ICONS.support_2,
-                    imgClass: 'img20_20',
+                    imgClass: "img20_20",
                     onClick: openSupportChat,
                },
                {
-                    title: 'راهنمای باشگاه',
+                    title: "راهنمای باشگاه",
                     icon: ICONS.help,
-                    imgClass: 'img20_20',
+                    imgClass: "img20_20",
                     onClick: openGuide,
                },
           ],
@@ -181,12 +195,12 @@ const SupportSection = () => {
                                    key={item.title}
                                    role="button"
                                    tabIndex={0}
-                                   className={`d-flex align-items-center justify-content-between p-3 ${index !== items.length - 1 ? 'border-bottom' : ''
+                                   className={`d-flex align-items-center justify-content-between p-3 ${index !== items.length - 1 ? "border-bottom" : ""
                                         }`}
-                                   style={{ cursor: 'pointer' }}
+                                   style={{ cursor: "pointer" }}
                                    onClick={item.onClick}
                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' || e.key === ' ') {
+                                        if (e.key === "Enter" || e.key === " ") {
                                              e.preventDefault();
                                              item.onClick();
                                         }

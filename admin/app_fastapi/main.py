@@ -47,6 +47,7 @@ from app_fastapi.views.support.support import router as support_router
 from app_fastapi.views.gallery.gallery import router as gallery_router
 from app_fastapi.views.visit.visit import router as visit_router
 from app_fastapi.views.review.review import router as review_router
+from app_fastapi.views.learn.learn import router as learn_router
 
 
 # ============================================================
@@ -283,6 +284,7 @@ app.include_router(support_router,prefix="/v1/support")
 app.include_router(gallery_router,prefix="/v1/gallery")
 app.include_router(visit_router,prefix="/v1/visit")
 app.include_router(review_router,prefix="/v1/review")
+app.include_router(learn_router,prefix="/v1/learn")
 
 # ============================================================
 # Static Files

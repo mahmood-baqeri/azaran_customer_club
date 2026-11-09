@@ -19,6 +19,7 @@ import { SUPPORT_ROUTES } from "../modules/support_module/routes";
 import { GALLERY_ROUTES } from "../modules/gallery_module/routes";
 import { VISIT_ROUTES } from "../modules/visit_module/routes";
 import { REVIEW_ROUTES } from "../modules/review_module/routes.ts";
+import { LEARN_ROUTES } from "../modules/learn_module/routes.ts";
 
 
 const LoginScreen = lazy(() => import("../modules/auth_module/screens/login.screen"));
@@ -71,6 +72,8 @@ const VisitDetailScreen = lazy(() => import("../modules/visit_module/screen/visi
 
 const ReviewScreen = lazy(() => import("../modules/review_module/screen/review.screen.tsx"));
 
+const LearnsListScreen = lazy(() => import("../modules/learn_module/screen/learns_list.screen.tsx"));
+const LearnDetailScreen = lazy(() => import("../modules/learn_module/screen/learn_detail.screen.tsx"));
 
 export default function AppRouter() {
      const navigate = useNavigate();
@@ -149,6 +152,10 @@ export default function AppRouter() {
                               <Route path={VISIT_ROUTES.list} element={<VisitsListScreen />} />
                               <Route path={VISIT_ROUTES.create} element={<CreateVisitScreen />} />
                               <Route path={VISIT_ROUTES.detail(":id")} element={<VisitDetailScreen />} />
+
+                              {/* LEARN Routes */}
+                              <Route path={LEARN_ROUTES.list} element={<LearnsListScreen />} />
+                              <Route path={LEARN_ROUTES.detail(":id")} element={<LearnDetailScreen />} />
                          </Route>
                     </Route>
                </Routes>

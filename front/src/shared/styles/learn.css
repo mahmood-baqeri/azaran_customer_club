@@ -1,0 +1,212 @@
+/* src/shared/styles/learn.css */
+
+
+.lc-placeholder-icon {
+     font-size: 40px;
+}
+
+.lc-title {
+     font-size: 12px;
+     font-weight: 500;
+     color: #14306b;
+     margin: 0 0 8px;
+}
+
+.lc-sub {
+     font-size: 10px;
+     color: #6b7794;
+     margin: 0;
+     line-height: 1.5;
+     font-weight: 400;
+}
+
+.lc-content {
+     position: relative;
+}
+
+.lc-caption {
+     font-size: 9px;
+     background: #fff;
+     position: absolute;
+     top: -24px;
+     width: fit-content;
+     padding: 2px 7px;
+     border-radius: 10px;
+}
+
+
+/* =========================================================
+   دکمه پشتیبانی
+   ========================================================= */
+.learn-support-btn {
+     width: 100%;
+     background: #fff;
+     border: 1.5px solid #14306b;
+     color: #14306b;
+     border-radius: 12px;
+     padding: 14px;
+     font-size: 13px;
+     font-weight: 700;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 8px;
+     cursor: pointer;
+     font-family: inherit;
+     transition: background 0.2s;
+}
+
+.learn-support-btn:active {
+     background: #f0f4f9;
+}
+
+/* =========================================================
+   صفحه جزئیات
+   ========================================================= */
+.learn-detail-body {}
+
+.learn-detail-img {
+     width: 100%;
+     border-radius: 16px;
+     overflow: hidden;
+     margin-bottom: 20px;
+     aspect-ratio: 16 / 9;
+}
+
+.learn-detail-img img {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+}
+
+.learn-detail-title {
+     font-size: 18px;
+     font-weight: 800;
+     color: #14306b;
+     margin: 0 0 8px;
+}
+
+.learn-detail-meta {
+     font-size: 12px;
+     color: #6b7794;
+     margin-bottom: 16px;
+     padding-bottom: 16px;
+     border-bottom: 1px solid #eef1f7;
+}
+
+.learn-detail-caption {
+     font-size: 14px;
+     font-weight: 700;
+     color: #14306b;
+     line-height: 1.8;
+     margin-bottom: 16px;
+}
+
+/* محتوای متنی (HTML) */
+.learn-detail-content {
+     font-size: 14px;
+     color: #4b5b7a;
+     line-height: 2;
+}
+
+.learn-detail-content p {
+     margin-bottom: 16px;
+}
+
+.learn-detail-content img {
+     max-width: 100%;
+     border-radius: 12px;
+     margin: 16px 0;
+}
+
+
+
+/* =========================================
+   Layout & Grid
+========================================= */
+.learn-grid {
+     position: relative;
+     display: grid;
+     grid-template-columns: repeat(2, 1fr);
+     gap: 16px;
+}
+
+/* کارت‌های نیم‌صفحه (یک ستون را اشغال می‌کنند) */
+.learn-card.card-half {
+     grid-column: span 1;
+}
+
+/* کارت‌های تمام‌صفحه (هر دو ستون را اشغال می‌کنند) */
+.learn-card.card-full {
+     grid-column: span 2;
+     /* اگر برای حالت تمام صفحه می‌خواهید عکس کنار متن باشد، می‌توانید اینجا فلکس کنید */
+}
+
+
+.learn-card.card-full .lc-content {
+     position: absolute;
+     color: #fff;
+     top: 5px;
+     right: 8px;
+}
+
+.learn-card.card-full .lc-content .lc-title {
+     color: #fff;
+}
+
+.learn-card.card-full .lc-content .lc-sub {
+     color: #dbdbdb;
+}
+
+/* =========================================
+   Card General Styles
+========================================= */
+.learn-card {
+     background: #ffffff;
+     border-radius: 16px;
+     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+     cursor: pointer;
+     position: relative;
+     display: flex;
+     flex-direction: column;
+     /* برای اینکه در حالت half، ارتفاع کارت‌ها با هم برابر شود */
+     height: 100%;
+     transition: transform 0.2s ease;
+}
+
+.learn-card:active {
+     transform: scale(0.98);
+}
+
+/* بقیه استایل‌های داخلی (بج، تصویر، متن‌ها) */
+.lc-badge {
+     position: absolute;
+     top: 12px;
+     left: 12px;
+     background: #eef2f9;
+     color: #3b5998;
+     padding: 3px 8px;
+     border-radius: 20px;
+     font-size: 8px;
+     font-weight: 700;
+}
+
+.lc-icon-wrap {
+     width: 100%;
+     aspect-ratio: 16 / 9;
+     /* نسبت تصویر ثابت */
+     background: #f8fafc;
+     border-radius: 12px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     overflow: hidden;
+     margin-bottom: 12px;
+     margin-top: 8px;
+}
+
+.faq-replay-icon {
+     width: 100%;
+     height: 100%;
+     object-fit: cover;
+}

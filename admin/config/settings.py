@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'applications.gallery.apps.config',
     'applications.visit.apps.config',
     'applications.review.apps.config',
+    'applications.learn.apps.config',
 ]
 
 ####################################
