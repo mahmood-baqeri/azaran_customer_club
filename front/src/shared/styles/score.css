@@ -1,0 +1,247 @@
+/* src/shared/styles/score.css */
+
+.score-body {
+     padding: 0;
+}
+
+/* =========================================================
+   کارت موجودی
+   ========================================================= */
+.score-balance-card {
+     display: flex;
+     align-items: center;
+     gap: 16px;
+     background: #fff;
+     border: 1.5px solid #eef1f7;
+     border-radius: 10px;
+     padding: 15px 20px;
+     box-shadow: 0 4px 12px rgb(20 48 107 / 10%);
+     margin-bottom: 12px;
+     justify-content: space-between;
+}
+
+.sbc-coin {
+     width: 60px;
+     height: 60px;
+     background: #fcf4d9;
+     border-radius: 50%;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     border: 2px solid #f5d77a;
+}
+
+.sbc-content {
+     display: flex;
+     flex-direction: column;
+     gap: 4px;
+}
+
+.sbc-label {
+     font-size: 18px;
+     color: #0a387c;
+     font-weight: 800;
+}
+
+.sbc-value {
+     font-size: 25px;
+     font-weight: 800;
+     color: #14306b;
+}
+
+/* =========================================================
+   دکمه‌های میانبر
+   ========================================================= */
+.score-actions-grid {
+     display: grid;
+     grid-template-columns: 1fr 1fr;
+     gap: 15px;
+     margin-bottom: 16px;
+     background: #ffffff;
+     padding: 12px;
+     border-radius: 10px;
+}
+
+.score-action-btn {
+     background: #e1ecfb;
+     border-radius: 12px;
+     padding: 7px;
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     gap: 8px;
+     cursor: pointer;
+     text-align: center;
+     transition: 0.2s;
+}
+
+.score-action-btn:active {
+     background: #e2e8f0;
+}
+
+.sab-icon {
+     font-size: 24px;
+}
+
+.score-action-btn span {
+     font-size: 12px;
+     font-weight: 700;
+     color: #14306b;
+}
+
+/* =========================================================
+   هدر لیست
+   ========================================================= */
+.score-list-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 2px;
+}
+
+.slh-title {
+     font-size: 14px;
+     font-weight: 800;
+     color: #14306b;
+}
+
+.slh-filter {
+     display: flex;
+     align-items: center;
+     gap: 4px;
+     background: transparent;
+     border: none;
+     font-size: 13px;
+     font-weight: 700;
+     color: #14306b;
+     cursor: pointer;
+     padding: 4px 8px;
+}
+
+/* =========================================================
+   لیست تراکنش‌ها
+   ========================================================= */
+.score-logs-list {
+     display: flex;
+     flex-direction: column;
+     gap: 10px;
+     background: #fff;
+     padding: 15px;
+     border-radius: 10px;
+}
+
+.score-log-item {
+     display: flex;
+     justify-content: flex-end;
+     align-items: center;
+     padding: 0;
+     border-radius: 8px;
+     transition: 0.2s;
+     flex-direction: row-reverse;
+     background: #e1ecfb;
+}
+
+/* رنگ سبز برای کسب امتیاز */
+.score-log-item.earned .sli-amount {
+     background: #a3eee9;
+}
+
+/* رنگ قرمز برای خرج امتیاز */
+.score-log-item.spent .sli-amount {
+     background: #ff9999;
+}
+
+.sli-content {
+     display: flex;
+     flex-direction: column;
+     gap: 4px;
+     padding: 6px;
+}
+
+.sli-title {
+     font-size: 13px;
+     font-weight: 700;
+     color: #14306b;
+}
+
+.sli-date {
+     font-size: 11px;
+     color: #6b7794;
+}
+
+.sli-amount {
+     display: flex;
+     align-items: center;
+     gap: 0px;
+     font-size: 15px;
+     font-weight: 800;
+     flex-direction: column;
+     color: #14306b;
+     padding: 3.2px 0;
+     border-radius: 6px;
+     width: 50px;
+     text-align: cente
+}
+
+/* =========================================================
+   مودال فیلتر
+   ========================================================= */
+.score-modal-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     padding: 20px;
+     border-bottom: 1px solid #eef1f7;
+}
+
+.score-modal-header h2 {
+     font-size: 15px;
+     font-weight: 800;
+     color: #14306b;
+     margin: 0;
+}
+
+.score-modal-header .close-btn {
+     background: transparent;
+     border: none;
+     font-size: 24px;
+     color: #6b7794;
+     cursor: pointer;
+}
+
+.score-modal-body {
+     padding: 20px;
+}
+
+.score-modal-footer {
+     padding: 16px 20px 24px;
+     border-top: 1px solid #eef1f7;
+}
+
+/* چیپ‌های فیلتر */
+.score-filter-chips {
+     display: flex;
+     gap: 8px;
+     margin-top: 8px;
+}
+
+.s-chip {
+     flex: 1;
+     padding: 10px;
+     background: #f4f6fa;
+     border: 1.5px solid transparent;
+     border-radius: 10px;
+     font-size: 12px;
+     font-weight: 700;
+     color: #6b7794;
+     cursor: pointer;
+     transition: 0.2s;
+     font-family: inherit;
+}
+
+.s-chip.active {
+     background: #e8eefc;
+     color: #14306b;
+     border-color: #14306b;
+}

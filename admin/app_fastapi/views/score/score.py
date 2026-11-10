@@ -1,20 +1,18 @@
-"""
-Endpointهای score.
-فقط خواندن + عملیات ادمین.
-هیچ endpointی اینجا امتیاز مستقیم نمی‌دهد (به جز ADMIN_ADJUST).
-"""
 from typing import Optional
-
+from datetime import datetime
+from typing import Optional
+from django.core.paginator import Paginator
 from channels.db import database_sync_to_async
 from fastapi import APIRouter, Depends, Query
-
+from datetime import datetime, time
+from django.utils import timezone
 from applications.score import api as score_api
 from applications.score.models import ScoreRule, UserScoreLog
 from applications.score.services import ScoreError
 from applications.user.models import User
 from app_fastapi.conf.dependencyRequest import DependencyDataRequest
 from app_fastapi.conf.response import error_response, success_response
-from app_fastapi.views.user.user_helper import get_current_user
+from app_fastapi.views.user.helper import get_current_user
 
 router = APIRouter()
 
@@ -62,35 +60,59 @@ async def balance(user: User = Depends(get_current_user)):
 
 @router.get("/logs/")
 async def logs(
-    code: Optional[str] = Query(None),
-    direction: Optional[str] = Query(None),
+    code: Optional[str] = Query(None, description="فیلتر بر اساس کد تراکنش"),
+    direction: Optional[str] = Query(None, description="جهت تراکنش: earned (کسب) یا spent (خرج)"),
+    start_date: Optional[str] = Query(None, description="تاریخ شروع (فرمت: YYYY-MM-DD)"),
+    end_date: Optional[str] = Query(None, description="تاریخ پایان (فرمت: YYYY-MM-DD)"),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     user: User = Depends(get_current_user),
 ):
     data = await database_sync_to_async(_list_logs)(
-        user.id, code, direction, page, page_size,
+        user.id, code, direction, start_date, end_date, page, page_size,
     )
     return success_response("تاریخچه امتیازات", data)
 
 
-def _list_logs(user_id, code, direction, page, page_size):
-    from django.core.paginator import Paginator
 
+def _list_logs(user_id, code, direction, start_date, end_date, page, page_size):
     qs = UserScoreLog.objects.filter(user_id=user_id).order_by("-created_at")
+
+    # ۱. فیلتر کد تراکنش
     if code:
         qs = qs.filter(transaction_code=code)
-    if direction:
+        
+    # ۲. فیلتر جهت (کسب/خرج)
+    if direction and direction in UserScoreLog.Direction.values:
         qs = qs.filter(direction=direction)
 
+    # ۳. فیلتر محدوده تاریخ (نسخه ضدضربه)
+    try:
+        if start_date:
+            parsed_start = datetime.strptime(start_date[:10], "%Y-%m-%d").date()
+            # شروع روز (00:00:00)
+            start_datetime = timezone.make_aware(datetime.combine(parsed_start, time.min))
+            qs = qs.filter(created_at__gte=start_datetime)
+            
+        if end_date:
+            parsed_end = datetime.strptime(end_date[:10], "%Y-%m-%d").date()
+            # پایان روز (23:59:59)
+            end_datetime = timezone.make_aware(datetime.combine(parsed_end, time.max))
+            qs = qs.filter(created_at__lte=end_datetime)
+    except ValueError:
+        pass
+
+    # صفحه‌بندی
     p = Paginator(qs, page_size)
     page_obj = p.get_page(page)
+    
     return {
         "total": p.count,
         "page": page,
         "page_size": page_size,
         "items": [_log(x) for x in page_obj],
     }
+    
 
 
 @router.get("/rules/")
@@ -139,61 +161,4 @@ def _leaderboard(limit):
     ]
 
 
-# ═══════════════════════════════════════════════════════════
-# ادمین — تنها endpointهایی که امتیاز تغییر می‌دهند
-# ═══════════════════════════════════════════════════════════
-def _require_admin(user: User):
-    if not (user.is_staff or user.is_superuser):
-        raise PermissionError("دسترسی ادمین لازم است")
 
-
-@router.post("/admin/adjust/")
-async def admin_adjust(
-    form: dict = Depends(DependencyDataRequest),
-    admin: User = Depends(get_current_user),
-):
-    try:
-        _require_admin(admin)
-        target = await database_sync_to_async(
-            lambda: User.objects.filter(uuid=form.get("user_uuid")).first()
-        )()
-        if not target:
-            return error_response("کاربر یافت نشد", status_code=404)
-
-        direction = form.get("direction")
-        if direction not in ("earned", "spent"):
-            return error_response("direction باید earned یا spent باشد")
-
-        log = await database_sync_to_async(score_api.adjust)(
-            target,
-            int(form.get("amount", 0)),
-            direction,
-            admin=admin,
-            reason=form.get("reason") or "تنظیم دستی",
-            extra={"admin_name": admin.full_name},
-        )
-        return success_response("امتیاز تنظیم شد", _log(log))
-    except PermissionError as e:
-        return error_response(str(e), status_code=403)
-    except ScoreError as e:
-        return error_response(str(e))
-
-
-@router.post("/admin/refund/{log_id}/")
-async def admin_refund(
-    log_id: int,
-    form: dict = Depends(DependencyDataRequest),
-    admin: User = Depends(get_current_user),
-):
-    try:
-        _require_admin(admin)
-        log = await database_sync_to_async(score_api.refund)(
-            log_id,
-            reason=form.get("reason") or "برگشت توسط ادمین",
-            created_by=admin,
-        )
-        return success_response("تراکنش برگشت خورد", _log(log))
-    except PermissionError as e:
-        return error_response(str(e), status_code=403)
-    except ScoreError as e:
-        return error_response(str(e))

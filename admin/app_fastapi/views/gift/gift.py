@@ -8,7 +8,7 @@ from channels.db import database_sync_to_async
 from asgiref.sync import sync_to_async
 from django.core.files.storage import default_storage
 
-from app_fastapi.views.user.user_helper import get_current_user
+from app_fastapi.views.user.helper import get_current_user
 from app_fastapi.conf.fileManager import handle_save_file
 from applications.gift.models import Gift
 from app_fastapi.conf.dependencyRequest import DependencyDataRequest

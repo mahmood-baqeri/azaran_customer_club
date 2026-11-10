@@ -2,7 +2,7 @@ from asgiref.sync import sync_to_async
 from fastapi import Depends
 from fastapi.responses import JSONResponse
 from app_fastapi.conf.response import error_response
-from admin.app_fastapi.views.user.user_helper import get_current_user
+from app_fastapi.views.user.helper import get_current_user
 from applications.user.models import User
 from django.utils.translation import gettext_lazy as _
 

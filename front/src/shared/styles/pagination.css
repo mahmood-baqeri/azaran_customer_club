@@ -1,0 +1,67 @@
+/* src/shared/styles/pagination.css */
+
+.custom-pagination {
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     gap: 6px;
+     margin: 0;
+     flex-wrap: wrap;
+}
+
+.cp-btn {
+     min-width: 32px;
+     height: 32px;
+     padding: 0 6px;
+     border-radius: 8px;
+     border: 1.5px solid #dfe4ee;
+     background: #fff;
+     color: #14306b;
+     font-size: 12px;
+     font-weight: 700;
+     font-family: inherit;
+     cursor: pointer;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     transition: all 0.2s ease;
+}
+
+.cp-btn:hover:not(:disabled):not(.active) {
+     background: #f4f6fa;
+     border-color: #b8c0d2;
+}
+
+/* حالت صفحه فعال */
+.cp-btn.active {
+     background: #14306b;
+     color: #fff;
+     border-color: #14306b;
+     cursor: default;
+}
+
+.cp-btn:disabled {
+     opacity: 0.5;
+     cursor: not-allowed;
+     background: #f4f6fa;
+}
+
+/* دکمه‌های قبلی و بعدی */
+.cp-nav {
+     padding: 0 6px;
+     background: #f4f6fa;
+     border-color: transparent;
+}
+
+.cp-nav:hover:not(:disabled) {
+     background: #e8eefc;
+}
+
+/* نقطه‌چین‌ها */
+.cp-dots {
+     color: #8792a8;
+     font-size: 14px;
+     font-weight: 700;
+     padding: 0 4px;
+     user-select: none;
+}

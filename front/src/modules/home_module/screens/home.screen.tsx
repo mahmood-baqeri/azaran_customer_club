@@ -17,6 +17,7 @@ import { REVIEW_ROUTES } from "../../review_module/routes";
 import { useNavigate } from "react-router-dom";
 import { LEARN_ROUTES } from "../../learn_module/routes";
 import { INVITATION_ROUTES } from "../../invitation_module/routes";
+import { SCORE_ROUTES } from "../../score_module/routes";
 
 export default function HomeScreen() {
      return (
@@ -88,6 +89,7 @@ const EarnPointsSection = () => {
           { title: 'نظرسنجی', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: REVIEW_ROUTES.main },
           { title: 'ثبت فاکتور', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: FACTOR_ROUTES.list },
           { title: ' بازدید کارخانه', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: VISIT_ROUTES.list },
+          { title: ' تاریخچه امتیازات', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: SCORE_ROUTES.history },
      ];
 
      return (

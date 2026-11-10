@@ -15,7 +15,7 @@ from app_fastapi.conf.cache import get_cache
 from app_fastapi.conf.dependencyRequest import DependencyDataRequest
 from app_fastapi.conf.response import error_response, success_response
 from app_fastapi.schemas.user import CheckEmailSchema, CheckUsernameSchema
-from app_fastapi.views.user.user_helper import create_access_token, create_refresh_token, verify_reset_token
+from app_fastapi.views.user.helper import create_access_token, create_refresh_token, verify_reset_token
 from app_fastapi.views.user.user import device_serialize, user_serialize
 from applications.user.models import UserDevice, RefreshToken, VerificationCode, User
 from app_fastapi.conf.config import SECRET_KEY, ALGORITHM, FORGET_RATE_LIMIT_SECONDS, FORGET_RATE_LIMIT_KEY, \

@@ -10,7 +10,7 @@ from django.db.models import F
 from applications.score.models import UserScore, UserScoreLog
 from applications.gift.models import Gift, GiftOrder, GiftOrderLog
 from applications.user.models import User
-from app_fastapi.views.user.user_helper import get_current_user
+from app_fastapi.views.user.helper import get_current_user
 from app_fastapi.conf.dependencyRequest import DependencyDataRequest
 from app_fastapi.conf.response import success_response, error_response
 

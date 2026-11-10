@@ -3,7 +3,7 @@
 from channels.db import database_sync_to_async
 from fastapi import APIRouter, Depends
 
-from app_fastapi.views.user.user_helper import get_current_user
+from app_fastapi.views.user.helper import get_current_user
 from applications.user.models import (
     User, FavoriteQuestion, FavoriteAnswer, FavoriteAnswerItem,
 )

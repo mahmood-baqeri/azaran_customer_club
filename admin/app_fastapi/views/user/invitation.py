@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends
 from applications.user.models import User, UserInvitation
 from app_fastapi.conf.fileManager import get_file_url
 from app_fastapi.conf.response import success_response, error_response
-from app_fastapi.views.user.user_helper import get_current_user
+from app_fastapi.views.user.helper import get_current_user
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

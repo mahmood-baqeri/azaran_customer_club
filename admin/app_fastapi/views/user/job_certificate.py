@@ -5,7 +5,7 @@ from channels.db import database_sync_to_async
 from fastapi import APIRouter, Depends
 import mimetypes
 
-from app_fastapi.views.user.user_helper import get_current_user
+from app_fastapi.views.user.helper import get_current_user
 from applications.user.models import User, JobCertificate
 from app_fastapi.conf.dependencyRequest import DependencyDataRequest
 from app_fastapi.conf.response import success_response, error_response

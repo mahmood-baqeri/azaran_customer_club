@@ -16,7 +16,7 @@ from django.core.cache import cache
 from applications.log.fastapi_middleware import FastAPIRequestLogMiddleware
 from app_fastapi.conf.media_security import SecureMediaService
 from app_fastapi.conf.redis_client import RedisClient
-from app_fastapi.views.user.user_helper import get_current_user_optional
+from app_fastapi.views.user.helper import get_current_user_optional
 from applications.user.models import User
 from middlewares.fastapiLocaleMiddleware import DjangoLocaleMiddleware
 from app_fastapi.conf.response import validation_error_response
@@ -29,11 +29,11 @@ from app_fastapi.middlewares.security_headers import SecurityHeadersMiddleware
 # ============================================================
 # Routers
 # ============================================================
-from app_fastapi.views.user.user_auth import router as auth_router
+from app_fastapi.views.user.auth import router as auth_router
 from app_fastapi.views.user.user import router as user_router
 from app_fastapi.views.user.invitation import router as invitation_router
-from app_fastapi.views.user.user_favorite import router as user_favorite_router
-from app_fastapi.views.user.user_job_certificate import router as user_job_certificate_router
+from app_fastapi.views.user.favorite import router as user_favorite_router
+from app_fastapi.views.user.job_certificate import router as user_job_certificate_router
 from app_fastapi.views.slider import router as slider_router
 from app_fastapi.views.setting import router as setting_router
 from app_fastapi.views.contactus import router as contactus_router
@@ -49,6 +49,7 @@ from app_fastapi.views.gallery.gallery import router as gallery_router
 from app_fastapi.views.visit.visit import router as visit_router
 from app_fastapi.views.review.review import router as review_router
 from app_fastapi.views.learn.learn import router as learn_router
+from app_fastapi.views.score.score import router as score_router
 
 
 # ============================================================
@@ -287,6 +288,7 @@ app.include_router(gallery_router,prefix="/v1/gallery")
 app.include_router(visit_router,prefix="/v1/visit")
 app.include_router(review_router,prefix="/v1/review")
 app.include_router(learn_router,prefix="/v1/learn")
+app.include_router(score_router,prefix="/v1/score")
 
 # ============================================================
 # Static Files

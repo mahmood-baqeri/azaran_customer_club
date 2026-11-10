@@ -14,7 +14,7 @@ from applications.factor.services import (
 from applications.user.models import User
 from app_fastapi.conf.dependencyRequest import DependencyDataRequest
 from app_fastapi.conf.response import error_response, success_response
-from app_fastapi.views.user.user_helper import get_current_user
+from app_fastapi.views.user.helper import get_current_user
 from app_fastapi.views.factor.factor import _serialize_factor
 
 logger = logging.getLogger(__name__)

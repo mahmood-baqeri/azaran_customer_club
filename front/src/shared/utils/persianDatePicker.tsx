@@ -37,11 +37,11 @@ export const PersianDatePicker: React.FC<PersianDatePickerProps> = ({
       // 👇 استایل اینلاین برای هم‌شکل شدن دقیق با EditInput
       style={{
         width: "100%",
-        height: "50px",
+        height: "40px",
         padding: "0 16px",
         background: "#fff",
         border: "1.5px solid #E7E7E7",
-        borderRadius: "12px",
+        borderRadius: "8px",
         fontSize: "13px",
         color: "#14306b",
         fontFamily: "inherit",

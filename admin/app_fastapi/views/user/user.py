@@ -13,7 +13,7 @@ from applications.user.models import RefreshToken, User, UserDevice, UserProfile
 from app_fastapi.conf.dependencyRequest import DependencyDataRequest
 from app_fastapi.conf.response import success_response, error_response
 from app_fastapi.schemas.user import LogoutSchema
-from app_fastapi.views.user.user_helper import get_current_user
+from app_fastapi.views.user.helper import get_current_user
 
 router = APIRouter()
 
