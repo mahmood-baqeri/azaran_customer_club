@@ -6,14 +6,14 @@
 }
 
 .lc-title {
-     font-size: 12px;
+     font-size: 10px;
      font-weight: 500;
      color: #14306b;
      margin: 0 0 8px;
 }
 
 .lc-sub {
-     font-size: 10px;
+     font-size: 9px;
      color: #6b7794;
      margin: 0;
      line-height: 1.5;
@@ -63,7 +63,6 @@
 /* =========================================================
    صفحه جزئیات
    ========================================================= */
-.learn-detail-body {}
 
 .learn-detail-img {
      width: 100%;
@@ -152,10 +151,12 @@
 
 .learn-card.card-full .lc-content .lc-title {
      color: #fff;
+     font-size: 12px;
 }
 
 .learn-card.card-full .lc-content .lc-sub {
      color: #dbdbdb;
+     font-size: 10px;
 }
 
 /* =========================================

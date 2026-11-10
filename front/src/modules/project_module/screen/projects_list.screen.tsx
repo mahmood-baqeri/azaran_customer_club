@@ -57,7 +57,7 @@ export default function ProjectsListScreen() {
                <Header title="پروژه‌های من" showBack showLogo={false} menuBg="f7f8fb" buttonBg="e8eefc"
                     action={
                          <a href={PROJECT_ROUTES.create} className="header-action-btn">
-                              <span className="color-primary fs-14 fw-400 me-1">ثبت پروژه</span>
+                              <span className="color-primary fw-400 me-1">ثبت پروژه</span>
                          </a>
                     }
                />

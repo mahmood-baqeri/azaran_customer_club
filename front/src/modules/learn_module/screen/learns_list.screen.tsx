@@ -19,7 +19,7 @@ export default function LearnsListScreen() {
           <>
                <Header title="آموزش باشگاه" showBack showLogo={false} menuBg="f7f8fb" buttonBg="e8eefc"
                     action={
-                         <span className="fs-12 text-muted me-auto">۲ از ۷ دیده شده</span>
+                         <span className="text-muted me-auto">۲ از ۷ دیده شده</span>
                     }
                />
 

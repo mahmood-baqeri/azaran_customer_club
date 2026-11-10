@@ -16,6 +16,7 @@ import { VISIT_ROUTES } from "../../visit_module/routes";
 import { REVIEW_ROUTES } from "../../review_module/routes";
 import { useNavigate } from "react-router-dom";
 import { LEARN_ROUTES } from "../../learn_module/routes";
+import { INVITATION_ROUTES } from "../../invitation_module/routes";
 
 export default function HomeScreen() {
      return (
@@ -83,11 +84,10 @@ const EarnPointsSection = () => {
      const items = [
           { title: 'پرسش از اهل فن', icon: ICONS.question, bg: 'bg-light-blue', class: "img20_20", href: FAQ_ROUTES.list },
           { title: 'گالری مجریان', icon: ICONS.gallery, bg: 'bg-light-blue', class: "img20_20", href: GALLERY_ROUTES.list },
-          { title: 'معرفی همکاران', icon: ICONS.user, bg: 'bg-light-blue', class: "img25_25", href: "" },
-          { title: 'نظرسنجی', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: "" },
+          { title: 'معرفی همکاران', icon: ICONS.user, bg: 'bg-light-blue', class: "img25_25", href: INVITATION_ROUTES.list },
+          { title: 'نظرسنجی', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: REVIEW_ROUTES.main },
           { title: 'ثبت فاکتور', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: FACTOR_ROUTES.list },
           { title: ' بازدید کارخانه', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: VISIT_ROUTES.list },
-          { title: 'بازخورد', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: REVIEW_ROUTES.main },
      ];
 
      return (

@@ -46,7 +46,7 @@ export default function FactorsListScreen() {
                     menuBg="f7f8fb" buttonBg="e8eefc"
                     action={
                          <a href={FACTOR_ROUTES.create} className="header-action-btn">
-                              <span className="color-primary fs-14 fw-400 me-1">ثبت فاکتور</span>
+                              <span className="color-primary fw-400 me-1">ثبت فاکتور</span>
                          </a>
                     }
                />

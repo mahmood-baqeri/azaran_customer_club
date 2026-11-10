@@ -20,7 +20,7 @@ export default function TicketsListScreen() {
                     menuBg="f7f8fb"
                     action={
                          <a href={SUPPORT_ROUTES.create} className="header-action-btn">
-                              <span className="color-primary fs-14 fw-400 me-1">تیکت جدید</span>
+                              <span className="color-primary fw-400 me-1">تیکت جدید</span>
                          </a>
                     }
                />

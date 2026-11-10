@@ -120,9 +120,9 @@ export default function ReviewScreen() {
           <>
                <Header showBack showLogo={false} menuBg="transparent" buttonBg="white" />
 
-               <div className="w-100">
-                    <MyImage src={ICONS.satisfaction_header} className="ص-100" />
-               </div>
+
+               <MyImage src={ICONS.satisfaction_header} className="w-100" />
+
 
                <div className="review-body">
                     {/* تصویر بالای صفحه */}

@@ -20,6 +20,7 @@ import { GALLERY_ROUTES } from "../modules/gallery_module/routes";
 import { VISIT_ROUTES } from "../modules/visit_module/routes";
 import { REVIEW_ROUTES } from "../modules/review_module/routes.ts";
 import { LEARN_ROUTES } from "../modules/learn_module/routes.ts";
+import { INVITATION_ROUTES } from "../modules/invitation_module/routes.ts";
 
 
 const LoginScreen = lazy(() => import("../modules/auth_module/screens/login.screen"));
@@ -74,6 +75,8 @@ const ReviewScreen = lazy(() => import("../modules/review_module/screen/review.s
 
 const LearnsListScreen = lazy(() => import("../modules/learn_module/screen/learns_list.screen.tsx"));
 const LearnDetailScreen = lazy(() => import("../modules/learn_module/screen/learn_detail.screen.tsx"));
+
+const InvitationsListScreen = lazy(() => import("../modules/invitation_module/screen/invitations.screen.tsx"));
 
 export default function AppRouter() {
      const navigate = useNavigate();
@@ -152,6 +155,9 @@ export default function AppRouter() {
                               <Route path={VISIT_ROUTES.list} element={<VisitsListScreen />} />
                               <Route path={VISIT_ROUTES.create} element={<CreateVisitScreen />} />
                               <Route path={VISIT_ROUTES.detail(":id")} element={<VisitDetailScreen />} />
+
+                              {/* INVITATION Routes */}
+                              <Route path={INVITATION_ROUTES.list} element={<InvitationsListScreen />} />
 
                               {/* LEARN Routes */}
                               <Route path={LEARN_ROUTES.list} element={<LearnsListScreen />} />

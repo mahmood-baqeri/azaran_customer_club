@@ -1,0 +1,232 @@
+/* src/shared/styles/invitation.css */
+
+.inv-body {
+     padding: 0;
+}
+
+.inv-body .banner {
+     position: relative;
+     top: -2px;
+     right: 0;
+}
+
+/* =========================================================
+   بخش هدر (Hero)
+   ========================================================= */
+.inv-hero {
+     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+     border-radius: 0 0 24px 24px;
+     padding: 24px 20px;
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     position: relative;
+     overflow: hidden;
+     margin: 0 -20px 20px;
+     min-height: 180px;
+}
+
+.inv-hero-content {
+     color: #fff;
+     z-index: 2;
+}
+
+.inv-hero-title {
+     font-size: 14px;
+     font-weight: 700;
+     margin: 0 0 8px;
+}
+
+.inv-hero-coin {
+     display: flex;
+     align-items: center;
+     gap: 6px;
+     background: rgba(255, 255, 255, 0.2);
+     padding: 6px 12px;
+     border-radius: 20px;
+     width: fit-content;
+     margin-bottom: 8px;
+}
+
+.inv-hero-coin span {
+     font-size: 16px;
+     font-weight: 800;
+}
+
+.inv-hero-sub {
+     font-size: 13px;
+     margin: 0;
+     opacity: 0.9;
+}
+
+.inv-hero-img {
+     position: absolute;
+     bottom: 0;
+     left: 0;
+     width: 60%;
+     height: 100%;
+     z-index: 1;
+}
+
+.inv-hero-img img {
+     width: 100%;
+     height: 100%;
+     object-fit: contain;
+     object-position: bottom left;
+}
+
+/* =========================================================
+   کارت خلاصه
+   ========================================================= */
+.inv-card {
+     background: #e1ecfb;
+     border: 1.5px solid #dfe4ee;
+     border-radius: 16px;
+     padding: 16px;
+     margin-bottom: 50px;
+}
+
+.inv-card-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: center;
+     margin-bottom: 20px;
+}
+
+.inv-card-title {
+     font-size: 13px;
+     font-weight: 800;
+     color: #14306b;
+     margin: 0;
+}
+
+.inv-badge {
+     background: #fff;
+     color: #2e7d32;
+     font-size: 11px;
+     font-weight: 700;
+     padding: 4px 10px;
+     border-radius: 20px;
+     display: flex;
+     align-items: center;
+     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.inv-avatars-row {
+     display: flex;
+     justify-content: flex-start;
+     gap: 20px;
+     overflow-x: auto;
+     background: #fff;
+     padding: 8px;
+     min-height: 160px;
+     border-radius: 10px;
+}
+
+.inv-avatar-item {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     gap: 6px;
+     min-width: 60px;
+}
+
+.inv-avatar-wrap {
+     position: relative;
+     width: 48px;
+     height: 48px;
+}
+
+.inv-avatar-img {
+     width: 100%;
+     height: 100%;
+     border-radius: 50%;
+     object-fit: cover;
+     border: 2px solid #15337026;
+}
+
+.inv-avatar-placeholder {
+     width: 100%;
+     height: 100%;
+     border-radius: 50%;
+     background: #e2e8f0;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     border: 2px solid #fff;
+}
+
+.inv-avatar-check {
+     position: absolute;
+     bottom: -2px;
+     right: -2px;
+     background: #fff;
+     border-radius: 50%;
+     width: 16px;
+     height: 16px;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+}
+
+.inv-avatar-name {
+     font-size: 10px;
+     color: #6b7794;
+     text-align: center;
+     max-width: 60px;
+     white-space: nowrap;
+     overflow: hidden;
+     text-overflow: ellipsis;
+}
+
+.inv-avatar-coin {
+     display: flex;
+     align-items: center;
+     gap: 2px;
+     background: #fff;
+     padding: 2px 6px;
+     border-radius: 10px;
+     font-size: 10px;
+     font-weight: 700;
+     color: #14306b;
+     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* =========================================================
+   متن راهنما و کد معرف
+   ========================================================= */
+.inv-hint {
+     font-size: 11px;
+     color: #6b7794;
+     line-height: 1.8;
+     text-align: right;
+     margin-top: 8px;
+     margin-bottom: 0;
+}
+
+.inv-code-box {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     background: #fff;
+     border: 1.5px solid #14306b;
+     border-radius: 12px;
+     padding: 12px 16px;
+     margin-bottom: 20px;
+}
+
+.inv-code-label {
+     font-size: 13px;
+     font-weight: 700;
+     color: #14306b;
+}
+
+.inv-code-value {
+     display: flex;
+     align-items: center;
+     gap: 8px;
+     font-size: 15px;
+     font-weight: 800;
+     color: #14306b;
+     cursor: pointer;
+}

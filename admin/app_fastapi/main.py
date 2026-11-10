@@ -31,6 +31,7 @@ from app_fastapi.middlewares.security_headers import SecurityHeadersMiddleware
 # ============================================================
 from app_fastapi.views.user.user_auth import router as auth_router
 from app_fastapi.views.user.user import router as user_router
+from app_fastapi.views.user.invitation import router as invitation_router
 from app_fastapi.views.user.user_favorite import router as user_favorite_router
 from app_fastapi.views.user.user_job_certificate import router as user_job_certificate_router
 from app_fastapi.views.slider import router as slider_router
@@ -270,6 +271,7 @@ app.include_router(auth_router, prefix="/v1/auth")
 app.include_router(user_router, prefix="/v1/user")
 app.include_router(user_favorite_router, prefix="/v1/user")
 app.include_router(user_job_certificate_router, prefix="/v1/user")
+app.include_router(invitation_router, prefix="/v1/user/invitation")
 
 app.include_router(slider_router,prefix="/v1/slider")
 app.include_router(setting_router,prefix="/v1/setting")

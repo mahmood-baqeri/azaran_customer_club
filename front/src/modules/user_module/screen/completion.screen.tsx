@@ -101,7 +101,7 @@ export default function CompletionScreen() {
                     action={
                          <a href={PROFILE_ROUTES.profile} className="header-action-btn">
                               <MyImage src={ICONS.lock_2} def="/assets/none.png" alt="settings" className="img20_20" />
-                              <span className="color-primary fs-14 fw-400 me-1">تنظیمات حساب</span>
+                              <span className="color-primary fw-400 me-1">تنظیمات حساب</span>
                          </a>
                     }
                />

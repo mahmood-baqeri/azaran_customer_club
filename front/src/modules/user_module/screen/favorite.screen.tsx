@@ -116,7 +116,7 @@ export default function FavoriteScreen() {
                     menuBg="f7f8fb"
                     buttonBg="white"
                     action={
-                         <span className="me-auto small fw-medium color-primary fs-12">
+                         <span className="me-auto small fw-medium color-primary">
                               مرحله {currentPage + 1} از {totalPages || 1}
                          </span>
                     }
