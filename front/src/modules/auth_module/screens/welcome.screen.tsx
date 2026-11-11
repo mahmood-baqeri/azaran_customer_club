@@ -7,7 +7,7 @@ import MyImage from "../../../shared/components/image-show";
 import { ICONS } from "../../../shared/constants/icons";
 import { useUser } from "../../user_module/hooks/use-user";
 import { UserMe } from "../../user_module/interface/user.types";
-import { PROFILE_ROUTES } from "../../user_module/routes";
+import { USER_ROUTES } from "../../user_module/routes";
 
 export default function WelcomeScreen() {
      const { user } = useUser();
@@ -104,7 +104,7 @@ const BottomTabs = () => {
      return (
           <div>
                {/* دکمه آبی */}
-               <a href={PROFILE_ROUTES.profile} className="btn w-100 text-white fw-bold fs-13 rounded-4 mb-4" style={{ backgroundColor: "#1E408A", padding: "14px 0" }}>
+               <a href={USER_ROUTES.profile} className="btn w-100 text-white fw-bold fs-13 rounded-4 mb-4" style={{ backgroundColor: "#1E408A", padding: "14px 0" }}>
                     تکمیل پروفایل و دریافت هدیه
                </a>
 

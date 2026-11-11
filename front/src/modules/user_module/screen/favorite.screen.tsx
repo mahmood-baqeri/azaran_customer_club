@@ -6,7 +6,7 @@ import { useUser } from "../hooks/use-user";
 import { userRepository } from "../repository/user.repository";
 import Header from "../../../app/layouts/header";
 import { MyNotification } from "../../../shared/utils/notification";
-import { PROFILE_ROUTES } from "../routes";
+import { USER_ROUTES } from "../routes";
 import { getErrorMessage } from "../../../shared/api/errors";
 import type { FavoriteQuestion, FavoriteAnswerValue } from "../interface/user.types";
 import { FavoriteSlider } from "../components/FavoriteSlider";
@@ -101,7 +101,7 @@ export default function FavoriteScreen() {
      // دکمه ذخیره (در صفحه آخر)
      const handleSave = () => {
           MyNotification("", "علایق و سلایق شما با موفقیت ذخیره شد.", "success");
-          navigate(PROFILE_ROUTES.favorite); // یا هر مسیری که قرار است بعد از این مرحله برود
+          navigate(USER_ROUTES.favorite); // یا هر مسیری که قرار است بعد از این مرحله برود
      };
 
      if (!user) return null;

@@ -110,7 +110,7 @@ class User(AbstractUser, SoftDeleteModel):
     @property
     def get_score_logs(self):
         """دریافت تاریخچه امتیازات (همیشه QuerySet برمی‌گرداند)"""
-        return self.relation_score_logs.all()
+        return self.user_score_logs.all()
 
     @property
     def get_inviter(self):
@@ -126,14 +126,7 @@ class User(AbstractUser, SoftDeleteModel):
         except Exception:
             return None
         
-
-    # برای پروفایل و امتیاز (OneToOne)
-    # users = User.objects.select_related('relation_profile', 'relation_score').all()
-
-    # برای دعوت‌ها و تاریخچه (Many) در صورت نیاز
-    # users = User.objects.prefetch_related('relation_sent_invitations', 'relation_score_logs').all()
-    #  با این کار، تمام propertyهای بالا صفر کوئری اضافی به دیتابیس می‌زنند و نهایت سرعت را خواهید داشت.
-
+        
     
 #######################################
 # اطلاعات تکمیلی 
@@ -176,7 +169,7 @@ class JobCertificate(BaseModel):
         Technical = "technical_professional_certificate", "مدرک فنی و حرفه ای"
         Introduction = "letter_of_introduction", "معرفی نامه از نمایندگی آذر"
         
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='relation_job_certificates', verbose_name="کاربر")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_job_certificates', verbose_name="کاربر")
     
     type = models.CharField(max_length=100, choices=FileType, default=FileType.License)
     file = models.FileField(upload_to='certificates/%Y/%m/', verbose_name="file")
@@ -216,7 +209,7 @@ class FavoriteAnswerItem(models.TextChoices):
     
 
 class FavoriteAnswer(BaseModel):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='relation_favorite_answers')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_favorite_answers')
     question = models.ForeignKey(FavoriteQuestion, on_delete=models.CASCADE, related_name='relation_answers')
     answer = models.CharField(max_length=50, choices=FavoriteAnswerItem, default=FavoriteAnswerItem.VeryLittle)
 

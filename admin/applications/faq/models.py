@@ -18,7 +18,7 @@ class Category(BaseModel):
 
 class FAQ(BaseModel):
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="faqs", verbose_name="دسته‌بندی") 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="faqs", verbose_name="کاربر پرسش‌کننده")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_faqs", verbose_name="کاربر پرسش‌کننده")
     question = models.TextField(verbose_name="سوال")
     
     is_active = models.BooleanField(default=False, verbose_name="فعال")

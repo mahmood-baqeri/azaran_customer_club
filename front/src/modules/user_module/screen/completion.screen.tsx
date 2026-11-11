@@ -9,7 +9,7 @@ import Header from "../../../app/layouts/header";
 import MyImage from "../../../shared/components/image-show";
 import { ICONS } from "../../../shared/constants/icons";
 import { MyNotification } from "../../../shared/utils/notification";
-import { PROFILE_ROUTES } from "../routes";
+import { USER_ROUTES } from "../routes";
 import {
      ProfileFormState,
      EMPTY_FORM,
@@ -99,7 +99,7 @@ export default function CompletionScreen() {
                     menuBg="f7f8fb"
                     buttonBg="white"
                     action={
-                         <a href={PROFILE_ROUTES.profile} className="header-action-btn">
+                         <a href={USER_ROUTES.profile} className="header-action-btn">
                               <MyImage src={ICONS.lock_2} def="/assets/none.png" alt="settings" className="img20_20" />
                               <span className="color-primary fw-400 me-1">تنظیمات حساب</span>
                          </a>
@@ -188,7 +188,7 @@ export default function CompletionScreen() {
                               title="علایق و سلایق"
                               status={isFavoriteQuestionsComplete ? "ویرایش" : "تکمیل نشده"}
                               isComplete={isFavoriteQuestionsComplete}
-                              onClick={() => navigate(PROFILE_ROUTES.favorite)}
+                              onClick={() => navigate(USER_ROUTES.favorite)}
 
                          />
 
@@ -209,7 +209,7 @@ export default function CompletionScreen() {
                          </div>
 
                          <button
-                              onClick={() => navigate(PROFILE_ROUTES.profile)}
+                              onClick={() => navigate(USER_ROUTES.profile)}
                               className="btn w-100 text-white fw-bold fs-13 rounded-10 p-2 bg-primary"
                          >
                               دریافت هدیه

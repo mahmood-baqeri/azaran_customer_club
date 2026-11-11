@@ -38,7 +38,7 @@ class Support(BaseModel):
         URGENT = "urgent", "فوری"
 
     # ── هویت ────────────────────────────────────────
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="supports", verbose_name="کاربر (ثبت‌کننده)")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_supports", verbose_name="کاربر (ثبت‌کننده)")
     category = models.CharField(max_length=20, choices=Category.choices, default=Category.OTHER, verbose_name="دسته‌بندی")
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.OPEN, verbose_name="وضعیت")
     priority = models.CharField(max_length=10, choices=Priority.choices, default=Priority.NORMAL, verbose_name="اولویت")

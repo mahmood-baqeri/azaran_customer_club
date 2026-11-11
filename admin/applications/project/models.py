@@ -25,7 +25,7 @@ class Project(BaseModel):
 
 
     type = models.CharField(max_length=20, choices=Type.choices, default=Type.WATER, verbose_name="نوع")
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="projects", verbose_name="کاربر")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_projects", verbose_name="کاربر")
     title = models.CharField(max_length=255, null=True, blank=True, verbose_name="عنوان")
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING, verbose_name="وضعیت")
     

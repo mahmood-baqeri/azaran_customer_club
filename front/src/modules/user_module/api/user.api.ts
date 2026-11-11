@@ -1,13 +1,8 @@
 // src/modules/user_module/api/user.api.ts
-import { apiGET, apiPOST, apiDELETE } from "../../../shared/api/http";
+
+import { apiGET, apiPOST } from "../../../shared/api/http";
 import { BASE_URL } from "../../../shared/constants/env";
-import type {
-  UserMe,
-  JobCertificate,
-  FavoriteQuestion,
-  FavoriteAnswerValue,
-  JobCertificateType,
-} from "../interface/user.types";
+import type { UserMe } from "../interface/user.types";
 
 export interface UpdateProfileInput {
   firstname: string;
@@ -37,48 +32,13 @@ export interface SimpleResponse {
   message: string;
 }
 
-export interface JobCertificatesResponse {
-  status: "Success" | "Error";
-  message: string;
-  data: JobCertificate[];
-}
-
-export interface JobCertificateResponse {
-  status: "Success" | "Error";
-  message: string;
-  data: JobCertificate;
-}
-
-export interface FavoriteQuestionsResponse {
-  status: "Success" | "Error";
-  message: string;
-  data: FavoriteQuestion[];
-}
-
-export interface FavoriteAnswerResponse {
-  status: "Success" | "Error";
-  message: string;
-  data: {
-    id: number;
-    question_id: number;
-    answer: FavoriteAnswerValue;
-    answer_display: string;
-  };
-}
-
-export interface UploadJobCertificateInput {
-  type: JobCertificateType;
-  file: File;
-}
-
-export interface SubmitFavoriteAnswerInput {
-  question_id: number;
-  answer: FavoriteAnswerValue;
-}
-
 export const userApi = {
-  // ----- پروفایل -----
+  // ✅ دریافت دیتای جامع (شامل آمار، فعالیت‌ها و پروفایل)
   me: (): Promise<ProfileResponse> =>
+    apiGET(`${BASE_URL}user/me/`, {}, true),
+
+  // ✅ (اختیاری) اگر جایی نیاز به دیتای پایه پروفایل داشتید
+  profile: (): Promise<ProfileResponse> =>
     apiGET(`${BASE_URL}user/profile/`, {}, true),
 
   updateProfile: (input: UpdateProfileInput): Promise<ProfileResponse> =>
@@ -92,25 +52,4 @@ export const userApi = {
 
   setInitialPassword: (password: string): Promise<SimpleResponse> =>
     apiPOST(`${BASE_URL}user/profile/set-password/`, { password }, true),
-
-  // ----- 🆕 مدارک شغلی -----
-  getJobCertificates: (): Promise<JobCertificatesResponse> =>
-    apiGET(`${BASE_URL}user/profile/job-certificates/`, {}, true),
-
-  uploadJobCertificate: (input: UploadJobCertificateInput): Promise<JobCertificateResponse> => {
-    const fd = new FormData();
-    fd.append("type", input.type);
-    fd.append("file", input.file);
-    return apiPOST(`${BASE_URL}user/profile/job-certificate/upload/`, fd, true);
-  },
-
-  deleteJobCertificate: (type: JobCertificateType): Promise<SimpleResponse> =>
-    apiDELETE(`${BASE_URL}user/profile/job-certificate/${type}/`, true),
-
-  // ----- 🆕 علاقه‌مندی‌ها -----
-  getFavoriteQuestions: (): Promise<FavoriteQuestionsResponse> =>
-    apiGET(`${BASE_URL}user/favorite-questions/`, {}, true),
-
-  submitFavoriteAnswer: (input: SubmitFavoriteAnswerInput): Promise<FavoriteAnswerResponse> =>
-    apiPOST(`${BASE_URL}user/favorite-questions/answer/`, input, true),
 };

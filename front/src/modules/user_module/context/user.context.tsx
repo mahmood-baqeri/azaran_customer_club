@@ -86,6 +86,14 @@ const reconstructFromStorage = (): UserMe | null => {
           job_certificates: [], // 🆕 آرایه خالی در حالت آفلاین
           favorite_answers_count: 0,
           has_answered_all_favorites: false,
+
+
+          // ✅ این چند خط اختیاری هستند (فقط برای کامل بودن تایپ)
+          stats: undefined,
+          recent_projects: [],
+          recent_factors: [],
+          recent_gift_orders: [],
+          recent_score_logs: [],
      };
 };
 
@@ -133,7 +141,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
           setLoading(true);
 
           try {
-               const me = await userRepository.loadMe();
+               const me = await userRepository.loadProfile();
                setUser(me);
           } catch (err) {
                console.warn("[user] load failed, using storage fallback:", err);

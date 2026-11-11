@@ -12,7 +12,7 @@ import OrderCertificateModal from "../../../shared/components/modal/order/certif
 import OrderCheckoutModal from "../../../shared/components/modal/order/checkout-modal";
 import "../../../shared/styles/gift.css";
 import "../../../shared/styles/gift-detail.css";
-import { PROFILE_ROUTES } from "../../user_module/routes";
+import { USER_ROUTES } from "../../user_module/routes";
 import { usePageContentClass } from "../../../shared/hooks/use-page-content-class";
 
 export default function GiftDetailScreen() {
@@ -177,7 +177,7 @@ export default function GiftDetailScreen() {
                     onClose={() => setShowCertModal(false)}
                     onUpload={() => {
                          setShowCertModal(false);
-                         navigate(PROFILE_ROUTES.completion);
+                         navigate(USER_ROUTES.completion);
                     }}
                />
 

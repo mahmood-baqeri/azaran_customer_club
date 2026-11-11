@@ -34,14 +34,14 @@ def user_serialize(user):
 
     try:
         from applications.user.models import FavoriteQuestion
-        favorite_answers_count = user.relation_favorite_answers.count()
+        favorite_answers_count = user.user_favorite_answers.count()
         
         # بررسی اینکه آیا کاربر به تمام سوالات فعال پاسخ داده است یا خیر
         total_active_questions = FavoriteQuestion.objects.filter(is_active=True).count()
         if total_active_questions == 0:
             has_answered_all_favorites = True # اگر سوالی وجود ندارد، یعنی همه را پاسخ داده
         else:
-            answered_active_count = user.relation_favorite_answers.filter(question__is_active=True).count()
+            answered_active_count = user.user_favorite_answers.filter(question__is_active=True).count()
             has_answered_all_favorites = answered_active_count >= total_active_questions
     except Exception:
         favorite_answers_count = 0
@@ -49,8 +49,25 @@ def user_serialize(user):
 
 
     job_certs = []
-    if hasattr(user, 'relation_job_certificates'):
-        job_certs = list(user.relation_job_certificates.all())
+    if hasattr(user, 'user_job_certificates'):
+        job_certs = list(user.user_job_certificates.all())
+        
+        
+    # ── محاسبه سطح کاربر (کاردان / استادکار) ───────────────────────────
+    score_balance = score.total_earned if score else 0
+    
+    LEVEL_THRESHOLD = 1000 # آستانه رسیدن به استادکار
+
+    if score_balance < LEVEL_THRESHOLD:
+        current_level = "kardan"
+        current_level_display = "کاردان"
+        progress = (score_balance / LEVEL_THRESHOLD) * 100
+        points_needed = LEVEL_THRESHOLD - score_balance
+    else:
+        current_level = "ostadkar"
+        current_level_display = "استادکار"
+        progress = 100
+        points_needed = 0
         
     base_data = {
         # ==========================================
@@ -71,6 +88,16 @@ def user_serialize(user):
         "referral_code": user.referral_code,
         "nature": user.nature,
         "nature_display": user.get_nature_display(),
+        
+        # ==========================================
+        #  سطح کاربر
+        # ==========================================
+        "level": {
+            "current_level": current_level,
+            "current_level_display": current_level_display,
+            "progress_percentage": int(progress),
+            "points_needed_for_next": points_needed,
+        },
 
         # ==========================================
         # اطلاعات دعوت‌کننده
@@ -134,7 +161,7 @@ def user_serialize(user):
         # ==========================================
         # خلاصه علاقه‌مندی‌ها
         # ==========================================
-       "favorite_answers_count": favorite_answers_count,
+        "favorite_answers_count": favorite_answers_count,
         "has_answered_all_favorites": has_answered_all_favorites,
     }
 

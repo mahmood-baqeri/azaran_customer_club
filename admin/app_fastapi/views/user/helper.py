@@ -64,7 +64,7 @@ def get_user_by_username(username: str):
                 'relation_received_invitation__inviter',
             )
             .prefetch_related(
-                'relation_job_certificates',
+                'user_job_certificates',
             )
             .filter(username=username)
             .first()

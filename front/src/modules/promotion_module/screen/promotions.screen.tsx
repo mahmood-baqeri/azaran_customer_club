@@ -11,7 +11,7 @@ import "../../../shared/styles/promotion.css";
 import OrderCheckoutModal from "../../../shared/components/modal/order/checkout-modal";
 import { ICONS } from "../../../shared/constants/icons";
 import MyImage from "../../../shared/components/image-show";
-import { PROFILE_ROUTES } from "../../user_module/routes";
+import { USER_ROUTES } from "../../user_module/routes";
 import OrderCertificateModal from "../../../shared/components/modal/order/certificate-modal";
 import { useUser } from "../../user_module/hooks/use-user";
 import { PROMOTION_ROUTES } from "../routes";
@@ -142,7 +142,7 @@ export default function PromotionsScreen() {
                     onClose={() => setShowCertModal(false)}
                     onUpload={() => {
                          setShowCertModal(false);
-                         navigate(PROFILE_ROUTES.completion);
+                         navigate(USER_ROUTES.completion);
                     }}
                />
 

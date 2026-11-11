@@ -8,7 +8,7 @@ import { AUTH_ROUTES } from "../modules/auth_module/routes";
 import Preloader from "../shared/tools/loader";
 import GuestGuard from "../modules/auth_module/components/guest-guard";
 import AuthGuard from "../modules/auth_module/components/auth-guard";
-import { PROFILE_ROUTES } from "../modules/user_module/routes";
+import { USER_ROUTES } from "../modules/user_module/routes";
 import { NOTIFICATIONS_ROUTES } from "../modules/notifications_module/routes";
 import { GIFT_ROUTES } from "../modules/gift_module/routes";
 import { PROMOTION_ROUTES } from "../modules/promotion_module/routes";
@@ -35,6 +35,7 @@ const NotificationScreen = lazy(() => import("../modules/notifications_module/sc
 const ProfileScreen = lazy(() => import("../modules/user_module/screen/profile.screen"));
 const CompletionScreen = lazy(() => import("../modules/user_module/screen/completion.screen"));
 const FavoriteScreen = lazy(() => import("../modules/user_module/screen/favorite.screen"));
+const LevelProfileScreen = lazy(() => import("../modules/user_module/screen/level.screen"));
 
 const GiftsScreen = lazy(() => import("../modules/gift_module/screen/gifts.screen"));
 const GiftDetailScreen = lazy(() => import("../modules/gift_module/screen/gift_detail.screen"));
@@ -108,9 +109,10 @@ export default function AppRouter() {
 
                               <Route path={NOTIFICATIONS_ROUTES.all} element={<NotificationScreen />} />
 
-                              <Route path={PROFILE_ROUTES.completion} element={<CompletionScreen />} />
-                              <Route path={PROFILE_ROUTES.profile} element={<ProfileScreen />} />
-                              <Route path={PROFILE_ROUTES.favorite} element={<FavoriteScreen />} />
+                              <Route path={USER_ROUTES.completion} element={<CompletionScreen />} />
+                              <Route path={USER_ROUTES.profile} element={<ProfileScreen />} />
+                              <Route path={USER_ROUTES.favorite} element={<FavoriteScreen />} />
+                              <Route path={USER_ROUTES.level} element={<LevelProfileScreen />} />
 
                               {/* Gift Routes */}
                               <Route path={GIFT_ROUTES.list} element={<GiftsScreen />} />

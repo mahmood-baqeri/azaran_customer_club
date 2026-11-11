@@ -9,6 +9,7 @@ import { DOMAIN } from "../../shared/constants/env";
 import { useUser } from "../../modules/user_module/hooks/use-user";
 import { NOTIFICATIONS_ROUTES } from "../../modules/notifications_module/routes";
 import { ICONS } from "../../shared/constants/icons";
+import { USER_ROUTES } from "../../modules/user_module/routes";
 
 interface SidebarMenuProps {
      isOpen: boolean;
@@ -72,8 +73,8 @@ export default function SidebarMenu({
 
      const MENU_ITEMS = [
           { label: "اعلان ها", text: "", icon: ICONS.notification, haveBadge: true, route: NOTIFICATIONS_ROUTES.all },
-          { label: "اطلاعات کاربری", text: "", icon: ICONS.user_edit, haveBadge: false, route: "/profile" },
-          { label: "سطح و مزایا", text: user?.profile?.job_title, icon: ICONS.level, haveBadge: false, route: "/profile" },
+          { label: "اطلاعات کاربری", text: "", icon: ICONS.user_edit, haveBadge: false, route: USER_ROUTES.profile },
+          { label: "سطح و مزایا", text: user?.profile?.job_title, icon: ICONS.level, haveBadge: false, route: USER_ROUTES.level },
      ] as const;
 
      return (

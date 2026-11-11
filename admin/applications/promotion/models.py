@@ -44,7 +44,7 @@ class PromotionOrder(BaseModel):
         CANCELLED = "cancelled", "لغو شده"
         RETURNED = "returned", "مرجوع شده"
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_promotion_orders_relation", verbose_name="کاربر")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_promotion_orders", verbose_name="کاربر")
     promotion = models.ForeignKey(Promotion, on_delete=models.PROTECT, related_name="promotion_orders_relation", verbose_name="اقلام تبلیغاتی")
     
     # اطلاعات گیرنده

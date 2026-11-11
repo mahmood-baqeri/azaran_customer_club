@@ -37,7 +37,7 @@ class RequestVisit(BaseModel):
         APPROVED = "approved", "تایید شده"
         REJECTED = "rejected", "رد شده"
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="visit_requests", verbose_name="کاربر")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_visit_requests", verbose_name="کاربر")
     visit = models.ForeignKey(Visit, on_delete=models.CASCADE, related_name="requests", verbose_name="بازدید")
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING, verbose_name="وضعیت")
     

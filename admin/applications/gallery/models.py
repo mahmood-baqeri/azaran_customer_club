@@ -18,7 +18,7 @@ class Gallery(BaseModel):
         REJECTED = "rejected", "رد شده"
 
     # ── هویت ────────────────────────────────────────
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="gallery_posts", verbose_name="کاربر (ثبت‌کننده)")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_gallery_posts", verbose_name="کاربر (ثبت‌کننده)")
     status = models.CharField(max_length=20,  choices=Status.choices, default=Status.PENDING, verbose_name="وضعیت")
 
     # ── تصویر ────────────────────────────────────────

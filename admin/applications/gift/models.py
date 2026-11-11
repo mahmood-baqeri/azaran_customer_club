@@ -45,7 +45,7 @@ class GiftOrder(BaseModel):
         CANCELLED = "cancelled", "لغو شده"
         RETURNED = "returned", "مرجوع شده"
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="gift_orders", verbose_name="کاربر")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_gift_orders", verbose_name="کاربر")
     gift = models.ForeignKey(Gift, on_delete=models.PROTECT, related_name="orders", verbose_name="هدیه")
     
     quantity = models.PositiveIntegerField(default=1, verbose_name="تعداد")

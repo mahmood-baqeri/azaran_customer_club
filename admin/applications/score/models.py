@@ -86,7 +86,7 @@ class UserScoreLog(BaseModel):
     # ──────────────────────────────────────────────────────
     # فیلدها
     # ──────────────────────────────────────────────────────
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="relation_score_logs", verbose_name="کاربر")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_score_logs", verbose_name="کاربر")
     transaction_code = models.CharField(max_length=32, choices=TransactionCode.choices, db_index=True, verbose_name="کد نوع تراکنش")
     direction = models.CharField(max_length=10, choices=Direction.choices, db_index=True, verbose_name="جهت")
     amount = models.PositiveIntegerField(verbose_name="مقدار امتیاز", help_text="برای شکست در بازی‌ها/کوئیز، مقدار صفر (۰) ذخیره شود")
