@@ -33,7 +33,7 @@ export default function LevelProfileScreen() {
                     {/* هدر */}
                     <div className="level-header">
                          <div className="lh-avatar">
-                              {profile.lockedPerks.length > 0 ? <MyImage src={ICONS.ostadkar_1} className="w__100" /> : <MyImage src={ICONS.ostadkar_2} className="w__100" />}
+                              {isOstadkar ? <MyImage src={ICONS.ostadkar_1} className="w__100" /> : <MyImage src={ICONS.ostadkar_2} className="w__100" />}
 
                          </div>
                          <div className="lh-info">
@@ -45,7 +45,9 @@ export default function LevelProfileScreen() {
                                         className="lh-progress-fill"
                                         style={{ width: `${levelInfo.progress_percentage}%` }}
                                    />
-                                   <MyImage src={ICONS.star_2} className="w__15 lh-progress-img" />
+                                   {isOstadkar &&
+                                        <MyImage src={ICONS.star_2} className="w__15 lh-progress-img" />
+                                   }
                               </div>
 
                               <span className="lh-next-level">
@@ -61,13 +63,14 @@ export default function LevelProfileScreen() {
                          <h3 className="level-section-title">مزایای سطح فعلی شما</h3>
                          <div className="perks-list">
                               {profile.activePerks.map((perk) => (
-                                   <div key={perk.id} className="perk-item active">
+                                   <a key={perk.id} className="perk-item active" href={perk.href}>
                                         <MyImage src={perk.icon} className="w__20 perk-icon" />
                                         <span className="perk-title fw-600">{perk.title}</span>
+                                        {perk.help != "" && <span className="perk-help">{perk.help}</span>}
                                         <span className="perk-arrow">
                                              <i className="icon-arrow-left-2 color-primary fw-800"></i>
                                         </span>
-                                   </div>
+                                   </a>
                               ))}
                          </div>
                     </div>
@@ -80,12 +83,8 @@ export default function LevelProfileScreen() {
                                    {profile.lockedPerks.map((perk) => (
                                         <div key={perk.id} className="perk-item locked">
                                              <MyImage src={perk.icon} className="w__20 perk-icon" />
-
-
-                                             <span className="perk-title">{perk.title}</span>
-                                             <span className="perk-lock">
-                                                  <i className="icon-lock"></i>
-                                             </span>
+                                             <span className="perk-title fw-600">{perk.title}</span>
+                                             {perk.help != "" && <span className="perk-help">{perk.help}</span>}
                                         </div>
                                    ))}
                               </div>

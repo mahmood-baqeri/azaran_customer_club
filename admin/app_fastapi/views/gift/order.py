@@ -1,5 +1,6 @@
 # admin/app_fastapi/views/gift/order.py
 
+import os
 from typing import Optional
 from fastapi import APIRouter, Depends
 from channels.db import database_sync_to_async
@@ -156,7 +157,15 @@ def async_create_order(user_id: int, form: dict, idem: Optional[str]):
             if gift.stock < qty:
                 return {"error": "موجودی هدیه کافی نیست"}
 
-            total = gift.azar_value * qty
+            # ----------------------------------------------------
+            # ✅ محاسبه مبلغ با اعمال تخفیف
+            # ----------------------------------------------------
+            original_total = gift.azar_value * qty
+            
+            # ✅ خواندن درصد تخفیف از مدل
+            discount_percent = user.gift_discount_percent
+            discount_amount = int(original_total * discount_percent / 100)
+            total = original_total - discount_amount
 
             # ----------------------------------------------------
             # 🔒 قفل دوم: UserScore

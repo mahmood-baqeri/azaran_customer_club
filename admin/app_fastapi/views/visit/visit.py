@@ -111,6 +111,12 @@ async def create_visit_request(
     form: dict = Depends(DependencyDataRequest),
     user: User = Depends(get_current_user),
 ):
+    
+    is_ostadkar = await sync_to_async(lambda: user.is_ostadkar)()
+    if not is_ostadkar:
+        return error_response("درخواست بازدید از کارخانه فقط برای اعضای سطح استادکار امکان‌پذیر است",)
+        
+        
     visit_id = form.get("visit_id")
     if not visit_id:
         return error_response("شناسه بازدید الزامی است")

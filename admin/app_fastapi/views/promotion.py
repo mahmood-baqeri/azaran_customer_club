@@ -7,6 +7,7 @@ from asgiref.sync import sync_to_async
 from django.db import transaction, IntegrityError
 from django.db.models import Prefetch
 
+from applications.core.jalali_period import get_current_jalali_year_range
 from applications.promotion.models import (
     Promotion,
     PromotionItem,
@@ -17,6 +18,9 @@ from applications.user.models import User
 from app_fastapi.views.user.helper import get_current_user
 from app_fastapi.conf.dependencyRequest import DependencyDataRequest
 from app_fastapi.conf.response import success_response, error_response
+
+from django.utils import timezone
+from datetime import datetime
 
 router = APIRouter()
 
@@ -170,9 +174,10 @@ async def create_promotion_order(
 
 
 
+
 @sync_to_async
 def async_create_promotion_order(user_id: int, form: dict, idem: Optional[str]):
-    # ── idempotency fast-path (بدون تغییر) ──────────────────
+    # ── idempotency fast-path ──────────────────────────────
     if idem:
         existing = (
             PromotionOrder.objects
@@ -192,7 +197,7 @@ def async_create_promotion_order(user_id: int, form: dict, idem: Optional[str]):
 
     try:
         with transaction.atomic():
-            # ✅ قفل ردیف کاربر → درخواست‌های هم‌زمان سریالایز می‌شن
+            # ✅ قفل روی ردیف کاربر — درخواست‌های موازی سریالایز می‌شوند
             user = (
                 User.objects
                 .select_for_update()
@@ -210,19 +215,54 @@ def async_create_promotion_order(user_id: int, form: dict, idem: Optional[str]):
             if not promotion:
                 return {"error": "پک تبلیغاتی یافت نشد یا غیرفعال است"}
 
-            # ✅ چک اتمیک: چون ردیف کاربر قفل شده، هیچ درخواست دیگه‌ای
-            #    نمی‌تونه بین این چک و create قرار بگیره
-            existing_order = (
+            # ----------------------------------------------------
+            # ✅ چک سهمیه سال شمسی جاری
+            # ----------------------------------------------------
+            start, end = get_current_jalali_year_range()
+            yearly_limit = user.promotion_order_yearly_limit
+
+            orders_this_year = (
                 PromotionOrder.objects
-                .filter(user_id=user_id, promotion_id=promotion.id)
-                .first()
+                .filter(
+                    user_id=user_id,
+                    created_at__gte=start,
+                    created_at__lt=end,
+                )
+                .count()
             )
-            if existing_order:
+
+            if orders_this_year >= yearly_limit:
                 return {
-                    "error": "شما قبلاً این پک تبلیغاتی را دریافت کرده‌اید و امکان دریافت مجدد وجود ندارد",
-                    "code": "ALREADY_ORDERED",
+                    "error": (
+                        f"سهمیه سالیانه شما ({yearly_limit} سفارش) "
+                        f"در سال جاری تکمیل شده است"
+                    ),
+                    "code": "YEARLY_LIMIT_REACHED",
                 }
 
+            # ----------------------------------------------------
+            # ✅ چک تکراری نبودن همین پک در سال جاری
+            # (اگر نمی‌خواهید این محدودیت را، این بلوک را حذف کن)
+            # ----------------------------------------------------
+            already_ordered = (
+                PromotionOrder.objects
+                .filter(
+                    user_id=user_id,
+                    promotion_id=promotion.id,
+                    created_at__gte=start,
+                    created_at__lt=end,
+                )
+                .exists()
+            )
+            if already_ordered:
+                return {
+                    "error": "شما در سال جاری این پک تبلیغاتی را دریافت کرده‌اید",
+                    "code": "ALREADY_ORDERED_THIS_YEAR",
+                }
+
+            # ----------------------------------------------------
+            # ✅ ساخت سفارش
+            # ----------------------------------------------------
             order = PromotionOrder.objects.create(
                 user=user,
                 promotion=promotion,
@@ -240,10 +280,14 @@ def async_create_promotion_order(user_id: int, form: dict, idem: Optional[str]):
                 to_status=PromotionOrder.Status.PENDING,
                 action="create",
                 changed_by=user,
-                note="سفارش رایگان پک تبلیغاتی توسط کاربر ثبت شد",
+                note=(
+                    f"سفارش رایگان پک تبلیغاتی توسط "
+                    f"{user.level_info['current_level_display']} ثبت شد "
+                    f"(سهمیه سال: {yearly_limit})"
+                ),
             )
 
-        # ── reload با prefetch (بیرون از تراکنش) ──────────
+        # ── reload بیرون از تراکنش با prefetch ────────────────
         order = (
             PromotionOrder.objects
             .select_related("promotion", "user")
@@ -256,8 +300,7 @@ def async_create_promotion_order(user_id: int, form: dict, idem: Optional[str]):
         return {"order": promotion_order_serialize(order, include_logs=True)}
 
     except IntegrityError:
-        # ── fallback: قید DB جلوی ما رو گرفت (بهترین حالت امنیتی) ──
-        # ۱) شاید idempotency
+        # ── fallback: idempotency conflict ─────────────────────
         if idem:
             existing = (
                 PromotionOrder.objects
@@ -274,21 +317,9 @@ def async_create_promotion_order(user_id: int, form: dict, idem: Optional[str]):
                     "order": promotion_order_serialize(existing, include_logs=True),
                     "idempotent": True,
                 }
-
-        # ۲) یا شاید (user, promotion) — تلاش دوم
-        if PromotionOrder.objects.filter(
-            user_id=user_id,
-            promotion_id=form.get("promotion_id"),
-        ).exists():
-            return {
-                "error": "شما قبلاً این پک تبلیغاتی را دریافت کرده‌اید و امکان دریافت مجدد وجود ندارد",
-                "code": "ALREADY_ORDERED",
-            }
-
-        # ۳) خطای غیرمنتظره
         return {"error": "خطا در ثبت سفارش، لطفاً دوباره تلاش کنید"}
     
-
+    
 # =========================================================
 # CANCEL ORDER
 # =========================================================

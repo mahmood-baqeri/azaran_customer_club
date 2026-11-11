@@ -7,6 +7,13 @@ from django.contrib.auth.models import AbstractUser
 import random
 import string
 
+from applications.core.constant import (
+    KARDAN_GIFT_DISCOUNT_PERCENT, 
+    KARDAN_PROMOTION_ORDER_LIMIT_YEARLY, 
+    LEVEL_THRESHOLD, 
+    OSTADKAR_GIFT_DISCOUNT_PERCENT,
+    OSTADKAR_PROMOTION_ORDER_LIMIT_YEARLY
+)
 from applications.core.baseModel import SoftDeleteModel, BaseModel
 from applications.core.utils import hash_code, generate_verification_code
 from applications.core.validators import validate_mobile
@@ -126,7 +133,74 @@ class User(AbstractUser, SoftDeleteModel):
         except Exception:
             return None
         
+    @property
+    def level_info(self) -> dict:
+        """
+        محاسبه سطح کاربر (کاردان / استادکار) بر اساس مجموع امتیازات کسب‌شده.
+        این متد به عنوان یک property قابل دسترسی است: user.level_info
+        """
+        score = self.get_score
+        score_balance = score.total_earned if score else 0
         
+
+        if score_balance < LEVEL_THRESHOLD:
+            return {
+                "current_level": "kardan",
+                "current_level_display": "کاردان",
+                "progress_percentage": int((score_balance / LEVEL_THRESHOLD) * 100),
+                "points_needed_for_next": LEVEL_THRESHOLD - score_balance,
+            }
+        else:
+            return {
+                "current_level": "ostadkar",
+                "current_level_display": "استادکار",
+                "progress_percentage": 100,
+                "points_needed_for_next": 0,
+            }
+    
+    # ✅ اضافه شد: چک سریع برای اعمال تخفیف
+    @property
+    def is_ostadkar(self) -> bool:
+        """آیا کاربر به سطح استادکار رسیده است؟"""
+        return self.level_info["current_level"] == "ostadkar"    
+    
+    
+    @property
+    def gift_discount_percent(self) -> int:
+        """درصد تخفیف کاربر روی خرید هدایا"""
+        if self.is_ostadkar:
+            return OSTADKAR_GIFT_DISCOUNT_PERCENT
+        return KARDAN_GIFT_DISCOUNT_PERCENT
+    
+    
+    # ─────────────────────────────────────────────────
+    # محدودیت سالیانه سفارش پک تبلیغاتی
+    # ─────────────────────────────────────────────────
+    @property
+    def promotion_order_yearly_limit(self) -> int:
+        return (
+            OSTADKAR_PROMOTION_ORDER_LIMIT_YEARLY
+            if self.is_ostadkar
+            else KARDAN_PROMOTION_ORDER_LIMIT_YEARLY
+        )
+
+    def promotion_orders_in_current_jalali_year(self):
+        """تعداد سفارش پک تبلیغاتی این کاربر در سال شمسی جاری"""
+        from applications.core.jalali_period import get_current_jalali_year_range
+        start, end = get_current_jalali_year_range()
+        return self.user_promotion_orders.filter(
+            created_at__gte=start,
+            created_at__lt=end,
+        ).count()
+
+    def promotion_order_remaining_quota(self) -> int:
+        """سهمیه باقی‌مانده در سال شمسی جاری"""
+        return max(
+            0,
+            self.promotion_order_yearly_limit
+            - self.promotion_orders_in_current_jalali_year(),
+        )
+    
     
 #######################################
 # اطلاعات تکمیلی 

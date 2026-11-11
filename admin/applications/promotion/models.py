@@ -69,11 +69,6 @@ class PromotionOrder(BaseModel):
                 condition=models.Q(idempotency_key__isnull=False),
                 name="uniq_promotion_order_idempotency_per_user",
             ),
-            # ✅ جدید: هر کاربر فقط یک سفارش برای هر پک
-            models.UniqueConstraint(
-                fields=["user", "promotion"],
-                name="uniq_promotion_order_per_user_promotion",
-            ),
         ]
 
     def __str__(self):

@@ -52,23 +52,8 @@ def user_serialize(user):
     if hasattr(user, 'user_job_certificates'):
         job_certs = list(user.user_job_certificates.all())
         
-        
-    # ── محاسبه سطح کاربر (کاردان / استادکار) ───────────────────────────
-    score_balance = score.total_earned if score else 0
-    
-    LEVEL_THRESHOLD = 1000 # آستانه رسیدن به استادکار
 
-    if score_balance < LEVEL_THRESHOLD:
-        current_level = "kardan"
-        current_level_display = "کاردان"
-        progress = (score_balance / LEVEL_THRESHOLD) * 100
-        points_needed = LEVEL_THRESHOLD - score_balance
-    else:
-        current_level = "ostadkar"
-        current_level_display = "استادکار"
-        progress = 100
-        points_needed = 0
-        
+
     base_data = {
         # ==========================================
         # اطلاعات پایه کاربر
@@ -92,12 +77,7 @@ def user_serialize(user):
         # ==========================================
         #  سطح کاربر
         # ==========================================
-        "level": {
-            "current_level": current_level,
-            "current_level_display": current_level_display,
-            "progress_percentage": int(progress),
-            "points_needed_for_next": points_needed,
-        },
+        "level": user.level_info,
 
         # ==========================================
         # اطلاعات دعوت‌کننده
