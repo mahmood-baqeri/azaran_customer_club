@@ -1,8 +1,7 @@
 /* src/shared/styles/level.css */
 
 .level-body {
-     padding: 0 20px 40px;
-     background: #f7f8fb;
+
      min-height: 100vh;
 }
 
@@ -15,6 +14,7 @@
      align-items: center;
      padding: 24px 0;
      position: relative;
+     background: #e1ecfb;
 }
 
 .lh-avatar {
@@ -70,6 +70,12 @@
      transition: width 0.5s ease;
 }
 
+.lh-progress-img {
+     position: absolute;
+     left: -3px;
+     top: -4px;
+}
+
 .lh-next-level {
      font-size: 11px;
      color: #6b7794;
@@ -80,6 +86,7 @@
    ========================================================= */
 .level-section {
      margin-bottom: 24px;
+     padding: 15px;
 }
 
 .level-section-title {
@@ -117,17 +124,7 @@
      opacity: 0.6;
 }
 
-.perk-icon {
-     width: 36px;
-     height: 36px;
-     border-radius: 50%;
-     display: flex;
-     align-items: center;
-     justify-content: center;
-     background: #e8eefc;
-     color: #14306b;
-     font-size: 18px;
-}
+.perk-icon {}
 
 /* آیکون‌های قفل‌شده خاکستری هستند */
 .perk-item.locked .perk-icon {

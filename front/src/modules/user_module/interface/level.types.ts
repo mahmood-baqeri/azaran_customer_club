@@ -3,6 +3,6 @@
 export interface LevelPerk {
   id: string;
   title: string;
-  icon_name: string;
+  icon: string;
   is_locked: boolean;
 }

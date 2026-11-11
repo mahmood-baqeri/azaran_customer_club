@@ -3,14 +3,18 @@
 import Header from "../../../app/layouts/header";
 import { useLevel } from "../hooks/use-level";
 import "../../../shared/styles/level.css";
+import MyImage from "../../../shared/components/image-show";
+import { ICONS } from "../../../shared/constants/icons";
+import { usePageContentClass } from "../../../shared/hooks/use-page-content-class";
 
 export default function LevelProfileScreen() {
+     usePageContentClass("review-active-wrapper");
      const { profile, loading } = useLevel();
 
      if (loading) {
           return (
                <>
-                    <Header title="سطح من" showBack showLogo={false} menuBg="f7f8fb" />
+                    <Header title="سطح من" showBack showLogo={false} menuBg="f7f8fb" buttonBg="e8eefc" />
                     <p className="text-center mt-5 text-muted">در حال دریافت اطلاعات...</p>
                </>
           );
@@ -23,13 +27,14 @@ export default function LevelProfileScreen() {
 
      return (
           <>
-               <Header title="" showBack showLogo={false} menuBg="f7f8fb" />
+               <Header title="" showBack showLogo={false} menuBg="transparent" buttonBg="white" />
 
                <div className="level-body">
                     {/* هدر */}
                     <div className="level-header">
                          <div className="lh-avatar">
-                              <img src={profile.avatar || "/assets/avatar.png"} alt="avatar" />
+                              {profile.lockedPerks.length > 0 ? <MyImage src={ICONS.ostadkar_1} className="w__100" /> : <MyImage src={ICONS.ostadkar_2} className="w__100" />}
+
                          </div>
                          <div className="lh-info">
                               <span className="lh-name">سطح شما: {levelInfo.current_level_display}</span>
@@ -40,6 +45,7 @@ export default function LevelProfileScreen() {
                                         className="lh-progress-fill"
                                         style={{ width: `${levelInfo.progress_percentage}%` }}
                                    />
+                                   <MyImage src={ICONS.star_2} className="w__15 lh-progress-img" />
                               </div>
 
                               <span className="lh-next-level">
@@ -51,17 +57,15 @@ export default function LevelProfileScreen() {
                     </div>
 
                     {/* مزایای سطح فعلی */}
-                    <div className="level-section">
+                    <div className="level-section mt-3">
                          <h3 className="level-section-title">مزایای سطح فعلی شما</h3>
                          <div className="perks-list">
                               {profile.activePerks.map((perk) => (
                                    <div key={perk.id} className="perk-item active">
-                                        <div className="perk-icon">
-                                             <i className={perk.icon_name}></i>
-                                        </div>
-                                        <span className="perk-title">{perk.title}</span>
+                                        <MyImage src={perk.icon} className="w__20 perk-icon" />
+                                        <span className="perk-title fw-600">{perk.title}</span>
                                         <span className="perk-arrow">
-                                             <i className="icon-arrow-left-3"></i>
+                                             <i className="icon-arrow-left-2 color-primary fw-800"></i>
                                         </span>
                                    </div>
                               ))}
@@ -75,9 +79,9 @@ export default function LevelProfileScreen() {
                               <div className="perks-list">
                                    {profile.lockedPerks.map((perk) => (
                                         <div key={perk.id} className="perk-item locked">
-                                             <div className="perk-icon locked-icon">
-                                                  <i className={perk.icon_name}></i>
-                                             </div>
+                                             <MyImage src={perk.icon} className="w__20 perk-icon" />
+
+
                                              <span className="perk-title">{perk.title}</span>
                                              <span className="perk-lock">
                                                   <i className="icon-lock"></i>

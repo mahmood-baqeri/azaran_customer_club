@@ -104,7 +104,7 @@ export default function GiftDetailScreen() {
 
      return (
           <>
-               <Header showLogo={false} showBack menuBg="e8eefc" buttonBg="white" />
+               <Header showLogo={false} showBack menuBg="transparent" buttonBg="white" />
 
                <div className="gift-detail-section" style={{ background: "#e8eefc" }}>
                     <div className="gift-body" style={{ paddingTop: 0, paddingBottom: 0 }}>
