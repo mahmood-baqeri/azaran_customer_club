@@ -17,7 +17,7 @@ if __name__ == "__main__":
                 "config.asgi:application",
                 host="0.0.0.0",
                 port=8000,
-                workers=4
+                workers=1
             )
 
         # os.system("nohup python3 run.py > server.log 2>&1 &")

@@ -10,6 +10,7 @@ import { useUser } from "../../modules/user_module/hooks/use-user";
 import { NOTIFICATIONS_ROUTES } from "../../modules/notifications_module/routes";
 import { ICONS } from "../../shared/constants/icons";
 import { USER_ROUTES } from "../../modules/user_module/routes";
+import { Link } from "react-router-dom";
 
 interface SidebarMenuProps {
      isOpen: boolean;
@@ -18,7 +19,6 @@ interface SidebarMenuProps {
      displayScore: string | number;
      displayAvatar?: string;
      onLogout: () => void;
-     onNavigate: (route: string) => void;
 }
 
 export default function SidebarMenu({
@@ -28,7 +28,6 @@ export default function SidebarMenu({
      displayScore,
      displayAvatar,
      onLogout,
-     onNavigate,
 }: SidebarMenuProps) {
      const { user } = useUser();
 
@@ -73,8 +72,8 @@ export default function SidebarMenu({
 
      const MENU_ITEMS = [
           { label: "اعلان ها", text: "", icon: ICONS.notification, haveBadge: true, route: NOTIFICATIONS_ROUTES.all },
-          { label: "اطلاعات کاربری", text: "", icon: ICONS.user_edit, haveBadge: false, route: USER_ROUTES.profile },
-          { label: "سطح و مزایا", text: user?.profile?.job_title, icon: ICONS.level, haveBadge: false, route: USER_ROUTES.level },
+          { label: "اطلاعات کاربری", text: "", icon: ICONS.user_edit, haveBadge: false, route: USER_ROUTES.completion },
+          { label: "سطح و مزایا", text: user?.level?.current_level_display, icon: ICONS.level, haveBadge: false, route: USER_ROUTES.level },
      ] as const;
 
      return (
@@ -136,11 +135,7 @@ export default function SidebarMenu({
                          <ul className="sidenav-nav">
                               {MENU_ITEMS.map((item) => (
                                    <li key={item.label}>
-                                        <button
-                                             type="button"
-                                             className="nav-link-btn color-primary"
-                                             onClick={() => onNavigate(item.route)}
-                                        >
+                                        <Link to={item.route} className="nav-link-btn color-primary">
                                              <MyImage
                                                   src={item.icon}
                                                   className=""
@@ -148,12 +143,12 @@ export default function SidebarMenu({
                                                   alt="avatar"
                                                   width={22}
                                              />
-                                             <span className="ml-auto">{item.label}</span>
-                                             {item.text && <span className="_text">{item.text}</span>}
+                                             <span className="ml-auto fw-500">{item.label}</span>
+                                             {item.text && <span className="_text fw-500">{item.text}</span>}
                                              {item.haveBadge && <i className="badge_element"></i>}
 
                                              <i className="icon-arrow-left-2 ml-0 fs-12 color-primary"></i>
-                                        </button>
+                                        </Link>
                                    </li>
                               ))}
 

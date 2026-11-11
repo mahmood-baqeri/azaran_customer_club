@@ -4,6 +4,7 @@ import MyImage from '../../../shared/components/image-show';
 import { ICONS } from '../../../shared/constants/icons';
 import GlobalModal from '../../../shared/components/GlobalModal';
 import { SUPPORT_ROUTES } from '../../support_module/routes';
+import { Link } from 'react-router-dom';
 
 interface Props {
      isOpen: boolean;
@@ -24,11 +25,7 @@ export default function SupportModal({ isOpen, onClose }: Props) {
 
                     < div className="support-modal-body" >
                          {/* دکمه تماس */}
-                         <a
-                              href="tel:09103143105"
-                              className="support-action-card"
-                              onClick={onClose} // بستن مودال بعد از کلیک
-                         >
+                         <a href="tel:09103143105" className="support-action-card" onClick={onClose} >
                               <div className="support-action-content">
                                    <div className="support-icon-box">
                                         <MyImage src={ICONS.phone} className="support-icon-img" />
@@ -42,7 +39,7 @@ export default function SupportModal({ isOpen, onClose }: Props) {
                          </a>
 
                          {/* دکمه پیام */}
-                         <a href={SUPPORT_ROUTES.create} className="support-action-card">
+                         <Link to={SUPPORT_ROUTES.create} className="support-action-card">
                               <div className="support-action-content">
                                    <div className="support-icon-box">
                                         <MyImage src={ICONS.message} className="support-icon-img" />
@@ -53,7 +50,7 @@ export default function SupportModal({ isOpen, onClose }: Props) {
                                    </div>
                               </div>
                               <FaChevronLeft className="support-action-chevron" size={14} />
-                         </a >
+                         </Link >
 
                          {/* دکمه انصراف */}
                          < button className="support-cancel-btn" onClick={onClose} >  انصراف </button >

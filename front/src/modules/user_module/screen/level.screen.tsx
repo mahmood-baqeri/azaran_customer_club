@@ -33,7 +33,7 @@ export default function LevelProfileScreen() {
                     {/* هدر */}
                     <div className="level-header">
                          <div className="lh-avatar">
-                              {isOstadkar ? <MyImage src={ICONS.ostadkar_1} className="w__100" /> : <MyImage src={ICONS.ostadkar_2} className="w__100" />}
+                              {isOstadkar ? <MyImage src={ICONS.ostadkar_2} className="w__100" /> : <MyImage src={ICONS.ostadkar_1} className="w__100" />}
 
                          </div>
                          <div className="lh-info">

@@ -23,3 +23,30 @@ export default function Preloader() {
     </div>
   );
 }
+
+
+// src/shared/tools/loader.tsx
+
+import "../styles/preloader.css";
+
+interface PreloaderProps {
+  /** اگر true باشد، انیمیشن خروج اجرا می‌شود (برای RouteLoader) */
+  exiting?: boolean;
+}
+
+export const MainPreloader = ({ exiting = false }: PreloaderProps) => {
+  return (
+    <div
+      className={`preloader${exiting ? " preloader--exiting" : ""}`}
+      id="preloader"
+      role="status"
+      aria-live="polite"
+      aria-label="در حال بارگذاری"
+    >
+      <div className="preloader-inner">
+        <div className="preloader-ring" aria-hidden="true" />
+        <span className="preloader-text">در حال بارگذاری…</span>
+      </div>
+    </div>
+  );
+}

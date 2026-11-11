@@ -49,10 +49,10 @@ export default function Header({
 
      const closeMenu = () => setIsMenuOpen(false);
 
-     const handleNavigate = (route: string): void => {
-          setIsMenuOpen(false);
-          setTimeout(() => navigate(route), 280);
-     };
+     // const handleNavigate = (route: string): void => {
+     //      setIsMenuOpen(false);
+     //      setTimeout(() => navigate(route), 280);
+     // };
 
      const handleLogout = () => {
           setIsMenuOpen(false);
@@ -132,7 +132,7 @@ export default function Header({
                                         <div className="user-info">
                                              <h1>{user?.name}</h1>
                                              <div>
-                                                  <span className="job">{user?.profile?.job_title}</span>
+                                                  <span className="job">{user?.level?.current_level_display}</span>
                                                   <span className="score">{user?.score?.current_balance}</span>
                                                   <img src={ICONS.coin_15} alt="coin" />
                                              </div>
@@ -172,7 +172,7 @@ export default function Header({
                     displayScore={displayScore}
                     displayAvatar={typeof avatarRaw === "string" ? avatarRaw : undefined}
                     onLogout={handleLogout}
-                    onNavigate={handleNavigate}
+               // onNavigate={handleNavigate}
                />
           </>
      );

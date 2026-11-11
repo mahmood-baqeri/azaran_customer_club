@@ -1,0 +1,109 @@
+/* src/shared/styles/preloader.css */
+
+.preloader {
+     position: fixed;
+     inset: 0;
+     z-index: 9999;
+     display: grid;
+     place-items: center;
+
+     /* ✅ پس‌زمینه‌ی خیلی مات — صفحه عملاً دیده نمی‌شود */
+     background: rgba(255, 255, 255, 0.94);
+     backdrop-filter: blur(12px) saturate(140%);
+     -webkit-backdrop-filter: blur(12px) saturate(140%);
+
+     /* ✅ هیچ انیمیشن ورودی — فوری ظاهر می‌شود */
+     opacity: 1;
+}
+
+/* فقط خروج انیمیشن دارد (کاربر قبلاً منتظر بوده، فلش نمی‌زند) */
+.preloader--exiting {
+     animation: preloaderOut 180ms ease-in forwards;
+}
+
+.preloader-inner {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     gap: 14px;
+}
+
+/* حلقه‌ی گرادیانی چرخان */
+.preloader-ring {
+     width: 45px;
+     height: 45px;
+     border-radius: 50%;
+     background: conic-gradient(from 0deg,
+               #0a387c00 0deg,
+               #0a387c59 90deg,
+               #0a387cbd 270deg,
+               #0a387ce0 330deg,
+               #0a387c 360deg);
+     -webkit-mask: radial-gradient(farthest-side,
+               transparent calc(100% - 5px),
+               #0a387c calc(100% - 4.5px));
+     mask: radial-gradient(farthest-side,
+               transparent calc(100% - 5px),
+               #0a387c calc(100% - 4.5px));
+     animation: preloaderSpin 900ms linear infinite;
+     filter: drop-shadow(0 0 6px rgba(37, 99, 235, 0.3));
+}
+
+
+
+.preloader-text {
+     font-family: inherit;
+     font-size: 13px;
+     font-weight: 500;
+     color: #475569;
+     letter-spacing: 0.3px;
+     animation: preloaderPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes preloaderSpin {
+     to {
+          transform: rotate(360deg);
+     }
+}
+
+@keyframes preloaderOut {
+     from {
+          opacity: 1;
+     }
+
+     to {
+          opacity: 0;
+     }
+}
+
+@keyframes preloaderPulse {
+
+     0%,
+     100% {
+          opacity: 0.55;
+     }
+
+     50% {
+          opacity: 1;
+     }
+}
+
+@media (prefers-color-scheme: dark) {
+     .preloader {
+          background: rgba(15, 23, 42, 0.94);
+     }
+
+     .preloader-text {
+          color: #94a3b8;
+     }
+}
+
+@media (prefers-reduced-motion: reduce) {
+     .preloader-ring {
+          animation-duration: 2s;
+     }
+
+     .preloader-text {
+          animation: none;
+     }
+}

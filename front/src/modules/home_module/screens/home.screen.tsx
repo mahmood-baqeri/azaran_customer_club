@@ -12,9 +12,8 @@ import { FACTOR_ROUTES } from "../../factor_module/routes";
 import SupportModal from "../components/SupportModal";
 import { useCallback, useMemo, useState } from "react";
 import { GALLERY_ROUTES } from "../../gallery_module/routes";
-import { VISIT_ROUTES } from "../../visit_module/routes";
 import { REVIEW_ROUTES } from "../../review_module/routes";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LEARN_ROUTES } from "../../learn_module/routes";
 import { INVITATION_ROUTES } from "../../invitation_module/routes";
 import { SCORE_ROUTES } from "../../score_module/routes";
@@ -88,7 +87,6 @@ const EarnPointsSection = () => {
           { title: 'معرفی همکاران', icon: ICONS.user, bg: 'bg-light-blue', class: "img25_25", href: INVITATION_ROUTES.list },
           { title: 'نظرسنجی', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: REVIEW_ROUTES.main },
           { title: 'ثبت فاکتور', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: FACTOR_ROUTES.list },
-          { title: ' بازدید کارخانه', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: VISIT_ROUTES.list },
           { title: ' تاریخچه امتیازات', icon: ICONS.notebook, bg: 'bg-light-blue', class: "img20_20", href: SCORE_ROUTES.history },
      ];
 
@@ -98,13 +96,13 @@ const EarnPointsSection = () => {
                <div className="bg-white rounded-4 p-3 shadow-sm">
                     <div className="row g-3">
                          {items.map((item, index) => (
-                              <a className="col-6 fw-400" key={index} href={item.href}>
+                              <Link className="col-6 fw-400" key={index} to={item.href}>
                                    <div className={`d-flex align-items-center justify-content-between p-3 rounded-3 ${item.bg}`}>
                                         <MyImage src={item.icon} def="/assets/none.png" alt="photo" className={item.class} />
 
                                         <span className="fs-11 color-primary">{item.title}</span>
                                    </div>
-                              </a>
+                              </Link>
                          ))}
                     </div>
                </div>
@@ -120,24 +118,24 @@ const GiftsSection = () => {
           <div className="mb-4 rtl">
                <div className="d-flex justify-content-between align-items-center mb-3">
                     <h6 className="fw-bold mb-0 fs-15">هدایا</h6>
-                    <a href={GIFT_ROUTES.orders} className="text-decoration-none  d-flex align-items-center gap-1 fw-500 fs-12 color-primary">
+                    <Link to={GIFT_ROUTES.orders} className="text-decoration-none  d-flex align-items-center gap-1 fw-500 fs-12 color-primary">
                          <span> وضعیت سفارش</span>
                          <FaChevronLeft size={12} />
-                    </a>
+                    </Link>
                </div>
                <div className="bg-white rounded-4 p-3 shadow-sm">
                     <div className="row g-3">
                          <div className="col-6">
-                              <a href={GIFT_ROUTES.list} className="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light-blue">
+                              <Link to={GIFT_ROUTES.list} className="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light-blue">
                                    <MyImage src={ICONS.gift} def="/assets/none.png" alt="photo" className="img20_20" />
                                    <span className="fs-12 fw-400 color-primary">ویترین هدایا</span>
-                              </a>
+                              </Link>
                          </div>
                          <div className="col-6">
-                              <a href={PROMOTION_ROUTES.list} className="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light-blue">
+                              <Link to={PROMOTION_ROUTES.list} className="d-flex align-items-center justify-content-between p-3 rounded-3 bg-light-blue">
                                    <MyImage src={ICONS.ads} def="/assets/none.png" alt="photo" className="img25_25" />
                                    <span className="fs-12 fw-400 color-primary">اقلام تبلیغاتی</span>
-                              </a>
+                              </Link>
                          </div>
                     </div>
                </div>

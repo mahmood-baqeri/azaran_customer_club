@@ -1,13 +1,14 @@
 // front/src/app/router.tsx
 
 import { lazy, Suspense, useLayoutEffect } from "react";
-import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import { setNavigator } from "../shared/auth/navigation";
 import MainLayout from "./layouts/main-layout";
 import { AUTH_ROUTES } from "../modules/auth_module/routes";
-import Preloader from "../shared/tools/loader";
+import { MainPreloader } from "../shared/tools/loader";
 import GuestGuard from "../modules/auth_module/components/guest-guard";
 import AuthGuard from "../modules/auth_module/components/auth-guard";
+import ErrorBoundary from "../shared/components/error-boundary";
 import { USER_ROUTES } from "../modules/user_module/routes";
 import { NOTIFICATIONS_ROUTES } from "../modules/notifications_module/routes";
 import { GIFT_ROUTES } from "../modules/gift_module/routes";
@@ -22,7 +23,6 @@ import { REVIEW_ROUTES } from "../modules/review_module/routes.ts";
 import { LEARN_ROUTES } from "../modules/learn_module/routes.ts";
 import { INVITATION_ROUTES } from "../modules/invitation_module/routes.ts";
 import { SCORE_ROUTES } from "../modules/score_module/routes.ts";
-
 
 const LoginScreen = lazy(() => import("../modules/auth_module/screens/login.screen"));
 const OtpScreen = lazy(() => import("../modules/auth_module/screens/otp.screen"));
@@ -84,95 +84,97 @@ const ScoreHistoryScreen = lazy(() => import("../modules/score_module/screen/sco
 
 export default function AppRouter() {
      const navigate = useNavigate();
-     const location = useLocation();
 
      useLayoutEffect(() => {
           setNavigator((to: string) => navigate(to));
      }, [navigate]);
 
      return (
-          <Suspense fallback={<Preloader />}>
-               <Routes>
-                    <Route element={<GuestGuard />}>
-                         <Route path={AUTH_ROUTES.login} element={<LoginScreen />} />
-                         <Route path={AUTH_ROUTES.otp} element={<OtpScreen />} />
-                         <Route path={AUTH_ROUTES.password} element={<PasswordLoginScreen />} />
-                    </Route>
-
-                    <Route element={<AuthGuard />}>
-
-                         <Route path={AUTH_ROUTES.register} element={<RegisterScreen />} />
-                         <Route path={AUTH_ROUTES.welcome} element={<WelcomeScreen />} />
-
-                         <Route element={<MainLayout />}>
-                              <Route path="/" element={<HomePage key={location.key} />} />
-
-                              <Route path={NOTIFICATIONS_ROUTES.all} element={<NotificationScreen />} />
-
-                              <Route path={USER_ROUTES.completion} element={<CompletionScreen />} />
-                              <Route path={USER_ROUTES.profile} element={<ProfileScreen />} />
-                              <Route path={USER_ROUTES.favorite} element={<FavoriteScreen />} />
-                              <Route path={USER_ROUTES.level} element={<LevelProfileScreen />} />
-
-                              {/* Gift Routes */}
-                              <Route path={GIFT_ROUTES.list} element={<GiftsScreen />} />
-                              <Route path={GIFT_ROUTES.detail(":id")} element={<GiftDetailScreen />} />
-                              <Route path={GIFT_ROUTES.orders} element={<OrdersScreen />} />
-                              <Route path={GIFT_ROUTES.orderDetail(":id")} element={<OrderDetailScreen />} />
-                              <Route path={GIFT_ROUTES.success(":id")} element={<SuccessfulOrderScreen type="gift" />} />
-
-                              {/* Promotion Routes */}
-                              <Route path={PROMOTION_ROUTES.list} element={<PromotionsScreen />} />
-                              <Route path={PROMOTION_ROUTES.orders} element={<PromotionOrdersScreen />} />
-                              <Route path={PROMOTION_ROUTES.success(":id")} element={<SuccessfulOrderScreen type="promotion" />} />
-                              <Route path={PROMOTION_ROUTES.orderDetail(":id")} element={<PromotionOrderDetailScreen />} />
-
-                              {/* FAQ Routes */}
-                              <Route path={FAQ_ROUTES.list} element={<FaqListScreen />} />
-                              <Route path={FAQ_ROUTES.detail(":id")} element={<FaqDetailScreen />} />
-
-                              {/* PROJECT Routes */}
-                              <Route path={PROJECT_ROUTES.list} element={<ProjectsListScreen />} />
-                              <Route path={PROJECT_ROUTES.create} element={<CreateProjectScreen />} />
-                              <Route path={PROJECT_ROUTES.upload(":id")} element={<UploadAttachmentsScreen />} />
-                              <Route path={PROJECT_ROUTES.edit(":id")} element={<EditProjectScreen />} />
-                              <Route path={PROJECT_ROUTES.detail(":id")} element={<ProjectDetailScreen />} />
-                              <Route path={PROJECT_ROUTES.colleagues(":id")} element={<ColleaguesScreen />} />
-
-                              {/* FACTOR Routes */}
-                              <Route path={FACTOR_ROUTES.list} element={<FactorsListScreen />} />
-                              <Route path={FACTOR_ROUTES.create} element={<CreateFactorScreen />} />
-                              <Route path={FACTOR_ROUTES.edit(":id")} element={<EditFactorScreen />} />
-
-                              {/* SUPPORT Routes */}
-                              <Route path={SUPPORT_ROUTES.list} element={<TicketsListScreen />} />
-                              <Route path={SUPPORT_ROUTES.create} element={<CreateTicketScreen />} />
-
-                              {/* GALLERY Routes */}
-                              <Route path={GALLERY_ROUTES.list} element={<GalleriesListScreen />} />
-                              <Route path={GALLERY_ROUTES.create} element={<CreateGalleryScreen />} />
-                              <Route path={GALLERY_ROUTES.detail(":id")} element={<GalleryDetailScreen />} />
-
-                              {/* REVIEW Routes */}
-                              <Route path={REVIEW_ROUTES.main} element={<ReviewScreen />} />
-
-                              {/* VISIT Routes */}
-                              <Route path={VISIT_ROUTES.list} element={<VisitsListScreen />} />
-                              <Route path={VISIT_ROUTES.create} element={<CreateVisitScreen />} />
-                              <Route path={VISIT_ROUTES.detail(":id")} element={<VisitDetailScreen />} />
-
-                              {/* INVITATION Routes */}
-                              <Route path={INVITATION_ROUTES.list} element={<InvitationsListScreen />} />
-
-                              {/* SCORE Routes */}
-                              <Route path={SCORE_ROUTES.history} element={<ScoreHistoryScreen />} />
-
-                              {/* LEARN Routes */}
-                              <Route path={LEARN_ROUTES.list} element={<LearnsListScreen />} />
-                              <Route path={LEARN_ROUTES.detail(":id")} element={<LearnDetailScreen />} />
+          <ErrorBoundary>
+               <Suspense fallback={<MainPreloader exiting={false} />}>
+                    <Routes>
+                         <Route element={<GuestGuard />}>
+                              <Route path={AUTH_ROUTES.login} element={<LoginScreen />} />
+                              <Route path={AUTH_ROUTES.otp} element={<OtpScreen />} />
+                              <Route path={AUTH_ROUTES.password} element={<PasswordLoginScreen />} />
                          </Route>
-                    </Route>
-               </Routes>
-          </Suspense>
+
+                         <Route element={<AuthGuard />}>
+                              <Route path={AUTH_ROUTES.register} element={<RegisterScreen />} />
+                              <Route path={AUTH_ROUTES.welcome} element={<WelcomeScreen />} />
+
+                              <Route element={<MainLayout />}>
+                                   {/* توجه: key={location.key} عمداً حذف شد تا HomePage
+                                       در هر ناوبری remount نشود و درخواست تکراری نزند. */}
+                                   <Route path="/" element={<HomePage />} />
+
+                                   <Route path={NOTIFICATIONS_ROUTES.all} element={<NotificationScreen />} />
+
+                                   <Route path={USER_ROUTES.completion} element={<CompletionScreen />} />
+                                   <Route path={USER_ROUTES.profile} element={<ProfileScreen />} />
+                                   <Route path={USER_ROUTES.favorite} element={<FavoriteScreen />} />
+                                   <Route path={USER_ROUTES.level} element={<LevelProfileScreen />} />
+
+                                   {/* Gift */}
+                                   <Route path={GIFT_ROUTES.list} element={<GiftsScreen />} />
+                                   <Route path={GIFT_ROUTES.detail(":id")} element={<GiftDetailScreen />} />
+                                   <Route path={GIFT_ROUTES.orders} element={<OrdersScreen />} />
+                                   <Route path={GIFT_ROUTES.orderDetail(":id")} element={<OrderDetailScreen />} />
+                                   <Route path={GIFT_ROUTES.success(":id")} element={<SuccessfulOrderScreen type="gift" />} />
+
+                                   {/* Promotion */}
+                                   <Route path={PROMOTION_ROUTES.list} element={<PromotionsScreen />} />
+                                   <Route path={PROMOTION_ROUTES.orders} element={<PromotionOrdersScreen />} />
+                                   <Route path={PROMOTION_ROUTES.success(":id")} element={<SuccessfulOrderScreen type="promotion" />} />
+                                   <Route path={PROMOTION_ROUTES.orderDetail(":id")} element={<PromotionOrderDetailScreen />} />
+
+                                   {/* FAQ */}
+                                   <Route path={FAQ_ROUTES.list} element={<FaqListScreen />} />
+                                   <Route path={FAQ_ROUTES.detail(":id")} element={<FaqDetailScreen />} />
+
+                                   {/* Project */}
+                                   <Route path={PROJECT_ROUTES.list} element={<ProjectsListScreen />} />
+                                   <Route path={PROJECT_ROUTES.create} element={<CreateProjectScreen />} />
+                                   <Route path={PROJECT_ROUTES.upload(":id")} element={<UploadAttachmentsScreen />} />
+                                   <Route path={PROJECT_ROUTES.edit(":id")} element={<EditProjectScreen />} />
+                                   <Route path={PROJECT_ROUTES.detail(":id")} element={<ProjectDetailScreen />} />
+                                   <Route path={PROJECT_ROUTES.colleagues(":id")} element={<ColleaguesScreen />} />
+
+                                   {/* Factor */}
+                                   <Route path={FACTOR_ROUTES.list} element={<FactorsListScreen />} />
+                                   <Route path={FACTOR_ROUTES.create} element={<CreateFactorScreen />} />
+                                   <Route path={FACTOR_ROUTES.edit(":id")} element={<EditFactorScreen />} />
+
+                                   {/* Support */}
+                                   <Route path={SUPPORT_ROUTES.list} element={<TicketsListScreen />} />
+                                   <Route path={SUPPORT_ROUTES.create} element={<CreateTicketScreen />} />
+
+                                   {/* Gallery */}
+                                   <Route path={GALLERY_ROUTES.list} element={<GalleriesListScreen />} />
+                                   <Route path={GALLERY_ROUTES.create} element={<CreateGalleryScreen />} />
+                                   <Route path={GALLERY_ROUTES.detail(":id")} element={<GalleryDetailScreen />} />
+
+                                   {/* Review */}
+                                   <Route path={REVIEW_ROUTES.main} element={<ReviewScreen />} />
+
+                                   {/* Visit */}
+                                   <Route path={VISIT_ROUTES.list} element={<VisitsListScreen />} />
+                                   <Route path={VISIT_ROUTES.create} element={<CreateVisitScreen />} />
+                                   <Route path={VISIT_ROUTES.detail(":id")} element={<VisitDetailScreen />} />
+
+                                   {/* Invitation */}
+                                   <Route path={INVITATION_ROUTES.list} element={<InvitationsListScreen />} />
+
+                                   {/* Score */}
+                                   <Route path={SCORE_ROUTES.history} element={<ScoreHistoryScreen />} />
+
+                                   {/* Learn */}
+                                   <Route path={LEARN_ROUTES.list} element={<LearnsListScreen />} />
+                                   <Route path={LEARN_ROUTES.detail(":id")} element={<LearnDetailScreen />} />
+                              </Route>
+                         </Route>
+                    </Routes>
+               </Suspense>
+          </ErrorBoundary>
      );
 }
