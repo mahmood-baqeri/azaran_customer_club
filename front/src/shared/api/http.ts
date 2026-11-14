@@ -1,6 +1,5 @@
 // src/shared/api/http.ts
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { BASE_URL, RunInServer } from "../constants/env";
 import { Token } from "../constants/storage-keys";

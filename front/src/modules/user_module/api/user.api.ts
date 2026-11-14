@@ -34,8 +34,8 @@ export interface SimpleResponse {
 
 export const userApi = {
   // ✅ دریافت دیتای جامع (شامل آمار، فعالیت‌ها و پروفایل)
-  me: (): Promise<ProfileResponse> =>
-    apiGET(`${BASE_URL}user/me/`, {}, true),
+  full_information: (): Promise<ProfileResponse> =>
+    apiGET(`${BASE_URL}user/full_information/`, {}, true),
 
   // ✅ (اختیاری) اگر جایی نیاز به دیتای پایه پروفایل داشتید
   profile: (): Promise<ProfileResponse> =>

@@ -20,7 +20,14 @@ export default function LevelProfileScreen() {
           );
      }
 
-     if (!profile) return null;
+     if (!profile) {
+          return (
+               <>
+                    <Header title="سطح من" showBack showLogo={false} menuBg="f7f8fb" buttonBg="e8eefc" />
+                    <p className="text-center mt-5 text-muted">اطلاعات سطح در دسترس نیست. لطفاً دوباره تلاش کنید.</p>
+               </>
+          );
+     }
 
      const { levelInfo } = profile;
      const isOstadkar = levelInfo.current_level === "ostadkar";
@@ -28,26 +35,19 @@ export default function LevelProfileScreen() {
      return (
           <>
                <Header title="" showBack showLogo={false} menuBg="transparent" buttonBg="white" />
-
                <div className="level-body">
-                    {/* هدر */}
                     <div className="level-header">
                          <div className="lh-avatar">
-                              {isOstadkar ? <MyImage src={ICONS.ostadkar_2} className="w__100" /> : <MyImage src={ICONS.ostadkar_1} className="w__100" />}
-
+                              {isOstadkar
+                                   ? <MyImage src={ICONS.ostadkar_2} className="w__100" />
+                                   : <MyImage src={ICONS.ostadkar_1} className="w__100" />}
                          </div>
                          <div className="lh-info">
                               <span className="lh-name">سطح شما: {levelInfo.current_level_display}</span>
 
-                              {/* نوار پیشرفت */}
                               <div className="lh-progress-track">
-                                   <div
-                                        className="lh-progress-fill"
-                                        style={{ width: `${levelInfo.progress_percentage}%` }}
-                                   />
-                                   {isOstadkar &&
-                                        <MyImage src={ICONS.star_2} className="w__15 lh-progress-img" />
-                                   }
+                                   <div className="lh-progress-fill" style={{ width: `${levelInfo.progress_percentage}%` }} />
+                                   {isOstadkar && <MyImage src={ICONS.star_2} className="w__15 lh-progress-img" />}
                               </div>
 
                               <span className="lh-next-level">
@@ -58,7 +58,6 @@ export default function LevelProfileScreen() {
                          </div>
                     </div>
 
-                    {/* مزایای سطح فعلی */}
                     <div className="level-section mt-3">
                          <h3 className="level-section-title">مزایای سطح فعلی شما</h3>
                          <div className="perks-list">
@@ -66,7 +65,7 @@ export default function LevelProfileScreen() {
                                    <a key={perk.id} className="perk-item active" href={perk.href}>
                                         <MyImage src={perk.icon} className="w__20 perk-icon" />
                                         <span className="perk-title fw-600">{perk.title}</span>
-                                        {perk.help != "" && <span className="perk-help">{perk.help}</span>}
+                                        {perk.help !== "" && <span className="perk-help">{perk.help}</span>}
                                         <span className="perk-arrow">
                                              <i className="icon-arrow-left-2 color-primary fw-800"></i>
                                         </span>
@@ -75,7 +74,6 @@ export default function LevelProfileScreen() {
                          </div>
                     </div>
 
-                    {/* مزایای قفل‌شده (فقط برای کاردان) */}
                     {profile.lockedPerks.length > 0 && (
                          <div className="level-section">
                               <p className="level-locked-hint">با رسیدن به سطح استادکار باز می‌شود</p>
@@ -84,7 +82,7 @@ export default function LevelProfileScreen() {
                                         <div key={perk.id} className="perk-item locked">
                                              <MyImage src={perk.icon} className="w__20 perk-icon" />
                                              <span className="perk-title fw-600">{perk.title}</span>
-                                             {perk.help != "" && <span className="perk-help">{perk.help}</span>}
+                                             {perk.help !== "" && <span className="perk-help">{perk.help}</span>}
                                         </div>
                                    ))}
                               </div>

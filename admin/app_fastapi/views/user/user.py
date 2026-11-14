@@ -1,5 +1,8 @@
 # admin/app_fastapi/views/user/user.py
+import re
+
 import jwt
+import logging
 from datetime import datetime, timedelta, timezone
 
 from asgiref.sync import sync_to_async
@@ -15,7 +18,21 @@ from app_fastapi.conf.response import success_response, error_response
 from app_fastapi.schemas.user import LogoutSchema
 from app_fastapi.views.user.helper import get_current_user
 
+# ── Import Models ─────────────────────────────────
+from applications.user.models import User, UserInvitation
+from applications.project.models import Project
+from applications.factor.models import Factor
+from applications.gift.models import GiftOrder
+from applications.promotion.models import PromotionOrder
+from applications.support.models import Support
+from applications.gallery.models import Gallery
+from applications.visit.models import RequestVisit
+from applications.faq.models import FAQ
+from applications.review.models import ReviewQuestion
+
 router = APIRouter()
+
+logger = logging.getLogger(__name__)
 
 
 def _location_name(obj):
@@ -27,125 +44,109 @@ def _location_name(obj):
 #############################################################################################
 # سریالایزر کاربر
 #############################################################################################
-def user_serialize(user):
-    inviter = user.get_inviter
-    profile = user.get_profile_info
+def user_serialize(user, include_full_information=False):
     score   = user.get_score
 
-    try:
-        from applications.user.models import FavoriteQuestion
-        favorite_answers_count = user.user_favorite_answers.count()
-        
-        # بررسی اینکه آیا کاربر به تمام سوالات فعال پاسخ داده است یا خیر
-        total_active_questions = FavoriteQuestion.objects.filter(is_active=True).count()
-        if total_active_questions == 0:
-            has_answered_all_favorites = True # اگر سوالی وجود ندارد، یعنی همه را پاسخ داده
-        else:
-            answered_active_count = user.user_favorite_answers.filter(question__is_active=True).count()
-            has_answered_all_favorites = answered_active_count >= total_active_questions
-    except Exception:
-        favorite_answers_count = 0
-        has_answered_all_favorites = False
-
-
-    job_certs = []
-    if hasattr(user, 'user_job_certificates'):
-        job_certs = list(user.user_job_certificates.all())
-        
-
-
+    # ------- داده‌های پایه (همیشه) -------
     base_data = {
-        # ==========================================
-        # اطلاعات پایه کاربر
-        # ==========================================
         "uuid": str(user.uuid),
         "name": user.full_name,
         "firstname": user.first_name,
         "lastname": user.last_name,
         "short_name": user.short_name,
         "avatar": get_file_url(user.avatar),
-
-        "mobile": user.mobile,
-        "is_mobile_verified": user.is_mobile_verified,
-        "date_joined": user.date_joined.isoformat() if user.date_joined else None,
-        "last_active_at": user.last_active_at.isoformat() if user.last_active_at else None,
-
-        "referral_code": user.referral_code,
+        # "date_joined": user.date_joined.isoformat() if user.date_joined else None,
+        # "last_active_at": user.last_active_at.isoformat() if user.last_active_at else None,
         "nature": user.nature,
         "nature_display": user.get_nature_display(),
-        
-        # ==========================================
-        #  سطح کاربر
-        # ==========================================
+
         "level": user.level_info,
 
-        # ==========================================
-        # اطلاعات دعوت‌کننده
-        # ==========================================
-        "invited_by": {
-            "uuid": str(inviter.uuid),
-            "name": inviter.full_name,
-            "mobile": inviter.mobile,
-            "referral_code": inviter.referral_code,
-        } if inviter else None,
-
-        # ==========================================
-        # امتیاز کاربر
-        # ==========================================
         "score": {
             "current_balance": score.current_balance,
             "total_earned": score.total_earned,
             "total_spent": score.total_spent,
         } if score else None,
 
-        # ==========================================
-        # پروفایل کاربر
-        # ==========================================
-        "profile": {
-            "national_code": profile.national_code,
-            "birth_date": profile.birth_date.isoformat() if profile.birth_date else None,
-            "gender": profile.gender,
-            "gender_display": profile.get_gender_display() if profile.gender else None,
-            "address": profile.address,
-            "post_code": profile.post_code,
-
-            "province": {
-                "id": profile.province_id,
-                "name": _location_name(profile.province),
-            } if profile.province_id else None,
-
-            "city": {
-                "id": profile.city_id,
-                "name": _location_name(profile.city),
-            } if profile.city_id else None,
-
-            "job_title": profile.job_title,
-            "company_name": profile.company_name,
-        } if profile else None,
-
-        # ==========================================
-        # مدارک شغلی
-        # ==========================================
-        "job_certificates": [{
-            "id": cert.id,
-            "type": cert.type,
-            "type_display": cert.get_type_display(),
-            "file": get_file_url(cert.file),
-            "file_size": cert.file_size,
-            "file_type": cert.file_type,
-            "is_verified": cert.is_verified,
-            "verified_at": cert.verified_at.isoformat() if cert.verified_at else None,
-            "can_edit": not cert.is_verified,
-        } for cert in job_certs],
-
-        # ==========================================
-        # خلاصه علاقه‌مندی‌ها
-        # ==========================================
-        "favorite_answers_count": favorite_answers_count,
-        "has_answered_all_favorites": has_answered_all_favorites,
+      
     }
 
+    # ------- فقط در /me/ -------
+    if include_full_information:
+        inviter = user.get_inviter
+        profile = user.get_profile_info
+    
+        # stats مورد علاقه‌مندی
+        try:
+            from applications.user.models import FavoriteQuestion
+            favorite_answers_count = user.user_favorite_answers.count()
+            total_active_questions = FavoriteQuestion.objects.filter(is_active=True).count()
+            has_answered_all_favorites = (
+                True if total_active_questions == 0
+                else user.user_favorite_answers.filter(question__is_active=True).count()
+                     >= total_active_questions
+            )
+        except Exception:
+            favorite_answers_count = 0
+            has_answered_all_favorites = False
+
+        base_data.update({
+            "profile": _profile_serialize(profile),
+            "mobile": user.mobile,
+            "is_mobile_verified": user.is_mobile_verified,
+            "referral_code": user.referral_code,
+            "invited_by": {
+                "uuid": str(inviter.uuid),
+                "name": inviter.full_name,
+                "mobile": inviter.mobile,
+                "referral_code": inviter.referral_code,
+            } if inviter else None,
+            "favorite_answers_count": favorite_answers_count,
+            "has_answered_all_favorites": has_answered_all_favorites,
+            "job_certificates": _job_certificates_serialize(user),
+        })
+
     return base_data
+
+
+def _profile_serialize(profile):
+    if not profile:
+        return None
+    return {
+        "national_code": profile.national_code,
+        "birth_date": profile.birth_date.isoformat() if profile.birth_date else None,
+        "gender": profile.gender,
+        "gender_display": profile.get_gender_display() if profile.gender else None,
+        "address": profile.address,
+        "post_code": profile.post_code,
+        "province": {
+            "id": profile.province_id,
+            "name": _location_name(profile.province),
+        } if profile.province_id else None,
+        "city": {
+            "id": profile.city_id,
+            "name": _location_name(profile.city),
+        } if profile.city_id else None,
+        "job_title": profile.job_title,
+        "company_name": profile.company_name,
+    }
+
+
+def _job_certificates_serialize(user):
+    if not hasattr(user, "user_job_certificates"):
+        return []
+    return [{
+        "id": cert.id,
+        "type": cert.type,
+        "type_display": cert.get_type_display(),
+        "file": get_file_url(cert.file),
+        "file_size": cert.file_size,
+        "file_type": cert.file_type,
+        "is_verified": cert.is_verified,
+        "verified_at": cert.verified_at.isoformat() if cert.verified_at else None,
+        "can_edit": not cert.is_verified,
+    } for cert in user.user_job_certificates.all()]
+
 
 
 #############################################################################################
@@ -162,6 +163,13 @@ def device_serialize(device):
     }
 
 
+#############################################################################################
+#############################################################################################
+#############################################################################################
+#############################################################################################
+#############################################################################################
+#############################################################################################
+#############################################################################################
 #############################################################################################
 # خروج
 #############################################################################################
@@ -251,6 +259,9 @@ async def profileUpdate(form: dict = Depends(DependencyDataRequest), user: User 
     if mobile:
         mobile = str(mobile).strip()
         if mobile != user.mobile:
+            if not re.fullmatch(r"09\d{9}", mobile):
+                return error_response("شماره موبایل نامعتبر است", status_code=400)
+        
             is_mobile_taken = await database_sync_to_async(
                 lambda: User.objects.filter(mobile=mobile).exclude(pk=user.pk).exists()
             )()
@@ -295,15 +306,19 @@ def async_profileUpdate(
 
     if gender is not None: profile.gender = gender
 
-    if birth_day:
-        try:
-            profile.birth_date = datetime.strptime(birth_day, "%Y-%m-%d").date()
-        except (ValueError, TypeError):
+    if birth_day is not None:
+        if birth_day == "":
             profile.birth_date = None
-    else:
-        profile.birth_date = None
+        else:
+            try:
+                profile.birth_date = datetime.strptime(birth_day, "%Y-%m-%d").date()
+            except (ValueError, TypeError):
+                return error_response("تاریخ تولد نامعتبر است", status_code=400)
 
-    profile.national_code  = national_code or None
+    # کد ملی هم همین رفتار
+    if national_code is not None:
+        profile.national_code = national_code or None
+        
     profile.address        = address if address is not None else profile.address
     profile.post_code      = post_code if post_code is not None else profile.post_code
     profile.job_title      = job_title if job_title is not None else profile.job_title
@@ -317,6 +332,204 @@ def async_profileUpdate(
     profile.save()
 
     profile.refresh_from_db(fields=["birth_date"])
+
+
+#############################################################################################
+# تمام اطلاعات کاربر
+#############################################################################################
+@router.get("/full_information/")
+async def get_my_full_profile(user: User = Depends(get_current_user)):
+    """
+    دریافت اطلاعات جامع کاربر در یک درخواست واحد (بهینه با Prefetch).
+    """
+    try:
+        data = await _get_full_information(user.id)
+        return success_response("پروفایل کامل کاربر", data)
+    except Exception:
+        logger.exception("get_my_full_profile failed")
+        return error_response("خطا در دریافت اطلاعات پروفایل")
+
+
+@sync_to_async
+def _get_full_information(user_id: int):
+    # ۱. واکشی هوشمندانه کاربر با تمام روابط (جلوگیری از N+1)
+    user = (
+        User.objects
+        .select_related(
+            "relation_profile",              # reverse OneToOne → UserProfile
+            "relation_profile__province",    # FK درون UserProfile
+            "relation_profile__city",        # FK درون UserProfile
+            "relation_score",                # reverse OneToOne → Score
+        )
+        .prefetch_related(
+            "user_job_certificates",
+            "user_favorite_answers",
+            "user_projects",
+            "user_factors",
+            "user_gift_orders__gift",        # gift داخل gift_order
+            "user_promotion_orders",
+            "user_supports",
+            "user_gallery_posts",
+            "user_visit_requests__visit",
+            "user_faqs",
+            "review_answers",
+            "user_score_logs",
+            "relation_sent_invitations",     # ← ✅ کاما اینجا الزامی
+        )
+        .get(id=user_id)
+    )
+
+    # ۲. سریالایزر پایه (اطلاعات پروفایل، مدارک و ...)
+    base_data = user_serialize(user, include_full_information=True)
+
+    # ─────────────────────────────────────────────
+    # ۳. محاسبه آمار (از دیتای پیش‌واکشی‌شده در حافظه - بدون کوئری اضافی)
+    # ─────────────────────────────────────────────
+
+    projects = list(user.user_projects.all())
+    factors = list(user.user_factors.all())
+    gift_orders = list(user.user_gift_orders.all())
+    promo_orders = list(user.user_promotion_orders.all())
+    supports = list(user.user_supports.all())
+    gallery = list(user.user_gallery_posts.all())
+    visits = list(user.user_visit_requests.all())
+    faqs = list(user.user_faqs.all())
+    reviews = list(user.review_answers.all())
+    invitations = list(user.relation_sent_invitations.all())
+
+    # شمارش در حافظه (O(N) - بسیار سریع)
+    projects_stats = {
+        "total": len(projects),
+        "pending": sum(1 for p in projects if p.status == Project.Status.PENDING),
+        "approved": sum(1 for p in projects if p.status == Project.Status.APPROVED),
+        "rejected": sum(1 for p in projects if p.status == Project.Status.REJECTED),
+    }
+
+    factors_stats = {
+        "total": len(factors),
+        "pending": sum(1 for f in factors if f.status == Factor.Status.PENDING),
+        "approved": sum(1 for f in factors if f.status == Factor.Status.APPROVED),
+        "rejected": sum(1 for f in factors if f.status == Factor.Status.REJECTED),
+    }
+
+    gift_orders_stats = {
+        "total": len(gift_orders),
+        "pending": sum(1 for g in gift_orders if g.status == GiftOrder.Status.PENDING),
+        "shipped": sum(1 for g in gift_orders if g.status == GiftOrder.Status.SHIPPED),
+        "delivered": sum(1 for g in gift_orders if g.status == GiftOrder.Status.DELIVERED),
+    }
+
+    promo_orders_stats = {
+        "total": len(promo_orders),
+        "pending": sum(1 for p in promo_orders if p.status == PromotionOrder.Status.PENDING),
+        "delivered": sum(1 for p in promo_orders if p.status == PromotionOrder.Status.DELIVERED),
+    }
+
+    supports_stats = {
+        "total": len(supports),
+        "open": sum(1 for s in supports if s.status == Support.Status.OPEN),
+        "in_progress": sum(1 for s in supports if s.status == Support.Status.IN_PROGRESS),
+        "closed": sum(1 for s in supports if s.status == Support.Status.CLOSED),
+    }
+
+    gallery_stats = {
+        "total": len(gallery),
+        "approved": sum(1 for g in gallery if g.status == Gallery.Status.APPROVED),
+        "pending": sum(1 for g in gallery if g.status == Gallery.Status.PENDING),
+    }
+
+    visits_stats = {
+        "total": len(visits),
+        "pending": sum(1 for v in visits if v.status == RequestVisit.Status.PENDING),
+        "approved": sum(1 for v in visits if v.status == RequestVisit.Status.APPROVED),
+    }
+
+    # نظرسنجی
+    # نکته: برای بررسی تعداد سوالات فعال، یک کوئری جدا می‌زنیم (چون برای هر کاربر واکشی نمی‌شود)
+    total_active_reviews = ReviewQuestion.objects.filter(is_active=True).count()
+    has_answered_all_reviews = (len(reviews) >= total_active_reviews) if total_active_reviews > 0 else True
+
+    invitation_stats = {
+        "total_sent": len(invitations),
+        "successful": sum(1 for i in invitations if i.invited_user_id is not None),
+        "rewarded": sum(1 for i in invitations if i.is_rewarded),
+    }
+
+    # ۴. ساخت خروجی نهایی آمار
+    base_data["stats"] = {
+        "projects": projects_stats,
+        "factors": factors_stats,
+        "gift_orders": gift_orders_stats,
+        "promotion_orders": promo_orders_stats,
+        "supports": supports_stats,
+        "gallery": gallery_stats,
+        "visits": visits_stats,
+        "faqs_count": len(faqs),
+        "reviews": {
+            "answered_count": len(reviews),
+            "total_active": total_active_reviews,
+            "has_answered_all": has_answered_all_reviews,
+        },
+        "invitations": invitation_stats,
+    }
+
+    # ─────────────────────────────────────────────
+    # ۵. آخرین فعالیت‌ها (با مرتب‌سازی روی دیتای حافظه)
+    # ─────────────────────────────────────────────
+    
+    # مرتب‌سازی در حافظه (چون از قبل لود شده‌اند)
+    recent_projects = sorted(projects, key=lambda x: x.created_at, reverse=True)[:3]
+    recent_factors = sorted(factors, key=lambda x: x.created_at, reverse=True)[:3]
+    recent_gifts = sorted(gift_orders, key=lambda x: x.created_at, reverse=True)[:3]
+    
+    # برای لاگ‌های امتیاز، چون ممکن است زیاد باشند، از خود دیتابیس با limit استفاده می‌کنیم
+    # اما چون prefetch کردیم، مرتب‌سازی در حافظه هم سریع است
+    recent_score_logs = sorted(
+        list(user.user_score_logs.all()), 
+        key=lambda x: x.created_at, 
+        reverse=True
+    )[:5]
+
+    base_data["recent_projects"] = [
+        {
+            "id": p.id,
+            "title": p.title,
+            "type_display": p.get_type_display(),
+            "status_display": p.get_status_display(),
+            "created_at": p.created_at.isoformat() if p.created_at else None,
+        } for p in recent_projects
+    ]
+
+    base_data["recent_factors"] = [
+        {
+            "id": f.id,
+            "invoice_number": f.invoice_number,
+            "status_display": f.get_status_display(),
+            "amount": f.amount,
+            "created_at": f.created_at.isoformat() if f.created_at else None,
+        } for f in recent_factors
+    ]
+
+    base_data["recent_gift_orders"] = [
+        {
+            "id": g.id,
+            "gift_title": g.gift.title if g.gift else "هدیه",
+            "status_display": g.get_status_display(),
+            "created_at": g.created_at.isoformat() if g.created_at else None,
+        } for g in recent_gifts
+    ]
+
+    base_data["recent_score_logs"] = [
+        {
+            "id": log.id,
+            "code_display": log.get_transaction_code_display(),
+            "direction": log.direction,
+            "amount": log.amount,
+            "created_at": log.created_at.isoformat() if log.created_at else None,
+        } for log in recent_score_logs
+    ]
+
+    return base_data
 
 
 #############################################################################################

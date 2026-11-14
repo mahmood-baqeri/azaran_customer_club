@@ -5,11 +5,11 @@ import { useMemo, useRef, useState } from "react";
 import { useCities, useProvinces } from "../../settings_module/hooks/use-locations";
 import SelectElement, { type Option } from "../../../shared/tools/select";
 import { PersianDatePicker } from "../../../shared/utils/persianDatePicker";
-import { userRepository } from "../../user_module/repository/user.repository";
 import { MyNotification } from "../../../shared/utils/notification";
 import type { JobCertificateType, UserMe } from "../../user_module/interface/user.types";
 import { FaCloudUploadAlt, FaFileAlt, FaFileImage, FaFilePdf, FaFileWord } from "react-icons/fa";
 import { getErrorMessage } from "../../../shared/api/errors";
+import { certificateRepository } from "../repository/certificate.repository";
 
 // ============================================================
 // Types
@@ -215,7 +215,7 @@ export const JobCertificatesForm = ({ user, onUserUpdate }: { user: UserMe, onUs
 
           setUploadingType(type);
           try {
-               const updatedCert = await userRepository.uploadJobCertificate({ type, file });
+               const updatedCert = await certificateRepository.upload({ type, file });
                if (updatedCert) {
                     // 🆕 آپدیت لیست مدارک
                     const currentCerts = user.job_certificates || [];
@@ -235,7 +235,7 @@ export const JobCertificatesForm = ({ user, onUserUpdate }: { user: UserMe, onUs
      const handleDelete = async (type: JobCertificateType) => {
           if (!window.confirm("آیا از حذف این مدرک مطمئن هستید؟")) return;
           try {
-               await userRepository.deleteJobCertificate(type);
+               await certificateRepository.delete(type);
                // 🆕 حذف از لیست
                const currentCerts = user.job_certificates || [];
                const newCerts = currentCerts.filter(c => c.type !== type);
@@ -275,7 +275,7 @@ export const JobCertificatesForm = ({ user, onUserUpdate }: { user: UserMe, onUs
                          <div className="d-flex align-items-center gap-2">
                               {getFileIcon(currentCert.file_type)}
                               <div>
-                                   <div className="fs-12 fw-bold color-primary" style={{ direction: "ltr" }}>
+                                   <div className="fs-12 fw-bold color-primary  short_text max_165" style={{ direction: "ltr" }}>
                                         {currentCert.file?.split("/").pop()?.split("_").slice(1).join("_") || "document"}
                                    </div>
                                    <div className="fs-10 text-muted">
@@ -332,19 +332,19 @@ export const JobCertificatesForm = ({ user, onUserUpdate }: { user: UserMe, onUs
 
      return (
           <div>
-               <p className="fs-12 text-end mb-4" style={{ color: "#4b5563" }}>
+               {/* <p className="fs-12 text-end mb-4" style={{ color: "#4b5563" }}>
                     بارگذاری حداقل یکی از مدارک زیر الزامی است
-               </p>
+               </p> */}
 
                {renderUploadBox("valid_business_license", "جواز کسب معتبر")}
                {renderUploadBox("technical_professional_certificate", "مدرک فنی و حرفه ای")}
                {renderUploadBox("letter_of_introduction", "معرفی‌نامه از نمایندگی آذر")}
 
-               {(!user.job_certificates || user.job_certificates.length === 0) && (
+               {/* {(!user.job_certificates || user.job_certificates.length === 0) && (
                     <div className="alert alert-warning py-2 fs-11 text-end mt-3 mb-0">
                          برای ثبت، حداقل یکی از مدارک بالا را آپلود کنید.
                     </div>
-               )}
+               )} */}
           </div>
      );
 };

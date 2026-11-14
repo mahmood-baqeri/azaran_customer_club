@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'applications.visit.apps.config',
     'applications.review.apps.config',
     'applications.learn.apps.config',
+    'applications.notification.apps.config',
 ]
 
 ####################################

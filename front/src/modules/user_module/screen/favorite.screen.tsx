@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/use-user";
-import { userRepository } from "../repository/user.repository";
 import Header from "../../../app/layouts/header";
 import { MyNotification } from "../../../shared/utils/notification";
 import { USER_ROUTES } from "../routes";
 import { getErrorMessage } from "../../../shared/api/errors";
 import type { FavoriteQuestion, FavoriteAnswerValue } from "../interface/user.types";
 import { FavoriteSlider } from "../components/FavoriteSlider";
+import { favoriteRepository } from "../repository/favorite.repository";
 
 
 // ==========================================
@@ -33,7 +33,7 @@ export default function FavoriteScreen() {
           const fetchQuestions = async () => {
                try {
                     setLoading(true);
-                    const data = await userRepository.getFavoriteQuestions();
+                    const data = await favoriteRepository.listQuestions();
                     if (mounted) setQuestions(data);
                } catch (err) {
                     MyNotification("", getErrorMessage(err, "خطا در دریافت سوالات علاقه‌مندی"), "error");
@@ -74,7 +74,7 @@ export default function FavoriteScreen() {
 
           setSavingId(questionId);
           try {
-               await userRepository.submitFavoriteAnswer({ question_id: questionId, answer });
+               await favoriteRepository.submitAnswer({ question_id: questionId, answer });
           } catch (err) {
                MyNotification("", getErrorMessage(err, "خطا در ذخیره پاسخ"), "error");
           } finally {

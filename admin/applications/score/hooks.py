@@ -7,7 +7,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from applications.score import api as score_api
-# ✅ import مستقیم — نه lazy reference
 from applications.user.models import (
     FavoriteAnswer,
     FavoriteQuestion,
@@ -43,6 +42,8 @@ def on_profile_saved(sender, instance, created, **kwargs):
         try:
             score_api.award(
                 user, "PROFILE_PERSONAL_INFO",
+                reference_type="profile_personal",
+                reference_id=str(user.id),
                 reason="تکمیل مشخصات فردی",
             )
         except Exception:
@@ -52,6 +53,8 @@ def on_profile_saved(sender, instance, created, **kwargs):
         try:
             score_api.award(
                 user, "PROFILE_BIRTH_DATE",
+                reference_type="profile_birth_date",
+                reference_id=str(user.id),
                 reason="ثبت تاریخ تولد",
             )
         except Exception:
@@ -77,21 +80,31 @@ def on_job_certificate_saved(sender, instance, created, **kwargs):
 
 
 # ═══════════════════════════════════════════════════════════
-# PROFILE_INTERESTS — فقط یک نسخه (تکراری حذف شد)
+# PROFILE_INTERESTS
 # ═══════════════════════════════════════════════════════════
 @receiver(post_save, sender=FavoriteAnswer)
 def on_favorite_answer_saved(sender, instance, created, **kwargs):
-    total_active = FavoriteQuestion.objects.filter(is_active=True).count()
-    if total_active == 0:
+    # ✅ اگر صرفاً یک پاسخ موجود ویرایش شده، تعداد کل تغییری نمی‌کند → skip
+    if not created:
         return
-    answered = instance.user.relation_favorite_answers.filter(
-        question__is_active=True,
-    ).count()
-    if answered >= total_active:
-        try:
+
+    # ✅ کل منطق داخل try — هیچ‌وقت نباید ذخیره‌ی اصلی را بشکند
+    try:
+        total_active = FavoriteQuestion.objects.filter(is_active=True).count()
+        if total_active == 0:
+            return
+
+        # ✅ related_name درست: user_favorite_answers (نه relation_favorite_answers)
+        answered = instance.user.user_favorite_answers.filter(
+            question__is_active=True,
+        ).count()
+
+        if answered >= total_active:
             score_api.award(
                 instance.user, "PROFILE_INTERESTS",
+                reference_type="favorite_set",
+                reference_id=str(instance.user_id),
                 reason="تکمیل علایق و سلایق",
             )
-        except Exception:
-            logger.exception("PROFILE_INTERESTS failed user=%s", instance.user_id)
+    except Exception:
+        logger.exception("PROFILE_INTERESTS failed user=%s", instance.user_id)

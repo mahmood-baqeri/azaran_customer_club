@@ -5,8 +5,8 @@ import type { UserMe } from "../interface/user.types";
 
 export const userRepository = {
   // ✅ دریافت دیتای جامع (آمار، فعالیت‌ها، پروفایل)
-  async loadMe(): Promise<UserMe> {
-    const res = await userApi.me();
+  async loadFullInformation(): Promise<UserMe> {
+    const res = await userApi.full_information();
     return res.data;
   },
 

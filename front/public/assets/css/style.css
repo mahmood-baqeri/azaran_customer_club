@@ -1915,3 +1915,33 @@ p.verifyText {
   position: relative;
   left: -15px;
 }
+
+.short_text {
+  white-space: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.max_100 {
+  max-width: 100px;
+}
+
+.max_120 {
+  max-width: 120px;
+}
+
+.max_140 {
+  max-width: 140px;
+}
+
+.max_150 {
+  max-width: 150px;
+}
+
+.max_165 {
+  max-width: 165px;
+}
+
+.max_185 {
+  max-width: 185px;
+}

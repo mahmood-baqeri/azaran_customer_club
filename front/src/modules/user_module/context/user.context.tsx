@@ -53,12 +53,7 @@ const reconstructFromStorage = (): UserMe | null => {
      const mobile = getLocalStorage(UserMobile) ?? "";
      const rawNature = getLocalStorage(UserNature);
 
-     const nature: UserNatureTypes =
-          rawNature === "manager" ||
-               rawNature === "executive" ||
-               rawNature === "seller"
-               ? rawNature
-               : "user";
+     const nature: UserNatureTypes = rawNature === "manager" || rawNature === "executive" || rawNature === "seller" ? rawNature : "user";
 
      const scoreBalance = Number(getLocalStorage(UserScoreBalance) ?? 0);
 

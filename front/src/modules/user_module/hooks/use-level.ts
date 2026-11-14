@@ -1,13 +1,13 @@
 // src/modules/user_module/hooks/use-level.ts
 
-import { useCallback, useEffect, useState } from "react";
-import { userRepository } from "../repository/user.repository";
+import { useMemo } from "react";
 import type { LevelPerk } from "../interface/level.types";
-import type { UserLevelInfo, UserMe } from "../interface/user.types";
+import type { UserLevelInfo } from "../interface/user.types";
 import { ICONS } from "../../../shared/constants/icons";
 import { GIFT_ROUTES } from "../../gift_module/routes";
 import { PROMOTION_ROUTES } from "../../promotion_module/routes";
 import { VISIT_ROUTES } from "../../visit_module/routes";
+import { useUser } from "./use-user";
 
 // ✅ مزایای کاردان (تصویر سمت چپ)
 const KARDAN_ACTIVE_PERKS: LevelPerk[] = [
@@ -42,40 +42,19 @@ export interface LevelProfileView {
 }
 
 export const useLevel = () => {
-  const [userFull, setUserFull] = useState<UserMe | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading } = useUser();
 
-  const fetchFullProfile = useCallback(async () => {
-    setLoading(true);
-    try {
-      // ✅ فقط در این صفحه درخواست سنگین را می‌زنیم
-      const me = await userRepository.loadMe();
-      setUserFull(me);
-    } catch (err) {
-      console.error("[level] loadMe failed:", err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const profile = useMemo<LevelProfileView | null>(() => {
+    if (!user?.level) return null;
+    const isOstadkar = user.level.current_level === "ostadkar";
+    return {
+      user_name: user.short_name || user.name || "کاربر",
+      avatar: user.avatar,
+      levelInfo: user.level,
+      activePerks: isOstadkar ? OSTADKAR_ACTIVE_PERKS : KARDAN_ACTIVE_PERKS,
+      lockedPerks: isOstadkar ? [] : KARDAN_LOCKED_PERKS,
+    };
+  }, [user]);
 
-  useEffect(() => {
-    fetchFullProfile();
-  }, [fetchFullProfile]);
-
-  // ساخت خروجی نهایی
-  const profile: LevelProfileView | null = userFull?.level
-    ? {
-        user_name: userFull.short_name || userFull.name || "کاربر",
-        avatar: userFull.avatar,
-        levelInfo: userFull.level,
-        activePerks:
-          userFull.level.current_level === "ostadkar"
-            ? OSTADKAR_ACTIVE_PERKS
-            : KARDAN_ACTIVE_PERKS,
-        lockedPerks:
-          userFull.level.current_level === "ostadkar" ? [] : KARDAN_LOCKED_PERKS,
-      }
-    : null;
-
-  return { profile, loading, refresh: fetchFullProfile };
+  return { profile, loading };
 };
