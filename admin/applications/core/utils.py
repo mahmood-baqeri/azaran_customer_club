@@ -2,6 +2,7 @@
 import hashlib
 import secrets
 import uuid
+from django.contrib import messages
 from django.core.cache import cache
 import json
 import os
@@ -22,6 +23,13 @@ from django.utils.translation import gettext_lazy as _
 from django.shortcuts import redirect
 
 from email.message import EmailMessage
+
+#
+#
+####
+def response_msg(request, level, text):
+    """شورت‌کات برای ساختار استاندارد پیغام."""
+    messages.add_message(request, level, json.dumps({"text": text}))
 
 #
 #

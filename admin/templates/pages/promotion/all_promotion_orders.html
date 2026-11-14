@@ -1,0 +1,98 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/search.html' %}
+            {% endif %}
+
+            <div class="table-responsive">
+              <table class="table-hover align-middle mt-3 table text-nowrap text-md-nowrap table-striped mg-b-0" id="theMainTabelElement">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>کاربر</th>
+                    <th>پک</th>
+                    <th>گیرنده</th>
+                    <th>وضعیت</th>
+                    <th>رهگیری</th>
+                    <th>تاریخ</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for o in data.all %}
+                    <tr>
+                      <td>{{ o.id }}</td>
+                      <td>
+                        {{ o.user.mobile }}<br />
+                        <small class="text-muted">{{ o.user.full_name }}</small>
+                      </td>
+                      <td>{{ o.promotion.title }}</td>
+                      <td>
+                        {{ o.receiver_name }}<br />
+                        <small class="text-muted">{{ o.receiver_phone }}</small>
+                      </td>
+                      <td>
+                        {% if o.status == 'pending' %}
+                          <span class="badge bg-warning text-dark">ثبت</span>
+                        {% elif o.status == 'approved' %}
+                          <span class="badge bg-info text-dark">تایید</span>
+                        {% elif o.status == 'shipped' %}
+                          <span class="badge bg-primary">ارسال</span>
+                        {% elif o.status == 'delivered' %}
+                          <span class="badge bg-success">تحویل</span>
+                        {% elif o.status == 'rejected' %}
+                          <span class="badge bg-danger">رد</span>
+                        {% elif o.status == 'cancelled' %}
+                          <span class="badge bg-secondary">لغو</span>
+                        {% elif o.status == 'returned' %}
+                          <span class="badge bg-dark">مرجوع</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ o.tracking_code|default:'—' }}</small>
+                      </td>
+                      <td>
+                        <small>{{ o.created_at|date:'Y/m/d H:i' }}</small>
+                      </td>
+                      <td>
+                        <a href="{% url 'app_promotion:order_detail' o.id %}" class="btn btn-sm btn-outline-primary">جزئیات</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="8" class="text-center text-muted py-4">سفارشی یافت نشد</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

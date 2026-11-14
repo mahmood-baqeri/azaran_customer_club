@@ -19,7 +19,7 @@
             {% endif %}
 
             <div class="table-responsive">
-              <table class="table table-hover align-middle mt-3">
+              <table class="table-hover align-middle mt-3 table text-nowrap text-md-nowrap table-striped mg-b-0" id="theMainTabelElement">
                 <thead>
                   <tr>
                     <th>#</th>
@@ -32,38 +32,39 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {% for g in data.all %}
+                  {% for item in data.all %}
                     <tr>
-                      <td>{{ g.id }}</td>
+                      <td>{{ item.id }}</td>
                       <td>
-                        {% if g.photo %}
-                          <img src="{{ g.photo.url }}" width="36" height="36" class="rounded me-2 object-fit-cover" alt="{{ g.title }}" />
+                        {% if item.photo %}
+                          <img src="{{ item.photo.url }}" width="36" height="36" class="rounded me-2 object-fit-cover" alt="{{ item.title }}" />
                         {% endif %}
-                        {{ g.title }}
+                        {{ item.title }}
                       </td>
-                      <td>{{ g.get_for_user_display }}</td>
-                      <td>{{ g.azar_value }}</td>
+                      <td>{{ item.get_for_user_display }}</td>
+                      <td>{{ item.azar_value }}</td>
                       <td>
-                        {% if g.stock <= 0 %}
+                        {% if item.stock <= 0 %}
                           <span class="badge bg-danger">ناموجود</span>
-                        {% elif g.stock < 5 %}
-                          <span class="badge bg-warning text-dark">{{ g.stock }}</span>
+                        {% elif item.stock < 5 %}
+                          <span class="badge bg-warning text-dark">{{ item.stock }}</span>
                         {% else %}
-                          {{ g.stock }}
+                          {{ item.stock }}
                         {% endif %}
                       </td>
                       <td>
-                        {% if g.is_active %}
+                        {% if item.is_active %}
                           <span class="badge bg-success">فعال</span>
                         {% else %}
                           <span class="badge bg-secondary">غیرفعال</span>
                         {% endif %}
                       </td>
                       <td class="text-end">
-                        <a href="{% url 'app_gift:gift_update' g.id %}" class="btn btn-sm btn-outline-primary">ویرایش</a>
-                        <form method="post" action="{% url 'app_gift:gift_delete' g.id %}" class="d-inline" onsubmit="return confirm('حذف هدیه «{{ g.title }}»؟');">
+                        <a href="{% url 'app_gift:gift_update' item.id %}">ویرایش</a>
+
+                        <a href="" data-toggle="tooltip" data-original-title="حذف" class="deleteRecordFromTable" data-deleteId="{{ item.id }}">حذف</a>
+                        <form id="deleteRecordForm_{{ item.id }}" action="{% url 'app_gift:gift_delete' item.id %}" method="post" style="display: none;">
                           {% csrf_token %}
-                          <button class="btn btn-sm btn-outline-danger">حذف</button>
                         </form>
                       </td>
                     </tr>

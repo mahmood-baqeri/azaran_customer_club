@@ -201,6 +201,17 @@ class User(AbstractUser, SoftDeleteModel):
             - self.promotion_orders_in_current_jalali_year(),
         )
     
+    def promotion_orders_effective_count(self):
+        """شمارش سفارش‌های مؤثر (بدون رد/لغو) در سال جاری"""
+        from applications.core.jalali_period import get_current_jalali_year_range
+        start, end = get_current_jalali_year_range()
+        return self.user_promotion_orders.filter(
+            created_at__gte=start,
+            created_at__lt=end,
+        ).exclude(
+            status__in=["rejected", "cancelled"]
+        ).count()
+        
     
 #######################################
 # اطلاعات تکمیلی 

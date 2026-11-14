@@ -1,12 +1,13 @@
 # applications/gift/forms.py
 
-
 from django import forms
 
-from admin.applications.user.models import User
 from .models import Gift, GiftOrder
 
 
+# ═══════════════════════════════════════════════════════════
+# Action Forms (داخل صفحه‌ی جزئیات سفارش)
+# ═══════════════════════════════════════════════════════════
 class OrderStatusForm(forms.Form):
     new_status = forms.ChoiceField(
         choices=GiftOrder.Status.choices,
@@ -34,12 +35,10 @@ class OrderAssignForm(forms.Form):
         self.fields["assigned_to"].queryset = User.objects.filter(
             is_staff=True, is_active=True
         ).order_by("first_name", "last_name")
-        
-        
 
 
 # ═══════════════════════════════════════════════════════════
-# GIFT CREATE / UPDATE (با data.items)
+# GIFT FORM — items برای قالب عمومی form.html
 # ═══════════════════════════════════════════════════════════
 def gift__form(gift=None, raw_data=None):
     """ساخت لیست items برای قالب عمومی form.html"""
@@ -51,8 +50,29 @@ def gift__form(gift=None, raw_data=None):
             return getattr(gift, field, default)
         return default
 
+    def photo_url():
+        """✅ URL رشته برمی‌گرداند (نه ImageFieldFile)"""
+        if not gift or not gift.photo:
+            return ""
+        try:
+            return gift.photo.url
+        except ValueError:
+            return ""
 
-    for_user_val = val("for_user", Gift.ForUser.SELLER)
+    def is_active_value():
+        """✅ raw_data را هم در نظر می‌گیرد"""
+        if raw_data is not None:
+            v = str(raw_data.get("is_active", "")).lower()
+            return 1 if v in ("on", "true", "1") else 0
+        if gift is not None:
+            return 1 if gift.is_active else 0
+        return 0
+
+    def gallery_photos():
+        """گالری از DB (منبع حقیقت — AJAX delete فوری ذخیره می‌شود)"""
+        if gift is not None:
+            return list(gift.gallery or [])
+        return []
 
     return [
         {
@@ -66,12 +86,12 @@ def gift__form(gift=None, raw_data=None):
         }, {
             'l': "برای *",
             'n': 'for_user',
-            'v': for_user_val,
+            'v': val("for_user", Gift.ForUser.SELLER),
             'id': 'the_for_user',
             'r': True,
             'c': 'col-md-6',
-            'data': [{"value": v, "label": l} for v, l in Gift.ForUser.choices],
-            'b': 'select2Multi.html',
+            'data': [{"id": v, "label": l} for v, l in Gift.ForUser.choices],
+            'b': 'select2Single.html',
         }, {
             'l': "توضیحات",
             'n': 'description',
@@ -99,7 +119,7 @@ def gift__form(gift=None, raw_data=None):
         }, {
             'l': 'فعال',
             'n': 'is_active',
-            'v': (1 if gift.is_active else 0) if gift else 0,
+            'v': is_active_value(),
             'id': 'is_active',
             'r': None,
             'c': 'col-md-3',
@@ -107,7 +127,7 @@ def gift__form(gift=None, raw_data=None):
         }, {
             'l': 'تصویر',
             'n': 'photo',
-            'v': val("photo"),
+            'v': photo_url(),
             'id': 'the_photo',
             'r': None,
             'c': 'col-md-3',
@@ -115,12 +135,12 @@ def gift__form(gift=None, raw_data=None):
         }, {
             'l': "گالری",
             'n': 'gallery',
-            'photos': gift.gallery if gift else [],
+            'photos': gallery_photos(),
             'theItem': gift if gift else '',
             'id': 'the_gallery',
             'r': None,
             'removeRoute': "gift/api/deletePhoto",
-            'c': 'col-md-9',
+            'c': 'col-md-12',
             'b': 'photoMulti.html'
         }
     ]

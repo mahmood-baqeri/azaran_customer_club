@@ -1,0 +1,85 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/search.html' %}
+            {% endif %}
+
+            <div class="table-responsive">
+              <table class="table-hover align-middle mt-3 table text-nowrap text-md-nowrap table-striped mg-b-0" id="theMainTabelElement">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>عنوان</th>
+                    <th>تعداد آیتم</th>
+                    <th>تعداد سفارش</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in data.all %}
+                    <tr>
+                      <td>{{ item.id }}</td>
+                      <td>{{ item.title }}</td>
+                      <td>{{ item.promotion_items_relation.count }}</td>
+                      <td>{{ item.promotion_orders_relation.count }}</td>
+                      <td>
+                        {% if item.is_active %}
+                          <span class="badge bg-success">فعال</span>
+                        {% else %}
+                          <span class="badge bg-secondary">غیرفعال</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ item.created_at|date:'Y/m/d' }}</small>
+                      </td>
+                      <td class="text-end">
+                        <a href="{% url 'app_promotion:promotion_detail' item.id %}" class="btn btn-sm btn-outline-info">آیتم‌ها</a>
+
+                        <a href="{% url 'app_promotion:promotion_update' item.id %}" class="btn btn-sm btn-outline-primary">ویرایش</a>
+
+                        <a href="" data-toggle="tooltip" data-original-title="حذف" class="deleteRecordFromTable btn btn-sm btn-outline-danger" data-deleteId="{{ item.id }}">حذف</a>
+                        <form id="deleteRecordForm_{{ item.id }}" action="{% url 'app_promotion:promotion_delete' item.id %}" method="post" style="display: none;">
+                          {% csrf_token %}
+                        </form>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="7" class="text-center text-muted py-4">پکی ثبت نشده است</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

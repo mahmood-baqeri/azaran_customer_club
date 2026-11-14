@@ -1,13 +1,17 @@
-# admin/applications/gift/clean_data.py
+# applications/gift/clean_data.py
 
-from django.contrib import messages
-from django.utils.translation import gettext_lazy as _
-
+from .forms import OrderAssignForm, OrderStatusForm
 from .models import Gift
 
 
+# ═══════════════════════════════════════════════════════════
+# GIFT
+# ═══════════════════════════════════════════════════════════
 def gift__clean__data(post):
-    """اعتبارسنجی و پاک‌سازی داده‌های فرم هدیه."""
+    """اعتبارسنجی و پاک‌سازی فرم هدیه.
+
+    خروجی: (cleaned_dict, errors_list)
+    """
     errors = []
 
     title = (post.get("title") or "").strip()
@@ -45,3 +49,43 @@ def gift__clean__data(post):
         "stock": int(stock),
         "is_active": str(post.get("is_active", "")).lower() in ("on", "true", "1"),
     }, []
+
+
+# ═══════════════════════════════════════════════════════════
+# ORDER — Status Change
+# ═══════════════════════════════════════════════════════════
+def order__clean__status(post):
+    """اعتبارسنجی فرم تغییر وضعیت با استفاده از OrderStatusForm."""
+    form = OrderStatusForm(post)
+    if not form.is_valid():
+        errors = []
+        for field, msgs in form.errors.items():
+            for m in msgs:
+                errors.append(f"{field}: {m}")
+        return {}, errors or ["اطلاعات نامعتبر"]
+
+    return {
+        "new_status": form.cleaned_data["new_status"],
+        "tracking_code": (form.cleaned_data.get("tracking_code") or "").strip(),
+        "note": (form.cleaned_data.get("note") or "").strip(),
+    }, []
+
+
+# ═══════════════════════════════════════════════════════════
+# ORDER — Assign
+# ═══════════════════════════════════════════════════════════
+def order__clean__assign(post):
+    """اعتبارسنجی فرم واگذاری با استفاده از OrderAssignForm."""
+    form = OrderAssignForm(post)
+    if not form.is_valid():
+        return {}, ["اطلاعات واگذاری نامعتبر است"]
+    return {"assigned_to": form.cleaned_data.get("assigned_to")}, []
+
+
+# ═══════════════════════════════════════════════════════════
+# ORDER — Note
+# ═══════════════════════════════════════════════════════════
+def order__clean__note(post):
+    """یادداشت اختیاری است — خالی مجاز است (پاک کردن)."""
+    note = (post.get("internal_note") or "").strip()
+    return {"internal_note": note or None}, []

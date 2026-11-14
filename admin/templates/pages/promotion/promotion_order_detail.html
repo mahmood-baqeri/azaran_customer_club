@@ -1,0 +1,121 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  سفارش #{{ order.id }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            <div class="row g-3">
+              <!-- اطلاعات -->
+              <div class="col-md-7">
+                <div class="card mb-3">
+                  <div class="card-header fw-bold">اطلاعات سفارش</div>
+                  <div class="card-body">
+                    <dl class="row mb-0">
+                      <dt class="col-4">کاربر</dt>
+                      <dd class="col-8">{{ order.user.full_name }} ({{ order.user.mobile }})</dd>
+
+                      <dt class="col-4">پک</dt>
+                      <dd class="col-8">{{ order.promotion.title }}</dd>
+
+                      <dt class="col-4">گیرنده</dt>
+                      <dd class="col-8">{{ order.receiver_name }} — {{ order.receiver_phone }}</dd>
+
+                      <dt class="col-4">آدرس</dt>
+                      <dd class="col-8">{{ order.address }}</dd>
+
+                      <dt class="col-4">کد پستی</dt>
+                      <dd class="col-8">{{ order.postal_code }}</dd>
+
+                      <dt class="col-4">کد رهگیری</dt>
+                      <dd class="col-8">{{ order.tracking_code|default:'—' }}</dd>
+
+                      <dt class="col-4">وضعیت</dt>
+                      <dd class="col-8">{{ order.get_status_display }}</dd>
+
+                      <dt class="col-4">مسئول</dt>
+                      <dd class="col-8">{{ order.assigned_to.full_name|default:'—' }}</dd>
+
+                      <dt class="col-4">تاریخ ثبت</dt>
+                      <dd class="col-8">{{ order.created_at|date:'Y/m/d H:i' }}</dd>
+                    </dl>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header fw-bold">تاریخچه</div>
+                  <div class="card-body">
+                    {% for l in logs %}
+                      <div class="d-flex justify-content-between border-bottom py-2">
+                        <div>
+                          <strong>{{ l.action }}</strong>
+                          {% if l.from_status or l.to_status %}
+                            <span class="text-muted small">{{ l.from_status }} → {{ l.to_status }}</span>
+                          {% endif %}
+                          {% if l.note %}
+                            <div class="small text-muted">{{ l.note }}</div>
+                          {% endif %}
+                        </div>
+                        <small class="text-muted">{{ l.changed_by.full_name|default:'سیستم' }} — {{ l.created_at|date:'Y/m/d H:i' }}</small>
+                      </div>
+                    {% empty %}
+                      <p class="text-muted mb-0">تاریخچه‌ای موجود نیست</p>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+
+              <!-- اکشن‌ها -->
+              <div class="col-md-5">
+                <div class="card mb-3">
+                  <div class="card-header fw-bold">تغییر وضعیت</div>
+                  <div class="card-body">
+                    {% if transitions %}
+                      {% for t in transitions %}
+                        <form method="post" action="{% url 'app_promotion:order_update_status' order.id %}" class="mb-2">
+                          {% csrf_token %}
+                          <input type="hidden" name="new_status" value="{{ t.value }}" />
+                          {% if t.value == 'shipped' %}
+                            <input type="text" name="tracking_code" class="form-control mb-1" placeholder="کد رهگیری *" required />
+                          {% endif %}
+                          <input type="text" name="note" class="form-control mb-1" placeholder="یادداشت (اختیاری)" />
+                          <button class="btn btn-sm btn-primary w-100">→ {{ t.label }}</button>
+                        </form>
+                      {% endfor %}
+                    {% else %}
+                      <p class="text-muted mb-0">این سفارش در وضعیت نهایی است.</p>
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header fw-bold">واگذاری به مسئول</div>
+                  <div class="card-body">
+                    <form method="post" action="{% url 'app_promotion:order_assign' order.id %}">
+                      {% csrf_token %}
+                      {{ assign_form.assigned_to }}
+                      <button class="btn btn-sm btn-outline-primary w-100 mt-2">ذخیره</button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

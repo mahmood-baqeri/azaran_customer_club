@@ -249,6 +249,8 @@ def Applications():
         
         ('Gift', 'Gift'),
         ('GiftOrder', 'GiftOrder'),
+        ('Promotion', 'Promotion'),
+        ('PromotionOrder', 'PromotionOrder'),
     )
 
 

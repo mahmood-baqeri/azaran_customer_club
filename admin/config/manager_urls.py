@@ -15,6 +15,7 @@ urlpatterns = [
     path('category/', include('applications.category.url')),
     
     path('gift/', include('applications.gift.url')),
+    path('promotion/', include('applications.promotion.url')),
 
 
     # User areas

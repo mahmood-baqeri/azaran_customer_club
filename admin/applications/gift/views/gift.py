@@ -1,12 +1,11 @@
-# admin/applications/gift/views/gift.py
+# applications/gift/views/gift.py
 
 import json
 import logging
 
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db import transaction
-from django.db.models import F, Q
+from django.db.models import Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -14,17 +13,18 @@ from django.urls import reverse
 from applications.core.fileManager import deleteFile
 from applications.core.decorators import is_admin_required
 from applications.core.requiredAccess import RequiredAccess
-from applications.core.utils import redirect_back
-from applications.core.validators import is_valid_date
+from applications.core.utils import redirect_back, response_msg
 
-from ..forms import OrderAssignForm, OrderStatusForm, gift__form
-from ..models import Gift, GiftOrder, GiftOrderLog
+from ..clean_data import gift__clean__data
+from ..forms import gift__form
+from ..models import Gift
+from ..repositories import gift__store
 
 logger = logging.getLogger(__name__)
 
 
 # ═══════════════════════════════════════════════════════════
-# GIFT LIST
+# LIST
 # ═══════════════════════════════════════════════════════════
 @is_admin_required
 def gift_index(request):
@@ -36,12 +36,10 @@ def gift_index(request):
     if q:
         qs = qs.filter(Q(title__icontains=q) | Q(description__icontains=q))
 
-    # فیلتر سفارشی (for_user) → theFilterItems
     filter_val = (request.GET.get("filter") or "").strip()
     if filter_val in dict(Gift.ForUser.choices):
         qs = qs.filter(for_user=filter_val)
 
-    # مرتب‌سازی
     sort = request.GET.get("sort", "desc")
     if sort == "asc":
         qs = qs.order_by("id")
@@ -76,32 +74,19 @@ def gift_index(request):
     return render(request, "pages/gift/all_gifts.html", {"data": data})
 
 
-
-
+# ═══════════════════════════════════════════════════════════
+# CREATE
+# ═══════════════════════════════════════════════════════════
 @is_admin_required
 def gift_create(request):
     RequiredAccess(request, "GiftCreate")
 
     if request.method == "POST":
-        # اعتبارسنجی سبک و ساخت مستقیم (چون form.html از data.items استفاده می‌کند)
-        title = (request.POST.get("title") or "").strip()
-        for_user = request.POST.get("for_user") or ""
-        azar_value = request.POST.get("azar_value") or "0"
-        stock = request.POST.get("stock") or "0"
-
-        errors = []
-        if not title:
-            errors.append("عنوان الزامی است")
-        if for_user not in dict(Gift.ForUser.choices):
-            errors.append("نوع کاربر نامعتبر است")
-        if not azar_value.isdigit():
-            errors.append("ارزش آذر نامعتبر است")
-        if not stock.lstrip("-").isdigit():
-            errors.append("موجودی نامعتبر است")
+        cleaned, errors = gift__clean__data(request.POST)
 
         if errors:
             for err in errors:
-                messages.error(request, err)
+                response_msg(request, messages.ERROR, err)
             return render(request, "pages/form.html", {
                 "data": {
                     "pageTitle": "ایجاد هدیه جدید",
@@ -111,20 +96,21 @@ def gift_create(request):
                 }
             })
 
-        gallery_raw = request.POST.get("gallery_text") or ""
-        gallery = [line.strip() for line in gallery_raw.splitlines() if line.strip()]
+        try:
+            gift__store(request, cleaned=cleaned)
+        except Exception:
+            logger.exception("gift_create failed")
+            response_msg(request, messages.ERROR, "خطا در ذخیره هدیه")
+            return render(request, "pages/form.html", {
+                "data": {
+                    "pageTitle": "ایجاد هدیه جدید",
+                    "backUrl": reverse("app_gift:gift_index"),
+                    "storeUrl": reverse("app_gift:gift_create"),
+                    "items": gift__form(raw_data=request.POST),
+                }
+            })
 
-        Gift.objects.create(
-            title=title,
-            for_user=for_user,
-            description=(request.POST.get("description") or "").strip() or None,
-            photo=request.FILES.get("photo") or None,
-            azar_value=int(azar_value),
-            stock=int(stock),
-            gallery=gallery,
-            is_active=request.POST.get("is_active") == "on",
-        )
-        messages.success(request, "هدیه با موفقیت ایجاد شد")
+        response_msg(request, messages.SUCCESS, "هدیه با موفقیت ایجاد شد")
         return redirect("app_gift:gift_index")
 
     return render(request, "pages/form.html", {
@@ -137,30 +123,20 @@ def gift_create(request):
     })
 
 
+# ═══════════════════════════════════════════════════════════
+# UPDATE
+# ═══════════════════════════════════════════════════════════
 @is_admin_required
 def gift_update(request, id):
     RequiredAccess(request, "GiftUpdate")
     gift = get_object_or_404(Gift, id=id)
 
     if request.method == "POST":
-        title = (request.POST.get("title") or "").strip()
-        for_user = request.POST.get("for_user") or ""
-        azar_value = request.POST.get("azar_value") or "0"
-        stock = request.POST.get("stock") or "0"
-
-        errors = []
-        if not title:
-            errors.append("عنوان الزامی است")
-        if for_user not in dict(Gift.ForUser.choices):
-            errors.append("نوع کاربر نامعتبر است")
-        if not azar_value.isdigit():
-            errors.append("ارزش آذر نامعتبر است")
-        if not stock.lstrip("-").isdigit():
-            errors.append("موجودی نامعتبر است")
+        cleaned, errors = gift__clean__data(request.POST)
 
         if errors:
             for err in errors:
-                messages.error(request, err)
+                response_msg(request, messages.ERROR, err)
             return render(request, "pages/form.html", {
                 "data": {
                     "pageTitle": "ویرایش هدیه",
@@ -170,19 +146,21 @@ def gift_update(request, id):
                 }
             })
 
-        gallery_raw = request.POST.get("gallery_text") or ""
-        gift.gallery = [line.strip() for line in gallery_raw.splitlines() if line.strip()]
-        gift.title = title
-        gift.for_user = for_user
-        gift.description = (request.POST.get("description") or "").strip() or None
-        gift.azar_value = int(azar_value)
-        gift.stock = int(stock)
-        gift.is_active = request.POST.get("is_active") == "on"
-        if request.FILES.get("photo"):
-            gift.photo = request.FILES["photo"]
-        gift.save()
+        try:
+            gift__store(request, cleaned=cleaned, item=gift)
+        except Exception:
+            logger.exception("gift_update failed id=%s", id)
+            response_msg(request, messages.ERROR, "خطا در ذخیره هدیه")
+            return render(request, "pages/form.html", {
+                "data": {
+                    "pageTitle": "ویرایش هدیه",
+                    "backUrl": reverse("app_gift:gift_index"),
+                    "storeUrl": reverse("app_gift:gift_update", kwargs={"id": gift.id}),
+                    "items": gift__form(gift=gift, raw_data=request.POST),
+                }
+            })
 
-        messages.success(request, "هدیه با موفقیت به‌روزرسانی شد")
+        response_msg(request, messages.SUCCESS, "هدیه با موفقیت به‌روزرسانی شد")
         return redirect("app_gift:gift_index")
 
     return render(request, "pages/form.html", {
@@ -195,40 +173,66 @@ def gift_update(request, id):
     })
 
 
+# ═══════════════════════════════════════════════════════════
+# DELETE
+# ═══════════════════════════════════════════════════════════
 @is_admin_required
 def gift_delete(request, id):
     RequiredAccess(request, "GiftDelete")
     if request.method != "POST":
-        messages.error(request, "درخواست نامعتبر")
+        response_msg(request, messages.ERROR, "درخواست نامعتبر")
         return redirect("app_gift:gift_index")
 
     gift = get_object_or_404(Gift, id=id)
     if gift.orders.exists():
-        messages.error(request, "این هدیه دارای سفارش است و قابل حذف نیست")
+        response_msg(request, messages.ERROR, "این هدیه دارای سفارش است و قابل حذف نیست")
         return redirect_back(request)
 
     gift.delete()
-    messages.success(request, "هدیه با موفقیت حذف شد")
+    response_msg(request, messages.SUCCESS, "هدیه با موفقیت حذف شد")
     return redirect("app_gift:gift_index")
 
 
+# ═══════════════════════════════════════════════════════════
+# AJAX — حذف عکس گالری (ساختار response جدا از messages)
+# ═══════════════════════════════════════════════════════════
 @is_admin_required
 def delete_gallery_photo(request):
-    if request.method == "POST":
-        inputData = json.loads(request.body)
+    if request.method != "POST":
+        return JsonResponse({"data": "درخواست نامعتبر"}, status=400)
 
-        gift = Gift.objects.filter(id=inputData['param']['itemId']).first()
-        if gift is None:
-            return JsonResponse({"data": f"هدیه یافت نشد"}, content_type="application/json", status=203)
+    try:
+        body = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        return JsonResponse({"data": "بدنه‌ی نامعتبر"}, status=400)
 
-        gallery = gift.gallery
-        deleteFile(gallery[int(inputData['param']['galleryIndex'])])
+    param = body.get("param") or {}
+    item_id = param.get("itemId")
+    gallery_index = param.get("galleryIndex")
 
-        gallery.pop(int(inputData['param']['galleryIndex']))
-        gift.gallery = gallery
-        gift.save()
+    if not item_id or gallery_index is None:
+        return JsonResponse({"data": "پارامتر ناقص"}, status=400)
 
-        return JsonResponse({"data": 'ok'}, content_type="application/json", status=201)
+    try:
+        index = int(gallery_index)
+    except (ValueError, TypeError):
+        return JsonResponse({"data": "index نامعتبر"}, status=400)
 
-    else:
-        return JsonResponse({"data": f"درخواست نامعتبر"}, content_type="application/json", status=203)
+    gift = Gift.objects.filter(id=item_id).first()
+    if not gift:
+        return JsonResponse({"data": "هدیه یافت نشد"}, status=404)
+
+    gallery = list(gift.gallery or [])
+    if index < 0 or index >= len(gallery):
+        return JsonResponse({"data": "index خارج از محدوده"}, status=400)
+
+    try:
+        deleteFile(gallery[index])
+    except Exception:
+        logger.warning("Could not delete file %s for gift %s", gallery[index], gift.id)
+
+    gallery.pop(index)
+    gift.gallery = gallery
+    gift.save(update_fields=["gallery", "updated_at"])
+
+    return JsonResponse({"data": "ok"}, status=200)

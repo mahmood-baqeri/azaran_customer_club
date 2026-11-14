@@ -1,157 +1,147 @@
+# applications/promotion/forms.py
+
 from django import forms
-from django.utils.translation import gettext_lazy as _
 
-from applications.page.models import Category, Page, PageContentItem
-
-
-class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-    def __init__(self, attrs=None):
-        default_attrs = {"multiple": True}
-        if attrs:
-            default_attrs.update(attrs)
-        super().__init__(default_attrs)
+from .models import Promotion, PromotionItem, PromotionOrder
 
 
-class PageForm(forms.ModelForm):
-    """فرم ایجاد/ویرایش صفحه — منطبق با مدل ساده‌شده"""
-
-    gallery_images = forms.FileField(
-        label=_("آپلود تصاویر گالری"),
+# ═══════════════════════════════════════════════════════════
+# Action Forms
+# ═══════════════════════════════════════════════════════════
+class OrderStatusForm(forms.Form):
+    new_status = forms.ChoiceField(
+        choices=PromotionOrder.Status.choices,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    tracking_code = forms.CharField(
+        required=False, max_length=100,
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+    )
+    note = forms.CharField(
         required=False,
-        widget=MultipleFileInput(attrs={"class": "form-control", "accept": "image/*"}),
+        widget=forms.Textarea(attrs={"class": "form-control", "rows": 2}),
     )
 
-    class Meta:
-        model = Page
-        fields = [
-            "category", "type",
-            "title", "summer", "text",
-            "photo", "gallery",
-            "is_active",
-        ]
-        widgets = {
-            "title": forms.TextInput(attrs={"class": "form-control", "maxlength": 120}),
-            "summer": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
-            "text": forms.Textarea(attrs={"class": "form-control online-editor", "rows": 10}),
-            "photo": forms.FileInput(attrs={"class": "form-control"}),
-            "gallery": forms.HiddenInput(),
-        }
+
+class OrderAssignForm(forms.Form):
+    assigned_to = forms.ModelChoiceField(
+        queryset=None, required=False,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # category
-        self.fields["category"].required = False
-        self.fields["category"].queryset = Category.objects.filter(is_active=True)
-        self.fields["category"].widget = forms.Select(attrs={"class": "form-control select2"})
-
-        # type
-        self.fields["type"].widget = forms.Select(attrs={"class": "form-control"})
-        self.fields["type"].choices = Page.PageType.choices
-
-        # is_active
-        self.fields["is_active"].required = False
-        self.fields["is_active"].widget = forms.CheckboxInput(
-            attrs={"class": "form-check-input", "role": "switch"}
-        )
-
-        # gallery — فقط برای آپلود مستقیم نیست؛ فیلد مخفی
-        self.fields["gallery"].required = False
-
-        # اگر رکورد موجود است، گالری را مقدار اولیه بده
-        if self.instance and self.instance.pk and isinstance(self.instance.gallery, list):
-            import json
-            self.initial["gallery"] = json.dumps(self.instance.gallery, ensure_ascii=False)
-
-    def clean_title(self):
-        title = (self.cleaned_data.get("title") or "").strip()
-        if not title:
-            raise forms.ValidationError(_("عنوان الزامی است"))
-        return title
-
-    def clean(self):
-        cleaned_data = super().clean()
-        is_active = cleaned_data.get("is_active", False)
-
-        # حداقل یکی از متن کوتاه یا متن اصلی باید باشد
-        if is_active and not (cleaned_data.get("summer") or cleaned_data.get("text")):
-            self.add_error("summer", _("صفحه فعال باید حداقل یک متن کوتاه یا متن اصلی داشته باشد"))
-
-        return cleaned_data
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-
-        # فیلد gallery از فرم مخفی — کاربر ممکن است JSON داده باشد
-        gallery_raw = self.cleaned_data.get("gallery")
-        if isinstance(gallery_raw, str) and gallery_raw.strip():
-            import json
-            try:
-                instance.gallery = json.loads(gallery_raw)
-            except Exception:
-                instance.gallery = []
-        elif isinstance(gallery_raw, list):
-            instance.gallery = gallery_raw
-
-        if commit:
-            instance.save()
-        return instance
+        from applications.user.models import User
+        self.fields["assigned_to"].queryset = User.objects.filter(
+            is_staff=True, is_active=True
+        ).order_by("first_name", "last_name")
 
 
-class PageFilterForm(forms.Form):
-    """فرم فیلتر لیست صفحات"""
+# ═══════════════════════════════════════════════════════════
+# PROMOTION FORM
+# ═══════════════════════════════════════════════════════════
+def promotion__form(promotion=None, raw_data=None):
+    """items برای قالب عمومی form.html"""
 
-    search = forms.CharField(
-        required=False,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": _("جستجو در عنوان، متن...")}
-        ),
-    )
+    def val(field, default=""):
+        if raw_data is not None:
+            return raw_data.get(field, default)
+        if promotion is not None:
+            return getattr(promotion, field, default)
+        return default
 
-    category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(is_active=True),
-        required=False,
-        empty_label=_("همه دسته‌بندی‌ها"),
-        widget=forms.Select(attrs={"class": "form-control select2"}),
-    )
+    def is_active_value():
+        if raw_data is not None:
+            return 1 if str(raw_data.get("is_active", "")).lower() in ("on", "true", "1") else 0
+        if promotion is not None:
+            return 1 if promotion.is_active else 0
+        return 1  # پیش‌فرض: فعال
 
-    type = forms.ChoiceField(
-        choices=[("", _("همه"))] + list(Page.PageType.choices),
-        required=False,
-        widget=forms.Select(attrs={"class": "form-control"}),
-    )
+    return [
+        {
+            "l": "عنوان پک *",
+            "n": "title",
+            "v": val("title"),
+            "id": "the_title",
+            "r": True,
+            "c": "col-md-9",
+            "b": "textBox.html",
+        },
+        {
+            "l": "فعال",
+            "n": "is_active",
+            "v": is_active_value(),
+            "id": "is_active",
+            "r": None,
+            "c": "col-md-3",
+            "b": "switch.html",
+        },
+    ]
 
-    is_active = forms.ChoiceField(
-        choices=[("", _("همه")), ("True", _("فعال")), ("False", _("غیرفعال"))],
-        required=False,
-        widget=forms.Select(attrs={"class": "form-control"}),
-    )
 
+# ═══════════════════════════════════════════════════════════
+# PROMOTION ITEM FORM
+# ═══════════════════════════════════════════════════════════
+def promotion_item__form(item=None, raw_data=None):
+    """items برای قالب عمومی form.html — آیتم داخل پک"""
 
-class PageContentItemForm(forms.ModelForm):
-    """فرم مدیریت محتوای صفحه (Step/FAQ)"""
+    def val(field, default=""):
+        if raw_data is not None:
+            return raw_data.get(field, default)
+        if item is not None:
+            return getattr(item, field, default)
+        return default
 
-    class Meta:
-        model = PageContentItem
-        fields = ["kind", "title", "body", "order", "extra"]
-        widgets = {
-            "kind": forms.Select(attrs={"class": "form-control"}),
-            "title": forms.TextInput(attrs={"class": "form-control", "maxlength": 255}),
-            "body": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
-            "order": forms.NumberInput(attrs={"class": "form-control", "min": 0}),
-            "extra": forms.Textarea(
-                attrs={
-                    "class": "form-control",
-                    "rows": 2,
-                    "placeholder": _('{"icon": "fa-icon", "link": "https://..."}'),
-                }
-            ),
-        }
+    def photo_url():
+        if not item or not item.photo:
+            return ""
+        try:
+            return item.photo.url
+        except ValueError:
+            return ""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["extra"].required = False
-        self.fields["title"].required = True
-        self.fields["body"].required = False
+    def is_active_value():
+        if raw_data is not None:
+            return 1 if str(raw_data.get("is_active", "")).lower() in ("on", "true", "1") else 0
+        if item is not None:
+            return 1 if item.is_active else 0
+        return 1
+
+    return [
+        {
+            "l": "عنوان آیتم *",
+            "n": "title",
+            "v": val("title"),
+            "id": "the_title",
+            "r": True,
+            "c": "col-md-6",
+            "b": "textBox.html",
+        },
+        {
+            "l": "برچسب",
+            "n": "badge",
+            "v": val("badge"),
+            "id": "the_badge",
+            "r": None,
+            "c": "col-md-3",
+            "b": "textBox.html",
+        },
+        {
+            "l": "فعال",
+            "n": "is_active",
+            "v": is_active_value(),
+            "id": "is_active",
+            "r": None,
+            "c": "col-md-3",
+            "b": "switch.html",
+        },
+        {
+            "l": "تصویر",
+            "n": "photo",
+            "v": photo_url(),
+            "id": "the_photo",
+            "r": None,
+            "c": "col-md-6",
+            "b": "photo.html",
+        },
+    ]

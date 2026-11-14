@@ -15,40 +15,62 @@
         <div class="card custom-card">
           <div class="card-body">
             <div class="row g-3">
-              <!-- ستون اطلاعات -->
+              <!-- ═══ ستون اطلاعات ═══ -->
               <div class="col-md-7">
+                <!-- اطلاعات سفارش -->
                 <div class="card mb-3">
                   <div class="card-header fw-bold">اطلاعات سفارش</div>
                   <div class="card-body">
                     <dl class="row mb-0">
                       <dt class="col-4">کاربر</dt>
                       <dd class="col-8">{{ order.user.full_name }} ({{ order.user.mobile }})</dd>
+
                       <dt class="col-4">هدیه</dt>
                       <dd class="col-8">{{ order.gift.title }} — {{ order.gift.azar_value }} آذر</dd>
-                      <dt class="col-4">تعداد</dt><dd class="col-8">{{ order.quantity }}</dd>
-                      <dt class="col-4">ارزش کل</dt><dd class="col-8">{{ order.total_azar_value }} آذر</dd>
+
+                      <dt class="col-4">تعداد</dt>
+                      <dd class="col-8">{{ order.quantity }}</dd>
+
+                      <dt class="col-4">ارزش کل</dt>
+                      <dd class="col-8">{{ order.total_azar_value }} آذر</dd>
+
                       <dt class="col-4">گیرنده</dt>
                       <dd class="col-8">{{ order.receiver_name }} — {{ order.receiver_phone }}</dd>
-                      <dt class="col-4">آدرس</dt><dd class="col-8">{{ order.address }}</dd>
-                      <dt class="col-4">کد پستی</dt><dd class="col-8">{{ order.postal_code }}</dd>
-                      <dt class="col-4">کد رهگیری</dt><dd class="col-8">{{ order.tracking_code|default:'—' }}</dd>
-                      <dt class="col-4">مسئول</dt><dd class="col-8">{{ order.assigned_to.full_name|default:'—' }}</dd>
-                      <dt class="col-4">تاریخ ثبت</dt><dd class="col-8">{{ order.created_at|date:'Y/m/d H:i' }}</dd>
+
+                      <dt class="col-4">آدرس</dt>
+                      <dd class="col-8">{{ order.address }}</dd>
+
+                      <dt class="col-4">کد پستی</dt>
+                      <dd class="col-8">{{ order.postal_code }}</dd>
+
+                      <dt class="col-4">کد رهگیری</dt>
+                      <dd class="col-8">{{ order.tracking_code|default:'—' }}</dd>
+
+                      <dt class="col-4">وضعیت</dt>
+                      <dd class="col-8">{{ order.get_status_display }}</dd>
+
+                      <dt class="col-4">مسئول</dt>
+                      <dd class="col-8">{{ order.assigned_to.full_name|default:'—' }}</dd>
+
+                      <dt class="col-4">تاریخ ثبت</dt>
+                      <dd class="col-8">{{ order.created_at|date:'Y/m/d H:i' }}</dd>
                     </dl>
                   </div>
                 </div>
 
+                <!-- یادداشت داخلی -->
                 <div class="card mb-3">
                   <div class="card-header fw-bold">یادداشت داخلی</div>
                   <div class="card-body">
                     <form method="post" action="{% url 'app_gift:order_note' order.id %}">
                       {% csrf_token %}
-                      <textarea name="internal_note" class="form-control" rows="3">{{ order.internal_note|default_if_none:'' }}</textarea>
+                      <textarea name="internal_note" class="form-control" rows="3" placeholder="یادداشت داخلی (فقط ادمین)">{{ order.internal_note|default_if_none:'' }}</textarea>
                       <button class="btn btn-sm btn-outline-primary mt-2">ذخیره یادداشت</button>
                     </form>
                   </div>
                 </div>
 
+                <!-- تاریخچه -->
                 <div class="card">
                   <div class="card-header fw-bold">تاریخچه</div>
                   <div class="card-body">
@@ -72,8 +94,9 @@
                 </div>
               </div>
 
-              <!-- ستون اکشن‌ها -->
+              <!-- ═══ ستون اکشن‌ها ═══ -->
               <div class="col-md-5">
+                <!-- تغییر وضعیت -->
                 <div class="card mb-3">
                   <div class="card-header fw-bold">تغییر وضعیت</div>
                   <div class="card-body">
@@ -95,6 +118,7 @@
                   </div>
                 </div>
 
+                <!-- واگذاری -->
                 <div class="card">
                   <div class="card-header fw-bold">واگذاری به مسئول</div>
                   <div class="card-body">
