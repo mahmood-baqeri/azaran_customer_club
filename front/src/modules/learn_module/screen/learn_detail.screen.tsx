@@ -3,16 +3,15 @@
 import { useParams } from "react-router-dom";
 import Header from "../../../app/layouts/header";
 import { useLearnDetail } from "../hooks/use-learn-detail";
-import { DOMAIN } from "../../../shared/constants/env";
 import "../../../shared/styles/learn.css";
+import { handel_photo_address } from "../../../shared/utils/handler";
 
 export default function LearnDetailScreen() {
   const { id } = useParams<{ id: string }>();
   const learnId = id ? Number(id) : null;
   const { learn, loading } = useLearnDetail(learnId);
 
-  const full = (p: string | null | undefined) =>
-    p ? (p.startsWith("http") ? p : `${DOMAIN}${p}`) : undefined;
+
 
   if (loading) return <div className="text-center mt-5 text-muted">در حال بارگذاری...</div>;
   if (!learn) return <div className="text-center mt-5">آموزش یافت نشد.</div>;
@@ -24,7 +23,7 @@ export default function LearnDetailScreen() {
       <div className="learn-detail-body">
         {learn.photo && (
           <div className="learn-detail-img">
-            <img src={full(learn.photo)} alt={learn.title} />
+            <img src={handel_photo_address(learn.photo)} alt={learn.title} />
           </div>
         )}
 

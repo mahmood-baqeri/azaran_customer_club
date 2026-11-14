@@ -41,3 +41,23 @@
 .bg-unread .text-dark {
      color: #1e40af !important;
 }
+
+
+
+
+/* .notification-card:hover {
+     background-color: #f9fbfd;
+}
+
+.modal-backdrop.show {
+     opacity: 0.45;
+} */
+
+.modal-content .btn-close {
+     box-shadow: none;
+}
+
+
+.badge.bg-warning.bg-opacity-10 {
+     font-weight: 600;
+}
