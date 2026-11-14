@@ -1,0 +1,113 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'pages/user/user_filters.html' %}
+            {% endif %}
+
+            <div class="table-responsive">
+              <table class="table-hover align-middle mt-3 table text-nowrap text-md-nowrap table-striped mg-b-0" id="theMainTabelElement">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>نام</th>
+                    <th>موبایل</th>
+                    <th>نوع</th>
+                    <th>سطح</th>
+                    <th>کد معرف</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ عضویت</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in data.all %}
+                    <tr>
+                      <td>{{ item.id }}</td>
+                      <td>
+                        {% if item.avatar %}
+                          <img src="{{ item.avatar.url }}" width="28" height="28" class="rounded-circle me-1 object-fit-cover" alt="" />
+                        {% endif %}
+                        {{ item.full_name|default:'—' }}
+                      </td>
+                      <td>
+                        <span style="direction: ltr">{{ item.mobile }}</span>
+                        {% if item.is_mobile_verified %}
+                          <span class="badge bg-success ms-1" title="تایید شده">✓</span>
+                        {% else %}
+                          <span class="badge bg-warning text-dark ms-1" title="تایید نشده">!</span>
+                        {% endif %}
+                      </td>
+                      <td>{{ item.get_nature_display }}</td>
+                      <td>
+                        {% if item.is_ostadkar %}
+                          <span class="badge bg-primary">استادکار</span>
+                        {% else %}
+                          <span class="badge bg-secondary">کاردان</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if item.referral_code %}
+                          <small style="direction: ltr">{{ item.referral_code }}</small>
+                        {% else %}
+                          —
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if item.is_active %}
+                          <span class="badge bg-success">فعال</span>
+                        {% else %}
+                          <span class="badge bg-secondary">غیرفعال</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ item.date_joined|date:'Y/m/d' }}</small>
+                      </td>
+                      <td class="text-end">
+                        <a href="{% url 'app_user:user_detail' item.id %}" class="btn btn-sm btn-outline-info">جزئیات</a>
+                        <a href="{% url 'app_user:user_update' item.id %}" class="btn btn-sm btn-outline-primary">ویرایش</a>
+                        {% if request.user.id != item.id %}
+                          <a href="" data-toggle="tooltip" data-original-title="حذف" class="deleteRecordFromTable btn btn-sm btn-outline-danger" data-deleteId="{{ item.id }}">حذف</a>
+                          <form id="deleteRecordForm_{{ item.id }}" action="{% url 'app_user:user_delete' item.id %}" method="post" style="display: none;">
+                            {% csrf_token %}
+                          </form>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="9" class="text-center text-muted py-4">کاربری یافت نشد</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

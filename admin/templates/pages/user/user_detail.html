@@ -1,0 +1,268 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  کاربر «{{ user.full_name }}»
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="row g-3">
+          <!-- ═══════ ستون چپ: اطلاعات ═══════ -->
+          <div class="col-md-7">
+            <!-- اطلاعات کاربر -->
+            <div class="card custom-card mb-3">
+              <div class="card-header fw-bold">اطلاعات کاربر</div>
+              <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                  {% if user.avatar %}
+                    <img src="{{ user.avatar.url }}" width="64" height="64" class="rounded-circle me-3 object-fit-cover" alt="" />
+                  {% endif %}
+                  <div>
+                    <h5 class="mb-1">{{ user.full_name }}</h5>
+                    <p class="mb-0 text-muted small">
+                      {{ user.get_nature_display }} ·{% if user.is_ostadkar %}
+                        استادکار
+                      {% else %}
+                        کاردان
+                      {% endif %}
+                    </p>
+                  </div>
+                </div>
+
+                <dl class="row mb-0">
+                  <dt class="col-4">موبایل</dt>
+                  <dd class="col-8">
+                    <span style="direction: ltr">{{ user.mobile }}</span>
+                    {% if user.is_mobile_verified %}
+                      <span class="badge bg-success ms-1">تایید شده</span>
+                    {% else %}
+                      <span class="badge bg-warning text-dark ms-1">تایید نشده</span>
+                    {% endif %}
+                  </dd>
+
+                  {% if user.email %}
+                    <dt class="col-4">ایمیل</dt>
+                    <dd class="col-8" style="direction: ltr">{{ user.email }}</dd>
+                  {% endif %}
+
+                  <dt class="col-4">کد معرف</dt>
+                  <dd class="col-8"><small style="direction: ltr">{{ user.referral_code|default:'—' }}</small></dd>
+
+                  <dt class="col-4">وضعیت</dt>
+                  <dd class="col-8">
+                    {% if user.is_active %}
+                      <span class="badge bg-success">فعال</span>
+                    {% else %}
+                      <span class="badge bg-secondary">غیرفعال</span>
+                    {% endif %}
+                  </dd>
+
+                  <dt class="col-4">تاریخ عضویت</dt>
+                  <dd class="col-8">{{ user.date_joined|date:'Y/m/d H:i' }}</dd>
+
+                  <dt class="col-4">آخرین فعالیت</dt>
+                  <dd class="col-8">{{ user.last_active_at|date:'Y/m/d H:i' }}</dd>
+                </dl>
+              </div>
+            </div>
+
+            <!-- پروفایل -->
+            {% if profile %}
+              <div class="card custom-card mb-3">
+                <div class="card-header fw-bold">اطلاعات پروفایل</div>
+                <div class="card-body">
+                  <dl class="row mb-0">
+                    <dt class="col-4">کد ملی</dt>
+                    <dd class="col-8"><span style="direction: ltr">{{ profile.national_code|default:'—' }}</span></dd>
+
+                    <dt class="col-4">تاریخ تولد</dt>
+                    <dd class="col-8">{{ profile.birth_date|date:'Y/m/d'|default:'—' }}</dd>
+
+                    <dt class="col-4">جنسیت</dt>
+                    <dd class="col-8">{{ profile.get_gender_display|default:'—' }}</dd>
+
+                    <dt class="col-4">استان</dt>
+                    <dd class="col-8">{{ profile.province.name|default:'—' }}</dd>
+
+                    <dt class="col-4">شهر</dt>
+                    <dd class="col-8">{{ profile.city.name|default:'—' }}</dd>
+
+                    <dt class="col-4">آدرس</dt>
+                    <dd class="col-8">{{ profile.address|default:'—' }}</dd>
+
+                    <dt class="col-4">کد پستی</dt>
+                    <dd class="col-8"><span style="direction: ltr">{{ profile.post_code|default:'—' }}</span></dd>
+
+                    <dt class="col-4">عنوان شغلی</dt>
+                    <dd class="col-8">{{ profile.job_title|default:'—' }}</dd>
+
+                    <dt class="col-4">نام شرکت</dt>
+                    <dd class="col-8">{{ profile.company_name|default:'—' }}</dd>
+                  </dl>
+                </div>
+              </div>
+            {% endif %}
+
+            <!-- مدارک شغلی -->
+            <div class="card custom-card mb-3">
+              <div class="card-header fw-bold">مدارک شغلی</div>
+              <div class="card-body">
+                <table class="table table-sm align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th>نوع</th>
+                      <th>فایل</th>
+                      <th>حجم</th>
+                      <th>وضعیت</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for cert in certificates %}
+                      <tr>
+                        <td>{{ cert.get_type_display }}</td>
+                        <td>
+                          {% if cert.file %}
+                            <a href="{{ cert.file.url }}" target="_blank" class="btn btn-sm btn-outline-info">مشاهده</a>
+                          {% else %}
+                            —
+                          {% endif %}
+                        </td>
+                        <td>
+                          <small>{{ cert.file_size|filesizeformat }}</small>
+                        </td>
+                        <td>
+                          {% if cert.is_verified %}
+                            <span class="badge bg-success">تایید شده</span>
+                          {% else %}
+                            <span class="badge bg-warning text-dark">در انتظار تایید</span>
+                          {% endif %}
+                        </td>
+                        <td class="text-end">
+                          {% if not cert.is_verified %}
+                            <form method="post" class="d-inline" action="{% url 'app_user:user_certificate_approve' user.id cert.id %}">
+                              {% csrf_token %}
+                              <button class="btn btn-sm btn-outline-success">تایید</button>
+                            </form>
+                          {% else %}
+                            <form method="post" class="d-inline" action="{% url 'app_user:user_certificate_reject' user.id cert.id %}" onsubmit="return confirm('رد این مدرک؟');">
+                              {% csrf_token %}
+                              <button class="btn btn-sm btn-outline-danger">رد</button>
+                            </form>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% empty %}
+                      <tr>
+                        <td colspan="5" class="text-center text-muted py-3">مدرکی ثبت نشده است</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════ ستون راست: اکشن‌ها ═══════ -->
+          <div class="col-md-5">
+            <!-- امتیاز -->
+            {% if score %}
+              <div class="card custom-card mb-3">
+                <div class="card-header fw-bold">امتیاز</div>
+                <div class="card-body">
+                  <dl class="row mb-0">
+                    <dt class="col-6">موجودی فعلی</dt>
+                    <dd class="col-6 text-end"><strong>{{ score.current_balance }}</strong></dd>
+
+                    <dt class="col-6">کل کسب‌شده</dt>
+                    <dd class="col-6 text-end text-success">{{ score.total_earned }}</dd>
+
+                    <dt class="col-6">کل خرج‌شده</dt>
+                    <dd class="col-6 text-end text-danger">{{ score.total_spent }}</dd>
+                  </dl>
+                </div>
+              </div>
+            {% endif %}
+
+            <!-- اکشن‌ها -->
+            <div class="card custom-card mb-3">
+              <div class="card-header fw-bold">اکشن‌ها</div>
+              <div class="card-body d-grid gap-2">
+                <a href="{% url 'app_user:user_update' user.id %}" class="btn btn-sm btn-outline-primary">ویرایش اطلاعات</a>
+
+                {% if not user.is_mobile_verified %}
+                  <form method="post" action="{% url 'app_user:user_verify_mobile' user.id %}">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-success">تایید موبایل</button>
+                  </form>
+                {% endif %}
+
+                {% if request.user.id != user.id %}
+                  <form method="post"
+                    action="{% url 'app_user:user_toggle_active' user.id %}"
+                    onsubmit="return confirm('{% if user.is_active %}
+                      
+                      غیرفعال
+
+                    {% else %}
+                      
+                      فعال
+
+                    {% endif %} کردن این کاربر؟');">
+                    {% csrf_token %}
+                    <button class="btn btn-sm {% if user.is_active %}
+                        
+                        btn-outline-warning
+
+                      {% else %}
+                        
+                        btn-outline-success
+
+                      {% endif %}">
+                      {% if user.is_active %}
+                        غیرفعال کردن
+                      {% else %}
+                        فعال کردن
+                      {% endif %}
+                    </button>
+                  </form>
+                {% endif %}
+
+                <a href="{% url 'app_user:user_index' %}" class="btn btn-sm btn-outline-secondary">بازگشت به لیست</a>
+              </div>
+            </div>
+
+            <!-- دستگاه‌ها -->
+            <div class="card custom-card">
+              <div class="card-header fw-bold">دستگاه‌های فعال</div>
+              <div class="card-body">
+                {% for d in devices %}
+                  <div class="border-bottom py-2">
+                    <strong>{{ d.device_name }}</strong>
+                    <span class="badge bg-secondary ms-1">{{ d.get_device_type_display }}</span>
+                    <div class="small text-muted">
+                      IP: <span style="direction: ltr">{{ d.ip_address }}</span>
+                      · {{ d.last_active|date:'Y/m/d H:i' }}
+                    </div>
+                  </div>
+                {% empty %}
+                  <p class="text-muted mb-0">دستگاه فعالی وجود ندارد</p>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

@@ -1,0 +1,253 @@
+{% load static %}
+
+<form id="userFiltersForm" method="get" action="{{ data.searchUrl }}" class="user-filters-form">
+
+    {# ═══════════════ ردیف ۱: جستجو + مرتب‌سازی + تعداد ═══════════════ #}
+    <div class="row gx-2 gy-2 align-items-center mb-2">
+        <div class="col-sm-6">
+            <input type="text" name="q" value="{{ data.searchText }}" class="form-control"
+                   placeholder="جستجو: نام، موبایل، ایمیل، کد معرف، کد ملی، ID">
+        </div>
+
+        <div class="col-sm-3">
+            <select class="form-select form-control" name="sort">
+                <option value="desc"        {% if data.searchSort == 'desc' %}selected{% endif %}>جدیدترین (ID)</option>
+                <option value="asc"         {% if data.searchSort == 'asc' %}selected{% endif %}>قدیمی‌ترین (ID)</option>
+                <option value="newest"      {% if data.searchSort == 'newest' %}selected{% endif %}>جدیدترین عضویت</option>
+                <option value="oldest"      {% if data.searchSort == 'oldest' %}selected{% endif %}>قدیمی‌ترین عضویت</option>
+                <option value="active"      {% if data.searchSort == 'active' %}selected{% endif %}>فعال‌ها</option>
+                <option value="deactive"    {% if data.searchSort == 'deactive' %}selected{% endif %}>غیرفعال‌ها</option>
+                <option value="balance_high"{% if data.searchSort == 'balance_high' %}selected{% endif %}>بیشترین موجودی</option>
+                <option value="balance_low" {% if data.searchSort == 'balance_low' %}selected{% endif %}>کمترین موجودی</option>
+                <option value="earned_high" {% if data.searchSort == 'earned_high' %}selected{% endif %}>بیشترین کل کسب</option>
+                <option value="earned_low"  {% if data.searchSort == 'earned_low' %}selected{% endif %}>کمترین کل کسب</option>
+                <option value="kardan"      {% if data.searchSort == 'kardan' %}selected{% endif %}>سطح کاردان</option>
+                <option value="ostadkar"    {% if data.searchSort == 'ostadkar' %}selected{% endif %}>سطح استادکار</option>
+            </select>
+        </div>
+
+        <div class="col-sm-2">
+            <select class="form-select form-control" name="count">
+                <option value="10"  {% if data.searchCount == 10 %}selected{% endif %}>10</option>
+                <option value="20"  {% if data.searchCount == 20 %}selected{% endif %}>20</option>
+                <option value="50"  {% if data.searchCount == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if data.searchCount == 100 %}selected{% endif %}>100</option>
+            </select>
+        </div>
+
+        <div class="col-sm-1">
+            <button type="submit" class="btn btn-info w-100">جستجو</button>
+        </div>
+    </div>
+
+    {# ═══════════════ ردیف ۲: فیلترهای اصلی ═══════════════ #}
+    <div class="row gx-2 gy-2 mb-2">
+        <div class="col-sm-3">
+            <select class="form-select form-control" name="nature">
+                <option value="">— نوع کاربری —</option>
+                {% for v, label in nature_choices %}
+                    <option value="{{ v }}" {% if request.GET.nature == v %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-sm-3">
+            <select class="form-select form-control" name="level">
+                <option value="">— سطح —</option>
+                <option value="kardan"   {% if request.GET.level == 'kardan' %}selected{% endif %}>کاردان</option>
+                <option value="ostadkar" {% if request.GET.level == 'ostadkar' %}selected{% endif %}>استادکار</option>
+            </select>
+        </div>
+
+        <div class="col-sm-2">
+            <select class="form-select form-control" name="is_active">
+                <option value="">— وضعیت —</option>
+                <option value="1" {% if request.GET.is_active == '1' %}selected{% endif %}>فعال</option>
+                <option value="0" {% if request.GET.is_active == '0' %}selected{% endif %}>غیرفعال</option>
+            </select>
+        </div>
+
+        <div class="col-sm-2">
+            <select class="form-select form-control" name="is_mobile_verified">
+                <option value="">— موبایل —</option>
+                <option value="1" {% if request.GET.is_mobile_verified == '1' %}selected{% endif %}>تایید شده</option>
+                <option value="0" {% if request.GET.is_mobile_verified == '0' %}selected{% endif %}>تایید نشده</option>
+            </select>
+        </div>
+
+        <div class="col-sm-2">
+            <select class="form-select form-control" name="has_avatar">
+                <option value="">— آواتار —</option>
+                <option value="1" {% if request.GET.has_avatar == '1' %}selected{% endif %}>دارد</option>
+                <option value="0" {% if request.GET.has_avatar == '0' %}selected{% endif %}>ندارد</option>
+            </select>
+        </div>
+    </div>
+
+    {# ═══════════════ دکمه‌ی فیلترهای بیشتر ═══════════════ #}
+    <div class="mb-2">
+        <button class="btn btn-sm btn-outline-secondary" type="button"
+                data-toggle="collapse" data-target="#advancedUserFilters">
+            <i class="fe fe-sliders me-1"></i> فیلترهای بیشتر
+        </button>
+        <a href="{{ data.searchUrl }}" class="btn btn-sm btn-outline-danger">حذف فیلترها</a>
+    </div>
+
+    {# ═══════════════ فیلترهای پیشرفته (collapsible) ═══════════════ #}
+    <div class="collapse {% if request.GET.gender or request.GET.province or request.GET.city or request.GET.min_balance or request.GET.max_balance or request.GET.min_earned or request.GET.has_certificate or request.GET.cert_verified or request.GET.invited or request.GET.joined_from or request.GET.joined_to or request.GET.role or request.GET.active_from or request.GET.active_to %}show{% endif %}"
+         id="advancedUserFilters">
+        <div class="border rounded-3 p-3 bg-light">
+
+            {# ─── دموگرافیک ─── #}
+            <h6 class="text-muted small fw-bold mb-2">مشخصات دموگرافیک</h6>
+            <div class="row gx-2 gy-2 mb-3">
+                <div class="col-sm-3">
+                    <select class="form-select form-control" name="gender">
+                        <option value="">— جنسیت —</option>
+                        <option value="male"   {% if request.GET.gender == 'male' %}selected{% endif %}>مرد</option>
+                        <option value="female" {% if request.GET.gender == 'female' %}selected{% endif %}>زن</option>
+                    </select>
+                </div>
+
+                <div class="col-sm-3">
+                    <select class="form-select form-control" name="province" id="filter_province">
+                        <option value="">— استان —</option>
+                        {% for p in provinces %}
+                            <option value="{{ p.id }}" {% if request.GET.province == p.id|stringformat:'s' %}selected{% endif %}>{{ p.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-sm-3">
+                    <select class="form-select form-control" name="city" id="filter_city">
+                        <option value="">— شهر —</option>
+                        {% for c in cities %}
+                            <option value="{{ c.id }}" data-province="{{ c.province_id }}"
+                                    {% if request.GET.city == c.id|stringformat:'s' %}selected{% endif %}>{{ c.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            {# ─── امتیاز ─── #}
+            <h6 class="text-muted small fw-bold mb-2">امتیاز</h6>
+            <div class="row gx-2 gy-2 mb-3">
+                <div class="col-sm-4">
+                    <input type="number" name="min_balance" class="form-control" min="0"
+                           placeholder="حداقل موجودی"
+                           value="{{ request.GET.min_balance|default:'' }}">
+                </div>
+                <div class="col-sm-4">
+                    <input type="number" name="max_balance" class="form-control" min="0"
+                           placeholder="حداکثر موجودی"
+                           value="{{ request.GET.max_balance|default:'' }}">
+                </div>
+                <div class="col-sm-4">
+                    <input type="number" name="min_earned" class="form-control" min="0"
+                           placeholder="حداقل کل کسب‌شده"
+                           value="{{ request.GET.min_earned|default:'' }}">
+                </div>
+            </div>
+
+            {# ─── مدارک و دعوت ─── #}
+            <h6 class="text-muted small fw-bold mb-2">مدارک و دعوت</h6>
+            <div class="row gx-2 gy-2 mb-3">
+                <div class="col-sm-3">
+                    <select class="form-select form-control" name="has_certificate">
+                        <option value="">— مدرک —</option>
+                        <option value="1" {% if request.GET.has_certificate == '1' %}selected{% endif %}>دارد</option>
+                        <option value="0" {% if request.GET.has_certificate == '0' %}selected{% endif %}>ندارد</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="form-select form-control" name="cert_verified">
+                        <option value="">— تایید مدرک —</option>
+                        <option value="1" {% if request.GET.cert_verified == '1' %}selected{% endif %}>تایید شده</option>
+                        <option value="0" {% if request.GET.cert_verified == '0' %}selected{% endif %}>تایید نشده</option>
+                    </select>
+                </div>
+                <div class="col-sm-3">
+                    <select class="form-select form-control" name="invited">
+                        <option value="">— دعوت —</option>
+                        <option value="1" {% if request.GET.invited == '1' %}selected{% endif %}>دعوت‌شده</option>
+                        <option value="0" {% if request.GET.invited == '0' %}selected{% endif %}>آزاد</option>
+                    </select>
+                </div>
+            </div>
+
+            {# ─── تاریخ‌ها ─── #}
+            <h6 class="text-muted small fw-bold mb-2">تاریخ‌ها (میلادی YYYY-MM-DD)</h6>
+            <div class="row gx-2 gy-2">
+                <div class="col-sm-3">
+                    <input type="text" name="joined_from" class="form-control pdate"
+                           placeholder="عضویت از"
+                           value="{{ request.GET.joined_from|default:'' }}">
+                </div>
+                <div class="col-sm-3">
+                    <input type="text" name="joined_to" class="form-control pdate"
+                           placeholder="عضویت تا"
+                           value="{{ request.GET.joined_to|default:'' }}">
+                </div>
+                <div class="col-sm-3">
+                    <input type="text" name="active_from" class="form-control pdate"
+                           placeholder="آخرین فعالیت از"
+                           value="{{ request.GET.active_from|default:'' }}">
+                </div>
+                <div class="col-sm-3">
+                    <input type="text" name="active_to" class="form-control pdate"
+                           placeholder="آخرین فعالیت تا"
+                           value="{{ request.GET.active_to|default:'' }}">
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    .user-filters-form input,
+    .user-filters-form select,
+    .user-filters-form button[type=submit] {
+        height: 40px !important;
+        font-size: 13px;
+    }
+</style>
+
+<script>
+    // ─── فیلتر وابسته استان → شهر ───
+    (function () {
+        const provinceSel = document.getElementById("filter_province");
+        const citySel = document.getElementById("filter_city");
+        if (!provinceSel || !citySel) return;
+
+        const allCityOptions = Array.from(citySel.querySelectorAll("option[data-province]"));
+        const selectedCity = citySel.value;
+
+        function filterCities() {
+            const pid = provinceSel.value;
+            // پاک‌سازی
+            citySel.innerHTML = '<option value="">— شهر —</option>';
+            allCityOptions
+                .filter(o => !pid || o.dataset.province === pid)
+                .forEach(o => {
+                    const clone = o.cloneNode(true);
+                    if (clone.value === selectedCity) clone.selected = true;
+                    citySel.appendChild(clone);
+                });
+        }
+
+        provinceSel.addEventListener("change", () => {
+            // شهر را ریست کن بعد از تغییر استان
+            if (citySel.value && provinceSel.value) {
+                // اگر شهر فعلی متعلق به استان جدید نیست، پاک شود
+                const current = allCityOptions.find(o => o.value === citySel.value);
+                if (current && current.dataset.province !== provinceSel.value) {
+                    citySel.value = "";
+                }
+            }
+            filterCities();
+        });
+
+        // اجرا در بارگذاری اولیه
+        if (provinceSel.value) filterCities();
+    })();
+</script>
