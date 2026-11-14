@@ -21,7 +21,6 @@ from django_dump_die.middleware import dd
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import redirect
 
-import aiosmtplib
 from email.message import EmailMessage
 
 #

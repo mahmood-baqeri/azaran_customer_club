@@ -13,6 +13,8 @@ urlpatterns = [
     path("setting/", include('applications.setting.url')),
     path('page/', include('applications.page.url')),
     path('category/', include('applications.category.url')),
+    
+    path('gift/', include('applications.gift.url')),
 
 
     # User areas

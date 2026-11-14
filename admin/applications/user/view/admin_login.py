@@ -39,6 +39,7 @@ def loginPass(request):
                     
                     # ✅ بررسی انقضای 7 روزه رمز عبور
                     if user.is_password_expired:
+                        logout(request)
                         messages.add_message(request, messages.WARNING, json.dumps({'text': 'رمز عبور شما منقضی شده است. لطفاً رمز خود را تغییر دهید.'}))
                         return redirect('app_user:admin_login_with_mobile')
 

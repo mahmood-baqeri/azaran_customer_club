@@ -1,0 +1,93 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/search.html' %}
+            {% endif %}
+
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mt-3">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>عنوان</th>
+                    <th>برای</th>
+                    <th>ارزش آذر</th>
+                    <th>موجودی</th>
+                    <th>وضعیت</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for g in data.all %}
+                    <tr>
+                      <td>{{ g.id }}</td>
+                      <td>
+                        {% if g.photo %}
+                          <img src="{{ g.photo.url }}" width="36" height="36" class="rounded me-2 object-fit-cover" alt="{{ g.title }}" />
+                        {% endif %}
+                        {{ g.title }}
+                      </td>
+                      <td>{{ g.get_for_user_display }}</td>
+                      <td>{{ g.azar_value }}</td>
+                      <td>
+                        {% if g.stock <= 0 %}
+                          <span class="badge bg-danger">ناموجود</span>
+                        {% elif g.stock < 5 %}
+                          <span class="badge bg-warning text-dark">{{ g.stock }}</span>
+                        {% else %}
+                          {{ g.stock }}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if g.is_active %}
+                          <span class="badge bg-success">فعال</span>
+                        {% else %}
+                          <span class="badge bg-secondary">غیرفعال</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-end">
+                        <a href="{% url 'app_gift:gift_update' g.id %}" class="btn btn-sm btn-outline-primary">ویرایش</a>
+                        <form method="post" action="{% url 'app_gift:gift_delete' g.id %}" class="d-inline" onsubmit="return confirm('حذف هدیه «{{ g.title }}»؟');">
+                          {% csrf_token %}
+                          <button class="btn btn-sm btn-outline-danger">حذف</button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="7" class="text-center text-muted py-4">هدیه‌ای ثبت نشده است</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

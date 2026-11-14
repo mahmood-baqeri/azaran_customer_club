@@ -244,11 +244,11 @@ def Applications():
         ('Role', 'Role'),
         ('Log', 'Log'),
         ('Setting', 'Setting'),
-        ('Category', 'Category'),
-        ('News', 'News'),
-        ('AdminPanel', 'AdminPanel'),
         ('Page', 'Page'),
-        ('Service', 'Service'),
+        
+        
+        ('Gift', 'Gift'),
+        ('GiftOrder', 'GiftOrder'),
     )
 
 

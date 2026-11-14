@@ -1,157 +1,126 @@
+# applications/gift/forms.py
+
+
 from django import forms
-from django.utils.translation import gettext_lazy as _
 
-from applications.page.models import Category, Page, PageContentItem
-
-
-class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-    def __init__(self, attrs=None):
-        default_attrs = {"multiple": True}
-        if attrs:
-            default_attrs.update(attrs)
-        super().__init__(default_attrs)
+from admin.applications.user.models import User
+from .models import Gift, GiftOrder
 
 
-class PageForm(forms.ModelForm):
-    """فرم ایجاد/ویرایش صفحه — منطبق با مدل ساده‌شده"""
-
-    gallery_images = forms.FileField(
-        label=_("آپلود تصاویر گالری"),
+class OrderStatusForm(forms.Form):
+    new_status = forms.ChoiceField(
+        choices=GiftOrder.Status.choices,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
+    tracking_code = forms.CharField(
+        required=False, max_length=100,
+        widget=forms.TextInput(attrs={"class": "form-control"}),
+    )
+    note = forms.CharField(
         required=False,
-        widget=MultipleFileInput(attrs={"class": "form-control", "accept": "image/*"}),
+        widget=forms.Textarea(attrs={"class": "form-control", "rows": 2}),
     )
 
-    class Meta:
-        model = Page
-        fields = [
-            "category", "type",
-            "title", "summer", "text",
-            "photo", "gallery",
-            "is_active",
-        ]
-        widgets = {
-            "title": forms.TextInput(attrs={"class": "form-control", "maxlength": 120}),
-            "summer": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
-            "text": forms.Textarea(attrs={"class": "form-control online-editor", "rows": 10}),
-            "photo": forms.FileInput(attrs={"class": "form-control"}),
-            "gallery": forms.HiddenInput(),
-        }
+
+class OrderAssignForm(forms.Form):
+    assigned_to = forms.ModelChoiceField(
+        queryset=None, required=False,
+        widget=forms.Select(attrs={"class": "form-select"}),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # category
-        self.fields["category"].required = False
-        self.fields["category"].queryset = Category.objects.filter(is_active=True)
-        self.fields["category"].widget = forms.Select(attrs={"class": "form-control select2"})
-
-        # type
-        self.fields["type"].widget = forms.Select(attrs={"class": "form-control"})
-        self.fields["type"].choices = Page.PageType.choices
-
-        # is_active
-        self.fields["is_active"].required = False
-        self.fields["is_active"].widget = forms.CheckboxInput(
-            attrs={"class": "form-check-input", "role": "switch"}
-        )
-
-        # gallery — فقط برای آپلود مستقیم نیست؛ فیلد مخفی
-        self.fields["gallery"].required = False
-
-        # اگر رکورد موجود است، گالری را مقدار اولیه بده
-        if self.instance and self.instance.pk and isinstance(self.instance.gallery, list):
-            import json
-            self.initial["gallery"] = json.dumps(self.instance.gallery, ensure_ascii=False)
-
-    def clean_title(self):
-        title = (self.cleaned_data.get("title") or "").strip()
-        if not title:
-            raise forms.ValidationError(_("عنوان الزامی است"))
-        return title
-
-    def clean(self):
-        cleaned_data = super().clean()
-        is_active = cleaned_data.get("is_active", False)
-
-        # حداقل یکی از متن کوتاه یا متن اصلی باید باشد
-        if is_active and not (cleaned_data.get("summer") or cleaned_data.get("text")):
-            self.add_error("summer", _("صفحه فعال باید حداقل یک متن کوتاه یا متن اصلی داشته باشد"))
-
-        return cleaned_data
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-
-        # فیلد gallery از فرم مخفی — کاربر ممکن است JSON داده باشد
-        gallery_raw = self.cleaned_data.get("gallery")
-        if isinstance(gallery_raw, str) and gallery_raw.strip():
-            import json
-            try:
-                instance.gallery = json.loads(gallery_raw)
-            except Exception:
-                instance.gallery = []
-        elif isinstance(gallery_raw, list):
-            instance.gallery = gallery_raw
-
-        if commit:
-            instance.save()
-        return instance
+        from applications.user.models import User
+        self.fields["assigned_to"].queryset = User.objects.filter(
+            is_staff=True, is_active=True
+        ).order_by("first_name", "last_name")
+        
+        
 
 
-class PageFilterForm(forms.Form):
-    """فرم فیلتر لیست صفحات"""
+# ═══════════════════════════════════════════════════════════
+# GIFT CREATE / UPDATE (با data.items)
+# ═══════════════════════════════════════════════════════════
+def gift__form(gift=None, raw_data=None):
+    """ساخت لیست items برای قالب عمومی form.html"""
 
-    search = forms.CharField(
-        required=False,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": _("جستجو در عنوان، متن...")}
-        ),
-    )
-
-    category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(is_active=True),
-        required=False,
-        empty_label=_("همه دسته‌بندی‌ها"),
-        widget=forms.Select(attrs={"class": "form-control select2"}),
-    )
-
-    type = forms.ChoiceField(
-        choices=[("", _("همه"))] + list(Page.PageType.choices),
-        required=False,
-        widget=forms.Select(attrs={"class": "form-control"}),
-    )
-
-    is_active = forms.ChoiceField(
-        choices=[("", _("همه")), ("True", _("فعال")), ("False", _("غیرفعال"))],
-        required=False,
-        widget=forms.Select(attrs={"class": "form-control"}),
-    )
+    def val(field, default=""):
+        if raw_data is not None:
+            return raw_data.get(field, default)
+        if gift is not None:
+            return getattr(gift, field, default)
+        return default
 
 
-class PageContentItemForm(forms.ModelForm):
-    """فرم مدیریت محتوای صفحه (Step/FAQ)"""
+    for_user_val = val("for_user", Gift.ForUser.SELLER)
 
-    class Meta:
-        model = PageContentItem
-        fields = ["kind", "title", "body", "order", "extra"]
-        widgets = {
-            "kind": forms.Select(attrs={"class": "form-control"}),
-            "title": forms.TextInput(attrs={"class": "form-control", "maxlength": 255}),
-            "body": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
-            "order": forms.NumberInput(attrs={"class": "form-control", "min": 0}),
-            "extra": forms.Textarea(
-                attrs={
-                    "class": "form-control",
-                    "rows": 2,
-                    "placeholder": _('{"icon": "fa-icon", "link": "https://..."}'),
-                }
-            ),
+    return [
+        {
+            'l': "عنوان *",
+            'n': 'title',
+            'v': val("title"),
+            'id': 'the_title',
+            'r': True,
+            'c': 'col-md-6',
+            'b': 'textBox.html'
+        }, {
+            'l': "برای *",
+            'n': 'for_user',
+            'v': for_user_val,
+            'id': 'the_for_user',
+            'r': True,
+            'c': 'col-md-6',
+            'data': [{"value": v, "label": l} for v, l in Gift.ForUser.choices],
+            'b': 'select2Multi.html',
+        }, {
+            'l': "توضیحات",
+            'n': 'description',
+            'v': val("description"),
+            'id': 'the_description',
+            'r': None,
+            'c': 'col-md-12',
+            'b': 'textarea.html'
+        }, {
+            'l': 'ارزش آذر *',
+            'n': 'azar_value',
+            'v': val("azar_value", 0),
+            'id': 'the_azar_value',
+            'r': True,
+            'c': 'col-md-3',
+            'b': 'number.html'
+        }, {
+            'l': 'موجودی *',
+            'n': 'stock',
+            'v': val("stock", 0),
+            'id': 'the_stock',
+            'r': True,
+            'c': 'col-md-3',
+            'b': 'number.html'
+        }, {
+            'l': 'فعال',
+            'n': 'is_active',
+            'v': (1 if gift.is_active else 0) if gift else 0,
+            'id': 'is_active',
+            'r': None,
+            'c': 'col-md-3',
+            'b': 'switch.html'
+        }, {
+            'l': 'تصویر',
+            'n': 'photo',
+            'v': val("photo"),
+            'id': 'the_photo',
+            'r': None,
+            'c': 'col-md-3',
+            'b': 'photo.html'
+        }, {
+            'l': "گالری",
+            'n': 'gallery',
+            'photos': gift.gallery if gift else [],
+            'theItem': gift if gift else '',
+            'id': 'the_gallery',
+            'r': None,
+            'removeRoute': "gift/api/deletePhoto",
+            'c': 'col-md-9',
+            'b': 'photoMulti.html'
         }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["extra"].required = False
-        self.fields["title"].required = True
-        self.fields["body"].required = False
+    ]

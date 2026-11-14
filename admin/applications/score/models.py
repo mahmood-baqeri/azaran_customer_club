@@ -68,6 +68,7 @@ class UserScoreLog(BaseModel):
         ORDER_REFUND            = "ORDER_REFUND",            "برگشت امتیاز با لغو سفارش"
         # ── SPEND ──
         GIFT_REDEEM             = "GIFT_REDEEM",             "خرید هدیه از ویترین"
+        GIFT_REFUND             = "gift_refund",             "استرداد امتیاز هدیه" 
         CUSTOM_GIFT             = "CUSTOM_GIFT",             "هدیه سفارشی"
         EXPIRE                  = "EXPIRE",                  "انقضای امتیاز"
         # ── EARN / SPEND (بسته به موقعیت) ──

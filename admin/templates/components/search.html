@@ -14,11 +14,6 @@
             <option value="desc" {% if data.searchSort == 'desc' %} selected  {% endif %}>جدید ترین</option>
             <option value="asc"  {% if data.searchSort == 'asc' %} selected  {% endif %}>قدیمی ترین</option>
 
-            {% if data.sortWithUserPersoncode %}
-                <option value="nationalCode" {% if data.searchSort == 'nationalCode' %} selected  {% endif %}>کد ملی</option>
-                <option value="personCode"  {% if data.searchSort == 'personCode' %} selected  {% endif %}>کد پرسنلی</option>
-            {% endif %}
-
             {% if data.sortWithActiveDeactive %}
                 <option value="active" {% if data.searchSort == 'active' %} selected  {% endif %}>فعال</option>
                 <option value="deactive"  {% if data.searchSort == 'deactive' %} selected  {% endif %}>غیر فعال</option>
@@ -26,7 +21,7 @@
 
             {% if data.sortWithMostScore %}
                 <option value="h" {% if data.searchSort == 'h' %} selected  {% endif %}>بیشترین امتیاز</option>
-                <option value="l"  {% if data.searchSort == 'l' %} selected  {% endif %}>کمترین امتیاز</option>
+                <option value="l"  {% if data.searchSort == 'l' %} selected  {% endif %}>کمترین امتیاز</option> 
             {% endif %}
 
             {% if data.sortWithSystemLog %}
@@ -45,6 +40,10 @@
             <option value="30" {% if data.searchCount == 30 %} selected  {% endif %}> 30</option>
             <option value="40" {% if data.searchCount == 40 %} selected  {% endif %}> 40</option>
             <option value="50" {% if data.searchCount == 50 %} selected  {% endif %}> 50</option>
+            <option value="100" {% if data.searchCount == 100 %} selected  {% endif %}> 100</option>
+            <option value="200" {% if data.searchCount == 200 %} selected  {% endif %}> 200</option>
+            <option value="500" {% if data.searchCount == 500 %} selected  {% endif %}> 500</option>
+            <option value="1000" {% if data.searchCount == 1000 %} selected  {% endif %}> 1000</option>
         </select>
     </div>
 
@@ -101,6 +100,19 @@
                 <option> فیلتر</option>
                 {% for item in data.theFilterItems %}
                     <option {% if data.filter == item.0 %} selected {% endif %} value="{{ item.0 }}"> {{ item.1 }} </option>
+                {% endfor %}
+            </select>
+        </div>
+    {% endif %}
+    
+    
+    {# ▼ این بلاک را بعد از {% if data.theFilterItems %} ... {% endif %} اضافه کنید #}
+    {% if data.theFilterItems2 %}
+        <div class="col-sm-2 p-2">
+            <select class="form-select" name="filter2">
+                <option>فیلتر دوم</option>
+                {% for item in data.theFilterItems2 %}
+                    <option {% if data.filter2 == item.0 %} selected {% endif %} value="{{ item.0 }}">{{ item.1 }}</option>
                 {% endfor %}
             </select>
         </div>

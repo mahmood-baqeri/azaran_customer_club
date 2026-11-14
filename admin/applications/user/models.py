@@ -398,7 +398,7 @@ class VerificationCode(models.Model):
 
         # ✅ ۳. ساخت کد جدید
         # code = generate_verification_code(code_length)
-        code = "1234"
+        code = "1234" if code_length == 4 else "5555555555"
         code_hash = hash_code(code)
 
         verification = cls.objects.create(
