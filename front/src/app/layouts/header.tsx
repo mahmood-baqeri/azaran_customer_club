@@ -133,7 +133,7 @@ export default function Header({
                                              <h1>{user?.name}</h1>
                                              <div>
                                                   <span className="job">{user?.level?.current_level_display}</span>
-                                                  <span className="score">{user?.score?.current_balance}</span>
+                                                  <span className="score">{user?.score?.current_balance?.toLocaleString() || "۰"}</span>
                                                   <img src={ICONS.coin_15} alt="coin" />
                                              </div>
 

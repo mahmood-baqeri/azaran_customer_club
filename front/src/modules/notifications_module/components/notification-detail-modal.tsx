@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // front/src/modules/notifications_module/components/notification-detail-modal.tsx
 
 // import { useNavigate } from "react-router-dom";
@@ -14,7 +13,7 @@ interface Props {
      onDismiss: (item: NotificationItemData) => void;
 }
 
-export const NotificationDetailModal: React.FC<Props> = ({ item, onClose, onDismiss }) => {
+export const NotificationDetailModal: React.FC<Props> = ({ item, onClose }) => {
      // const navigate = useNavigate();
 
      // ✅ وقتی item=null است، isOpen=false → GlobalModal به‌درستی unmount می‌کند
@@ -37,7 +36,7 @@ export const NotificationDetailModal: React.FC<Props> = ({ item, onClose, onDism
      //      onDismiss(item);
      // };
 
-     const hasAction = !!(item?.action_url || item?.action_type);
+     // const hasAction = !!(item?.action_url || item?.action_type);
 
      return (
           <GlobalModal isOpen={isOpen} onClose={onClose}>

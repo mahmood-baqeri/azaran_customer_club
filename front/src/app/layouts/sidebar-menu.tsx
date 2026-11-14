@@ -124,7 +124,7 @@ export default function SidebarMenu({
                               <div>
                                    <p className="fs-12">موجودی من</p>
                                    <div>
-                                        <span>{displayScore}</span>
+                                        <span>{displayScore.toLocaleString() || "۰"}</span>
                                         <img src="/assets/coin_17.png" alt="coin" />
                                    </div>
                               </div>
