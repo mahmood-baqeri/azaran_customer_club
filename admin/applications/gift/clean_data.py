@@ -8,23 +8,13 @@ from .models import Gift
 # GIFT
 # ═══════════════════════════════════════════════════════════
 def gift__clean__data(post):
-    """اعتبارسنجی و پاک‌سازی فرم هدیه.
-
-    خروجی: (cleaned_dict, errors_list)
-    """
     errors = []
 
     title = (post.get("title") or "").strip()
     if not title:
         errors.append("عنوان الزامی است")
 
-    # select2Multi ممکن است آرایه یا رشته بفرستد
-    for_user_raw = (
-        post.getlist("for_user[]")
-        or post.getlist("for_user")
-        or [post.get("for_user") or ""]
-    )
-    for_user = (for_user_raw[0] or "").strip() if for_user_raw else ""
+    for_user = (post.get("for_user") or "").strip()
     if for_user not in dict(Gift.ForUser.choices):
         errors.append("نوع کاربر نامعتبر است")
 
@@ -49,7 +39,6 @@ def gift__clean__data(post):
         "stock": int(stock),
         "is_active": str(post.get("is_active", "")).lower() in ("on", "true", "1"),
     }, []
-
 
 # ═══════════════════════════════════════════════════════════
 # ORDER — Status Change

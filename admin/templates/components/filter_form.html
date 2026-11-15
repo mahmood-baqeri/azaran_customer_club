@@ -1,0 +1,92 @@
+{% load static %}
+{# ═══════════════════════════════════════════════════════════════ #}
+{# Filter Form — generic #}
+{#  #}
+{# Usage: #}
+{# data = { #}
+{# "searchUrl": ..., # required #}
+{# "exportUrl": ..., # optional #}
+{# "formId": "...", # optional (default: #}
+{# # filterFormElement) #}
+{# "showAdvanced": bool, # optional #}
+{# "filters": { #}
+{# "basic": [item,...], #}
+{# "main": [item,...], #}
+{# "advanced": [{"title":..., "items":[item,...]}], #}
+{# }, #}
+{# } #}
+{# ═══════════════════════════════════════════════════════════════ #}
+
+{% with form_id=data.formId|default:'filterFormElement' %}
+  <form id="{{ form_id }}" method="get" action="{{ data.searchUrl }}" class="filter-form-element">
+    {# ─── ردیف ۱: basic + دکمه‌ها ─── #}
+    {% if data.filters.basic %}
+      <div class="row gx-2 gy-2 align-items-center mb-2">
+        {% for item in data.filters.basic %}
+          {% include 'components/'|add:item.b %}
+        {% endfor %}
+
+        <div class="col-md-1">
+          <button type="submit" class="btn btn-info w-100">جستجو</button>
+        </div>
+
+        {% if data.exportUrl %}
+          <div class="col-md-2">
+            <button type="submit" class="btn btn-success w-100" formaction="{{ data.exportUrl }}" formtarget="_blank" title="خروجی اکسل با فیلترهای فعلی"><i class="fa fa-file-excel-o me-1"></i> خروجی اکسل</button>
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {# ─── ردیف ۲: main ─── #}
+    {% if data.filters.main %}
+      <div class="row gx-2 gy-2 mb-2">
+        {% for item in data.filters.main %}
+          {% include 'components/'|add:item.b %}
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# ─── بخش پیشرفته ─── #}
+    {% if data.filters.advanced %}
+      <div class="mb-2 d-flex gap-2">
+        <button class="btn btn-sm btn-outline-secondary" type="button" data-toggle="collapse" data-target="#{{ form_id }}_advanced"><i class="fe fe-sliders me-1"></i> فیلترهای بیشتر</button>
+        <a href="{{ data.searchUrl }}" class="btn btn-sm btn-outline-danger">حذف فیلترها</a>
+      </div>
+
+      <div class="collapse {% if data.showAdvanced %}show{% endif %}" id="{{ form_id }}_advanced">
+        <div class="border rounded-3 p-3 bg-light">
+          {% for section in data.filters.advanced %}
+            {% if section.title %}
+              <h6 class="text-muted small fw-bold mb-2">{{ section.title }}</h6>
+            {% endif %}
+            <div class="row gx-2 gy-2 {% if not forloop.last %}mb-3{% endif %}">
+              {% for item in section.items %}
+                {% include 'components/'|add:item.b %}
+              {% endfor %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </form>
+{% endwith %}
+
+<style>
+  .filter-form-element input,
+  .filter-form-element select,
+  .filter-form-element button[type='submit'],
+  .filter-form-element .select2-container .select2-selection--single {
+    height: 40px !important;
+    font-size: 13px;
+  }
+  .filter-form-element .select2-container .select2-selection--single .select2-selection__rendered {
+    line-height: 38px;
+  }
+  .filter-form-element .select2-container .select2-selection--single .select2-selection__arrow {
+    height: 38px;
+  }
+  .filter-form-element .form-group > label.mg-b-10:empty {
+    display: none;
+  }
+</style>

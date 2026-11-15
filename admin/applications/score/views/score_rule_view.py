@@ -7,13 +7,17 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.http import HttpResponse
+from django.utils import timezone
 
 from applications.core.decorators import is_admin_required
 from applications.core.requiredAccess import RequiredAccess
 from applications.core.utils import redirect_back, response_msg
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Font, PatternFill
 
 from ..clean_data import score_rule__clean__data
-from ..forms import score_rule__form
+from ..forms import rule__filters, score_rule__form
 from ..models import ScoreRule
 from ..repositories import (
     score_rule__delete,
@@ -26,33 +30,25 @@ logger = logging.getLogger(__name__)
 
 
 # ═══════════════════════════════════════════════════════════
-# LIST
+# Filter helper
 # ═══════════════════════════════════════════════════════════
-@is_admin_required
-def rule_index(request):
-    RequiredAccess(request, "ScoreRuleRead")
-
+def _filtered_rules_qs(request):
     qs = ScoreRule.objects.all()
 
     q = (request.GET.get("q") or "").strip()
     if q:
-        qs = qs.filter(
-            Q(code__icontains=q) | Q(metadata__icontains=q)
-        )
+        qs = qs.filter(Q(code__icontains=q) | Q(metadata__icontains=q))
 
-    # فیلتر calc_type → theFilterItems
     filter_val = (request.GET.get("filter") or "").strip()
     if filter_val in dict(ScoreRule.CalcType.choices):
         qs = qs.filter(calc_type=filter_val)
 
-    # فیلتر فعال/غیرفعال
     active = (request.GET.get("is_active") or "").strip()
     if active == "1":
         qs = qs.filter(is_active=True)
     elif active == "0":
         qs = qs.filter(is_active=False)
 
-    # مرتب‌سازی
     sort = request.GET.get("sort", "code_asc")
     if sort == "code_desc":
         qs = qs.order_by("-code")
@@ -62,6 +58,18 @@ def rule_index(request):
         qs = qs.order_by("-default_amount")
     else:
         qs = qs.order_by("code")
+
+    return qs
+
+
+# ═══════════════════════════════════════════════════════════
+# LIST
+# ═══════════════════════════════════════════════════════════
+@is_admin_required
+def rule_index(request):
+    RequiredAccess(request, "ScoreRuleRead")
+
+    qs = _filtered_rules_qs(request)
 
     try:
         count = int(request.GET.get("count", "30"))
@@ -75,24 +83,74 @@ def rule_index(request):
         "pageTitle": "قواعد امتیاز",
         "newUrl": reverse("app_score:rule_create"),
         "searchUrl": reverse("app_score:rule_index"),
-        "searchText": q,
-        "searchSort": sort,
-        "searchCount": count,
-        "sortWithActiveDeactive": 0,
-        "sortWithSystemLog": [
-            {"en": "code_asc", "fa": "کد (الفبا)"},
-            {"en": "code_desc", "fa": "کد (نزولی)"},
-            {"en": "priority", "fa": "اولویت"},
-            {"en": "amount_desc", "fa": "بیشترین مقدار"},
-        ],
-        "theFilterItems": list(ScoreRule.CalcType.choices),
-        "filter": filter_val,
-        "is_active": active,
+        "exportUrl": reverse("app_score:rule_export"),   # ← جدید
+        "filters": rule__filters(get_data=request.GET),
+        "showAdvanced": False,
         "all": page,
         "total": paginator.count,
         "has_rules": ScoreRule.objects.exists(),
     }
     return render(request, "pages/score/all_rules.html", {"data": data})
+
+
+# ═══════════════════════════════════════════════════════════
+# EXPORT
+# ═══════════════════════════════════════════════════════════
+@is_admin_required
+def rule_export(request):
+    RequiredAccess(request, "ScoreRuleRead")
+
+    qs = _filtered_rules_qs(request)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "قواعد امتیاز"
+    ws.sheet_view.rightToLeft = True
+
+    headers = [
+        "#", "کد", "نمایش کد", "نوع محاسبه", "مقدار",
+        "دوره محدودیت", "حداکثر تعداد", "حداکثر امتیاز دوره",
+        "نیاز به مرجع", "نیاز به تأیید", "اولویت", "وضعیت",
+        "معتبر از", "معتبر تا",
+    ]
+    ws.append(headers)
+
+    head_font = Font(bold=True, color="FFFFFF")
+    head_fill = PatternFill("solid", fgColor="4472C4")
+    for cell in ws[1]:
+        cell.font = head_font
+        cell.fill = head_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    for r in qs.iterator():
+        ws.append([
+            r.id,
+            r.code,
+            r.get_code_display(),
+            r.get_calc_type_display(),
+            r.default_amount,
+            r.get_cap_period_display() if r.cap_period else "",
+            r.cap_count or "",
+            r.max_amount_per_period or "",
+            "بله" if r.requires_reference else "خیر",
+            "بله" if r.requires_approval else "خیر",
+            r.priority,
+            "فعال" if r.is_active else "غیرفعال",
+            r.valid_from.strftime("%Y-%m-%d %H:%M") if r.valid_from else "",
+            r.valid_until.strftime("%Y-%m-%d %H:%M") if r.valid_until else "",
+        ])
+
+    for col_cells in ws.columns:
+        length = max(len(str(c.value or "")) for c in col_cells)
+        ws.column_dimensions[col_cells[0].column_letter].width = min(max(length + 2, 10), 60)
+
+    filename = f"score_rules_{timezone.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    resp = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+    wb.save(resp)
+    return resp
 
 
 # ═══════════════════════════════════════════════════════════

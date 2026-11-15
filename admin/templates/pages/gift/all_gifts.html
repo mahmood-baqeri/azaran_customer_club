@@ -60,9 +60,9 @@
                         {% endif %}
                       </td>
                       <td class="text-end">
-                        <a href="{% url 'app_gift:gift_update' item.id %}">ویرایش</a>
+                        <a href="{% url 'app_gift:gift_update' item.id %}" class="btn btn-sm btn-outline-primary">ویرایش</a>
 
-                        <a href="" data-toggle="tooltip" data-original-title="حذف" class="deleteRecordFromTable" data-deleteId="{{ item.id }}">حذف</a>
+                        <a href="" data-toggle="tooltip" class="deleteRecordFromTable btn btn-sm btn-outline-danger" data-deleteId="{{ item.id }}">حذف</a>
                         <form id="deleteRecordForm_{{ item.id }}" action="{% url 'app_gift:gift_delete' item.id %}" method="post" style="display: none;">
                           {% csrf_token %}
                         </form>

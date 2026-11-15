@@ -5,6 +5,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Q, Sum
 
+from applications.core.fileManager import ImageProcessingMixin
 from applications.core.baseModel import BaseModel
 from applications.user.models import User
 
@@ -91,7 +92,7 @@ class Colleague(BaseModel):
 #######################################
 # Attachment
 #######################################
-class Attachment(BaseModel):
+class Attachment(ImageProcessingMixin, BaseModel):
     class FileType(models.TextChoices):
         Building  = "exterior_view_building",  "نمای خارجی ساختمان"
         Installed = "azar_products_installed", "محصولات آذر نصب شده"

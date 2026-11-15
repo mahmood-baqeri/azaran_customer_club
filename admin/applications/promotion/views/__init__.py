@@ -9,12 +9,14 @@ from .promotion import (
     promotion_item_delete,
     promotion_item_update,
     promotion_update,
+    promotion_export,
 )
 from .promotion_order import (
     order_assign,
     order_detail,
     order_index,
     order_update_status,
+    order_export,
 )
 
 __all__ = [
@@ -27,9 +29,11 @@ __all__ = [
     "promotion_item_create",
     "promotion_item_update",
     "promotion_item_delete",
+    "promotion_export",
     # order
     "order_index",
     "order_detail",
     "order_update_status",
     "order_assign",
+    "order_export",
 ]

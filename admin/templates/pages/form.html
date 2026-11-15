@@ -46,5 +46,13 @@
 {% endblock %}
 
 {% block js %}
-
+  {% if data.extraJs %}
+    <script>
+      {
+        {
+          data.extraJs | safe
+        }
+      }
+    </script>
+  {% endif %}
 {% endblock %}

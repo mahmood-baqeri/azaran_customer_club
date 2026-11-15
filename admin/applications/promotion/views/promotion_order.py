@@ -6,9 +6,15 @@ import logging
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
 
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Font, PatternFill
+
+from applications.core.utils import response_msg
 from applications.core.decorators import is_admin_required
 from applications.core.requiredAccess import RequiredAccess
 from applications.core.validators import is_valid_date
@@ -28,17 +34,10 @@ from ..repositories import (
 logger = logging.getLogger(__name__)
 
 
-def _msg(request, level, text):
-    messages.add_message(request, level, json.dumps({"text": text}))
-
-
 # ═══════════════════════════════════════════════════════════
-# LIST
+# Filter helper — بین لیست و اکسل مشترک
 # ═══════════════════════════════════════════════════════════
-@is_admin_required
-def order_index(request):
-    RequiredAccess(request, "PromotionOrderRead")
-
+def _filtered_promotion_orders_qs(request):
     qs = PromotionOrder.objects.select_related("user", "promotion", "assigned_to")
 
     q = (request.GET.get("q") or "").strip()
@@ -72,6 +71,24 @@ def order_index(request):
     sort = request.GET.get("sort", "desc")
     qs = qs.order_by("id") if sort == "asc" else qs.order_by("-id")
 
+    return qs, q, filter_val, filter2_val, df, dt, sort
+
+
+def _user_name(u):
+    if not u:
+        return ""
+    return getattr(u, "full_name", None) or u.get_full_name() or ""
+
+
+# ═══════════════════════════════════════════════════════════
+# LIST
+# ═══════════════════════════════════════════════════════════
+@is_admin_required
+def order_index(request):
+    RequiredAccess(request, "PromotionOrderRead")
+
+    qs, q, filter_val, filter2_val, df, dt, sort = _filtered_promotion_orders_qs(request)
+
     try:
         count = int(request.GET.get("count", "20"))
     except ValueError:
@@ -83,6 +100,7 @@ def order_index(request):
     data = {
         "pageTitle": "لیست سفارشات پک تبلیغاتی",
         "searchUrl": reverse("app_promotion:order_index"),
+        "exportUrl": reverse("app_promotion:order_export"),   # ← جدید
         "searchText": q,
         "searchSort": sort,
         "searchCount": count,
@@ -103,7 +121,73 @@ def order_index(request):
 
 
 # ═══════════════════════════════════════════════════════════
-# DETAIL
+# EXPORT — خروجی اکسل با تمام فیلترها
+# ═══════════════════════════════════════════════════════════
+@is_admin_required
+def order_export(request):
+    RequiredAccess(request, "PromotionOrderRead")
+
+    qs, *_ = _filtered_promotion_orders_qs(request)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "سفارشات اقلام تبلیغاتی"
+    ws.sheet_view.rightToLeft = True
+
+    headers = [
+        "#",
+        "کاربر",
+        "موبایل کاربر",
+        "اقلام تبلیغاتی",
+        "گیرنده",
+        "تلفن گیرنده",
+        "آدرس",
+        "کد پستی",
+        "وضعیت",
+        "کد رهگیری",
+        "مسئول پیگیری",
+        "تاریخ ثبت",
+    ]
+    ws.append(headers)
+
+    head_font = Font(bold=True, color="FFFFFF")
+    head_fill = PatternFill("solid", fgColor="4472C4")
+    for cell in ws[1]:
+        cell.font = head_font
+        cell.fill = head_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    for o in qs.iterator():
+        ws.append([
+            o.id,
+            _user_name(o.user),
+            o.user.mobile if o.user else "",
+            o.promotion.title if o.promotion else "",
+            o.receiver_name,
+            o.receiver_phone,
+            o.address,
+            o.postal_code,
+            o.get_status_display(),
+            o.tracking_code or "",
+            _user_name(o.assigned_to),
+            o.created_at.strftime("%Y-%m-%d %H:%M") if o.created_at else "",
+        ])
+
+    for col_cells in ws.columns:
+        length = max(len(str(c.value or "")) for c in col_cells)
+        ws.column_dimensions[col_cells[0].column_letter].width = min(max(length + 2, 10), 60)
+
+    filename = f"promotion_orders_{timezone.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    resp = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+    wb.save(resp)
+    return resp
+
+
+# ═══════════════════════════════════════════════════════════
+# DETAIL  (بدون تغییر)
 # ═══════════════════════════════════════════════════════════
 @is_admin_required
 def order_detail(request, id):
@@ -123,7 +207,7 @@ def order_detail(request, id):
 
 
 # ═══════════════════════════════════════════════════════════
-# CHANGE STATUS
+# CHANGE STATUS  (بدون تغییر)
 # ═══════════════════════════════════════════════════════════
 @is_admin_required
 def order_update_status(request, id):
@@ -135,20 +219,20 @@ def order_update_status(request, id):
     cleaned, errors = order__clean__status(request.POST)
     if errors:
         for err in errors:
-            _msg(request, messages.ERROR, err)
+            response_msg(request, messages.ERROR, err)
         return redirect("app_promotion:order_detail", id=id)
 
     try:
         order__change_status(order, cleaned, changed_by=request.user)
     except ValueError as e:
-        _msg(request, messages.ERROR, str(e))
+        response_msg(request, messages.ERROR, str(e))
         return redirect("app_promotion:order_detail", id=id)
     except Exception:
         logger.exception("promotion order_update_status failed id=%s", id)
-        _msg(request, messages.ERROR, "خطا در تغییر وضعیت")
+        response_msg(request, messages.ERROR, "خطا در تغییر وضعیت")
         return redirect("app_promotion:order_detail", id=id)
 
-    _msg(
+    response_msg(
         request,
         messages.SUCCESS,
         f"وضعیت سفارش #{order.id} به «{order.get_status_display()}» تغییر کرد",
@@ -157,7 +241,7 @@ def order_update_status(request, id):
 
 
 # ═══════════════════════════════════════════════════════════
-# ASSIGN
+# ASSIGN  (بدون تغییر)
 # ═══════════════════════════════════════════════════════════
 @is_admin_required
 def order_assign(request, id):
@@ -169,15 +253,15 @@ def order_assign(request, id):
     cleaned, errors = order__clean__assign(request.POST)
     if errors:
         for err in errors:
-            _msg(request, messages.ERROR, err)
+            response_msg(request, messages.ERROR, err)
         return redirect("app_promotion:order_detail", id=id)
 
     try:
         order__assign(order, cleaned["assigned_to"], changed_by=request.user)
     except Exception:
         logger.exception("promotion order_assign failed id=%s", id)
-        _msg(request, messages.ERROR, "خطا در واگذاری")
+        response_msg(request, messages.ERROR, "خطا در واگذاری")
         return redirect("app_promotion:order_detail", id=id)
 
-    _msg(request, messages.SUCCESS, "مسئول پیگیری به‌روزرسانی شد")
+    response_msg(request, messages.SUCCESS, "مسئول پیگیری به‌روزرسانی شد")
     return redirect("app_promotion:order_detail", id=id)

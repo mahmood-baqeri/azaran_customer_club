@@ -175,6 +175,15 @@
           </ul>
         </li>
       {% endif %}
+
+      {% if 'NotificationRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'notification:notification_index' %}">
+            <span class="shape1"></span><span class="shape2"></span><i class="ti-bell sidemenu-icon"></i>
+            <span class="sidemenu-label">اعلانات</span>
+          </a>
+        </li>
+      {% endif %}
     </ul>
   </div>
 </div>

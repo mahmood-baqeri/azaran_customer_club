@@ -1,0 +1,120 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/filter_form.html' %}
+            {% endif %}
+
+            <div class="table-responsive mt-3">
+              <table class="table-hover align-middle table text-nowrap table-striped mg-b-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>عنوان</th>
+                    <th>هدف‌گیری</th>
+                    <th>نوع</th>
+                    <th>اولویت</th>
+                    <th>وضعیت</th>
+                    <th>گیرندگان</th>
+                    <th>خوانده</th>
+                    <th>ارسال</th>
+                    <th>ایجاد</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for n in data.all %}
+                    <tr>
+                      <td>{{ n.id }}</td>
+                      <td>
+                        <strong>{{ n.title }}</strong>
+                        <br /><small class="text-muted">{{ n.body|truncatechars:40 }}</small>
+                      </td>
+                      <td>
+                        <small>{{ n.get_target_type_display }}</small>
+                      </td>
+                      <td>
+                        <small>{{ n.get_notification_type_display }}</small>
+                      </td>
+                      <td>
+                        {% if n.priority == 'high' %}
+                          <span class="badge bg-danger">فوری</span>
+                        {% elif n.priority == 'normal' %}
+                          <span class="badge bg-info text-dark">معمولی</span>
+                        {% else %}
+                          <span class="badge bg-secondary">کم</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if n.status == 'draft' %}
+                          <span class="badge bg-secondary">پیش‌نویس</span>
+                        {% elif n.status == 'scheduled' %}
+                          <span class="badge bg-warning text-dark">زمان‌بندی</span>
+                        {% elif n.status == 'sending' %}
+                          <span class="badge bg-info text-dark">در حال ارسال</span>
+                        {% elif n.status == 'sent' %}
+                          <span class="badge bg-success">ارسال شده</span>
+                        {% elif n.status == 'failed' %}
+                          <span class="badge bg-danger">خطا</span>
+                        {% elif n.status == 'cancelled' %}
+                          <span class="badge bg-dark">لغو شده</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ n.total_recipients }}</small>
+                      </td>
+                      <td>
+                        <small>{{ n.total_reads }}</small>
+                      </td>
+                      <td>
+                        <small>
+                          {% if n.sent_at %}
+                            {{ n.sent_at|date:'Y/m/d H:i' }}
+                          {% else %}
+                            —
+                          {% endif %}
+                        </small>
+                      </td>
+                      <td>
+                        <small>{{ n.created_at|date:'Y/m/d H:i' }}</small>
+                      </td>
+                      <td class="text-end">
+                        <a href="{% url 'notification:notification_detail' n.id %}" class="btn btn-sm btn-outline-primary">جزئیات</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="11" class="text-center text-muted py-4">نوتیفیکیشنی یافت نشد</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

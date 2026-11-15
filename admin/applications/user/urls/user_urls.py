@@ -7,6 +7,7 @@ from ..view import user_view
 urlpatterns = [
     path("", user_view.user_index, name="user_index"),
     path("create/", user_view.user_create, name="user_create"),
+    path("export/", user_view.user_export, name="user_export"),
     path("<int:id>/update/", user_view.user_update, name="user_update"),
     path("<int:id>/delete/", user_view.user_delete, name="user_delete"),
     path("<int:id>/", user_view.user_detail, name="user_detail"),

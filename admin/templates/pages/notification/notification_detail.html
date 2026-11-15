@@ -1,0 +1,228 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  نوتیفیکیشن «{{ n.title }}»
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="row g-3">
+          <!-- ═══════ ستون چپ: محتوا + گیرندگان ═══════ -->
+          <div class="col-md-7">
+            <!-- محتوا -->
+            <div class="card custom-card mb-3">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span>محتوا</span>
+                <small class="text-muted">#{{ n.id }}</small>
+              </div>
+              <div class="card-body">
+                <h5 class="mb-2">{{ n.title }}</h5>
+
+                {% if n.image %}
+                  <div class="mb-3">
+                    <img src="{{ n.image.url }}" alt="{{ n.title }}" class="rounded" style="max-width:100%;max-height:220px;" />
+                  </div>
+                {% endif %}
+
+                <p class="mb-3" style="white-space:pre-line;">{{ n.body }}</p>
+
+                <dl class="row mb-0">
+                  <dt class="col-4">نوع هدف‌گیری</dt>
+                  <dd class="col-8">{{ n.get_target_type_display }}</dd>
+
+                  <dt class="col-4">نوع نوتیفیکیشن</dt>
+                  <dd class="col-8">{{ n.get_notification_type_display }}</dd>
+
+                  <dt class="col-4">اولویت</dt>
+                  <dd class="col-8">{{ n.get_priority_display }}</dd>
+
+                  <dt class="col-4">وضعیت</dt>
+                  <dd class="col-8">
+                    {% if n.status == 'draft' %}
+                      <span class="badge bg-secondary">پیش‌نویس</span>
+                    {% elif n.status == 'scheduled' %}
+                      <span class="badge bg-warning text-dark">زمان‌بندی</span>
+                    {% elif n.status == 'sent' %}
+                      <span class="badge bg-success">ارسال شده</span>
+                    {% elif n.status == 'cancelled' %}
+                      <span class="badge bg-dark">لغو شده</span>
+                    {% elif n.status == 'failed' %}
+                      <span class="badge bg-danger">خطا</span>
+                    {% else %}
+                      <span class="badge bg-info text-dark">{{ n.get_status_display }}</span>
+                    {% endif %}
+                  </dd>
+
+                  {% if n.action_type or n.action_url %}
+                    <dt class="col-4">اقدام</dt>
+                    <dd class="col-8">
+                      {% if n.action_type %}
+                        <code>{{ n.action_type }}</code>
+                      {% endif %}
+                      {% if n.action_url %}
+                        <br /><small>{{ n.action_url }}</small>
+                      {% endif %}
+                    </dd>
+                  {% endif %}
+
+                  <dt class="col-4">زمان ارسال</dt>
+                  <dd class="col-8">
+                    {% if n.sent_at %}
+                      {{ n.sent_at|date:'Y/m/d H:i:s' }}
+                    {% elif n.scheduled_at %}
+                      <span class="text-warning">{{ n.scheduled_at|date:'Y/m/d H:i' }}</span>
+                      <small class="text-muted">(زمان‌بندی‌شده)</small>
+                    {% else %}
+                      <span class="text-muted">دستی</span>
+                    {% endif %}
+                  </dd>
+
+                  <dt class="col-4">انقضا</dt>
+                  <dd class="col-8">{{ n.expires_at|date:'Y/m/d H:i'|default:'—' }}</dd>
+
+                  <dt class="col-4">سازنده</dt>
+                  <dd class="col-8">{{ n.created_by.full_name|default:'—' }}</dd>
+
+                  <dt class="col-4">تاریخ ایجاد</dt>
+                  <dd class="col-8">{{ n.created_at|date:'Y/m/d H:i' }}</dd>
+                </dl>
+              </div>
+            </div>
+
+            <!-- گیرندگان مشخص -->
+            {% if targets %}
+              <div class="card custom-card mb-3">
+                <div class="card-header fw-bold">گیرندگان مشخص ({{ targets|length }})</div>
+                <div class="card-body p-0">
+                  <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>کاربر</th>
+                          <th>موبایل</th>
+                          <th>وضعیت خواندن</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for t in targets %}
+                          <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ t.user.full_name }}</td>
+                            <td>
+                              <span style="direction:ltr">{{ t.user.mobile }}</span>
+                            </td>
+                            <td>
+                              {% if t.is_read_by_user %}
+                                <span class="badge bg-success">خوانده</span>
+                              {% else %}
+                                <span class="badge bg-secondary">نخوانده</span>
+                              {% endif %}
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+
+            <!-- آخرین خوانندگان -->
+            {% if read_states %}
+              <div class="card custom-card">
+                <div class="card-header fw-bold">آخرین خوانندگان (۵۰ مورد)</div>
+                <div class="card-body">
+                  {% for s in read_states %}
+                    <div class="border-bottom py-1 d-flex justify-content-between">
+                      <div>
+                        {{ s.user.full_name }}
+                        <small class="text-muted" style="direction:ltr">— {{ s.user.mobile }}</small>
+                      </div>
+                      <small class="text-muted">{{ s.read_at|date:'Y/m/d H:i' }}</small>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- ═══════ ستون راست: آمار + اکشن‌ها ═══════ -->
+          <div class="col-md-5">
+            <!-- آمار -->
+            <div class="card custom-card mb-3">
+              <div class="card-header fw-bold">آمار</div>
+              <div class="card-body">
+                <dl class="row mb-0">
+                  <dt class="col-6">تعداد گیرندگان</dt>
+                  <dd class="col-6 text-end"><strong>{{ n.total_recipients }}</strong></dd>
+
+                  <dt class="col-6">تعداد خوانده</dt>
+                  <dd class="col-6 text-end text-success">{{ n.total_reads }}</dd>
+
+                  <dt class="col-6">نرخ خواندن</dt>
+                  <dd class="col-6 text-end">
+                    <strong class="{% if read_rate >= 50 %}
+                        text-success
+                      {% elif read_rate > 0 %}
+                        text-warning
+                      {% else %}
+                        text-muted
+                      {% endif %}">
+                      {{ read_rate }}٪
+                    </strong>
+                  </dd>
+                </dl>
+                <div class="progress mt-3" style="height:6px;">
+                  <div class="progress-bar bg-success" role="progressbar" style="width: {{ read_rate }}%;" aria-valuenow="{{ read_rate }}" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- اکشن‌ها -->
+            <div class="card custom-card mb-3">
+              <div class="card-header fw-bold">اکشن‌ها</div>
+              <div class="card-body d-grid gap-2">
+                {% if can_edit %}
+                  <a href="{% url 'notification:notification_update' n.id %}" class="btn btn-sm btn-outline-primary">ویرایش</a>
+                {% endif %}
+
+                {% if can_send %}
+                  <form method="post" action="{% url 'notification:notification_send' n.id %}" onsubmit="return confirm('ارسال فوری به همه گیرندگان؟');">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-success w-100">ارسال فوری</button>
+                  </form>
+                {% endif %}
+
+                {% if can_cancel %}
+                  <form method="post" action="{% url 'notification:notification_cancel' n.id %}" onsubmit="return confirm('لغو این نوتیفیکیشن؟');">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-warning w-100">لغو</button>
+                  </form>
+                {% endif %}
+
+                {% if can_delete %}
+                  <form method="post" action="{% url 'notification:notification_delete' n.id %}" onsubmit="return confirm('حذف کامل این نوتیفیکیشن؟');">
+                    {% csrf_token %}
+                    <button class="btn btn-sm btn-outline-danger w-100">حذف</button>
+                  </form>
+                {% endif %}
+
+                <a href="{% url 'notification:notification_index' %}" class="btn btn-sm btn-outline-secondary">بازگشت به لیست</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

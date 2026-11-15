@@ -8,6 +8,7 @@ app_name = "app_score"
 urlpatterns = [
     # Score Rules
     path("rules/", views.rule_index, name="rule_index"),
+    path("rules/export/",       views.rule_export,       name="rule_export"),
     path("rules/create/", views.rule_create, name="rule_create"),
     path("rules/<int:id>/update/", views.rule_update, name="rule_update"),
     path("rules/<int:id>/delete/", views.rule_delete, name="rule_delete"),
@@ -16,10 +17,12 @@ urlpatterns = [
 
     # Score Logs
     path("logs/", views.log_index, name="log_index"),
+    path("logs/export/",        views.log_export,        name="log_export"),
     path("logs/<int:id>/", views.log_detail, name="log_detail"),
 
     # User Scores
     path("users/", views.user_score_index, name="user_score_index"),
     path("users/<int:user_id>/", views.user_score_detail, name="user_score_detail"),
     path("users/<int:user_id>/adjust/", views.user_score_adjust, name="user_score_adjust"),
+    path("users/export/",       views.user_score_export, name="user_score_export"),
 ]

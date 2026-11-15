@@ -8,6 +8,7 @@ app_name = "app_promotion"
 urlpatterns = [
     # Promotion packs
     path("", views.promotion_index, name="promotion_index"),
+    path("export/", views.promotion_export, name="promotion_export"),   
     path("create/", views.promotion_create, name="promotion_create"),
     path("<int:id>/update/", views.promotion_update, name="promotion_update"),
     path("<int:id>/delete/", views.promotion_delete, name="promotion_delete"),
@@ -20,6 +21,7 @@ urlpatterns = [
 
     # Orders
     path("orders/", views.order_index, name="order_index"),
+    path("orders/export/", views.order_export, name="order_export"),  
     path("orders/<int:id>/", views.order_detail, name="order_detail"),
     path("orders/<int:id>/status/", views.order_update_status, name="order_update_status"),
     path("orders/<int:id>/assign/", views.order_assign, name="order_assign"),

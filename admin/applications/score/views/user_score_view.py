@@ -1,10 +1,13 @@
 # applications/score/view/user_score_view.py
 
 import logging
-
+from django.utils import timezone
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Font, PatternFill
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -13,21 +16,18 @@ from applications.core.requiredAccess import RequiredAccess
 from applications.user.models import User
 
 from ..clean_data import score_adjust__clean__data
-from ..forms import adjust__form
+from ..forms import adjust__form, user_score__filters
 from ..models import UserScore, UserScoreLog
 from ..repositories import score__adjust
 
 logger = logging.getLogger(__name__)
 
 
-# ═══════════════════════════════════════════════════════════
-# LIST — کاربران با امتیاز
-# ═══════════════════════════════════════════════════════════
-@is_admin_required
-def user_score_index(request):
-    RequiredAccess(request, "UserScoreRead")
 
-    # ✅ از User شروع می‌کنیم تا کاربران بدون Score هم دیده شوند
+# ═══════════════════════════════════════════════════════════
+# Filter helper
+# ═══════════════════════════════════════════════════════════
+def _filtered_user_scores_qs(request):
     qs = (
         User.objects
         .select_related("relation_score")
@@ -45,11 +45,15 @@ def user_score_index(request):
             cond |= Q(id=int(q))
         qs = qs.filter(cond)
 
-    # مرتب‌سازی
+    min_balance = request.GET.get("min_balance")
+    if min_balance and str(min_balance).isdigit():
+        qs = qs.filter(relation_score__current_balance__gte=int(min_balance))
+    max_balance = request.GET.get("max_balance")
+    if max_balance and str(max_balance).isdigit():
+        qs = qs.filter(relation_score__current_balance__lte=int(max_balance))
+
     sort = request.GET.get("sort", "balance_high")
-    if sort == "balance_high":
-        qs = qs.order_by("-relation_score__current_balance")
-    elif sort == "balance_low":
+    if sort == "balance_low":
         qs = qs.order_by("relation_score__current_balance")
     elif sort == "earned_high":
         qs = qs.order_by("-relation_score__total_earned")
@@ -58,15 +62,19 @@ def user_score_index(request):
     elif sort == "spent_high":
         qs = qs.order_by("-relation_score__total_spent")
     else:
-        qs = qs.order_by("-id")
+        qs = qs.order_by("-relation_score__current_balance")
 
-    # بازه موجودی
-    min_balance = request.GET.get("min_balance")
-    if min_balance and str(min_balance).isdigit():
-        qs = qs.filter(relation_score__current_balance__gte=int(min_balance))
-    max_balance = request.GET.get("max_balance")
-    if max_balance and str(max_balance).isdigit():
-        qs = qs.filter(relation_score__current_balance__lte=int(max_balance))
+    return qs
+
+
+# ═══════════════════════════════════════════════════════════
+# LIST
+# ═══════════════════════════════════════════════════════════
+@is_admin_required
+def user_score_index(request):
+    RequiredAccess(request, "UserScoreRead")
+
+    qs = _filtered_user_scores_qs(request)
 
     try:
         count = int(request.GET.get("count", "30"))
@@ -79,23 +87,69 @@ def user_score_index(request):
     data = {
         "pageTitle": "امتیازات کاربران",
         "searchUrl": reverse("app_score:user_score_index"),
-        "searchText": q,
-        "searchSort": sort,
-        "searchCount": count,
-        "sortWithSystemLog": [
-            {"en": "balance_high", "fa": "بیشترین موجودی"},
-            {"en": "balance_low", "fa": "کمترین موجودی"},
-            {"en": "earned_high", "fa": "بیشترین کسب"},
-            {"en": "earned_low", "fa": "کمترین کسب"},
-            {"en": "spent_high", "fa": "بیشترین مصرف"},
-        ],
-        "min_balance": min_balance or "",
-        "max_balance": max_balance or "",
+        "exportUrl": reverse("app_score:user_score_export"),   # ← جدید
+        "filters": user_score__filters(get_data=request.GET),
+        "showAdvanced": False,
         "all": page,
         "total": paginator.count,
-        "request_get": request.GET,
     }
     return render(request, "pages/score/all_user_scores.html", {"data": data})
+
+
+# ═══════════════════════════════════════════════════════════
+# EXPORT
+# ═══════════════════════════════════════════════════════════
+@is_admin_required
+def user_score_export(request):
+    RequiredAccess(request, "UserScoreRead")
+
+    qs = _filtered_user_scores_qs(request)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "امتیازات کاربران"
+    ws.sheet_view.rightToLeft = True
+
+    headers = [
+        "#", "کاربر", "موبایل", "کد معرف", "موجودی فعلی",
+        "کل کسب", "کل مصرف", "سطح",
+    ]
+    ws.append(headers)
+
+    head_font = Font(bold=True, color="FFFFFF")
+    head_fill = PatternFill("solid", fgColor="4472C4")
+    for cell in ws[1]:
+        cell.font = head_font
+        cell.fill = head_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    for u in qs.iterator():
+        score = getattr(u, "relation_score", None)
+        level_label = "استادکار" if getattr(u, "is_ostadkar", False) else "کاردان"
+
+        ws.append([
+            u.id,
+            u.full_name or u.username or "",
+            u.mobile or "",
+            u.referral_code or "",
+            score.current_balance if score else 0,
+            score.total_earned if score else 0,
+            score.total_spent if score else 0,
+            level_label,
+        ])
+
+    for col_cells in ws.columns:
+        length = max(len(str(c.value or "")) for c in col_cells)
+        ws.column_dimensions[col_cells[0].column_letter].width = min(max(length + 2, 10), 60)
+
+    filename = f"user_scores_{timezone.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    resp = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+    wb.save(resp)
+    return resp
+
 
 
 # ═══════════════════════════════════════════════════════════

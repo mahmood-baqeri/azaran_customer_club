@@ -2,12 +2,13 @@
 
 from django.db import models
 from django.core.validators import FileExtensionValidator
+from applications.core.fileManager import ImageProcessingMixin
 from applications.core.baseModel import BaseModel
 
 #######################################
 # Learn (آموزش‌ها)
 #######################################
-class Learn(BaseModel):   
+class Learn(ImageProcessingMixin, BaseModel):   
     class Size(models.TextChoices):
         HALF = "half", "نیم صفحه"
         FULL = "full", "تمام صفحه"

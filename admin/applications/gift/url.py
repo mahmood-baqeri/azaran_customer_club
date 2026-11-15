@@ -8,6 +8,7 @@ app_name = "app_gift"
 urlpatterns = [
     # Gifts
     path("", views.gift_index, name="gift_index"),
+    path("export/", views.gift_export, name="gift_export"),
     path("create/", views.gift_create, name="gift_create"),
     path("<int:id>/update/", views.gift_update, name="gift_update"),
     path("<int:id>/delete/", views.gift_delete, name="gift_delete"),
@@ -17,6 +18,7 @@ urlpatterns = [
 
     # Orders
     path("orders/", views.order_index, name="order_index"),
+    path("orders/export/", views.order_export, name="order_export"),
     path("orders/<int:id>/", views.order_detail, name="order_detail"),
     path("orders/<int:id>/status/", views.order_update_status, name="order_update_status"),
     path("orders/<int:id>/assign/", views.order_assign, name="order_assign"),

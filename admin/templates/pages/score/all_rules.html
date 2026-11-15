@@ -2,7 +2,9 @@
 {% load static %}
 {% load customTags %}
 
-{% block title %}{{ data.pageTitle }}{% endblock %}
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
 
 {% block content %}
   <div class="main-content side-content pt-0">
@@ -13,27 +15,17 @@
         <div class="card custom-card">
           <div class="card-body">
             {% if data.searchUrl %}
-              {% include 'components/search.html' %}
+              {% include 'components/filter_form.html' %}
             {% endif %}
 
-            <div class="row gx-2 gy-2 my-2">
-              <div class="col-sm-3">
-                <select class="form-select" id="activeFilter">
-                  <option value="">— وضعیت —</option>
-                  <option value="1" {% if data.is_active == '1' %}selected{% endif %}>فعال</option>
-                  <option value="0" {% if data.is_active == '0' %}selected{% endif %}>غیرفعال</option>
-                </select>
+            {% if 'ScoreRuleCreate' in adminAccess %}
+              <div class="text-end my-2">
+                <form method="post" action="{% url 'app_score:rule_seed_defaults' %}" class="d-inline" onsubmit="return confirm('قواعد پیش‌فرض برای کدهای خالی ایجاد شود؟');">
+                  {% csrf_token %}
+                  <button class="btn btn-sm btn-outline-success">ایجاد قواعد پیش‌فرض</button>
+                </form>
               </div>
-              <div class="col-sm-9 text-end">
-                {% if 'ScoreRuleCreate' in adminAccess %}
-                  <form method="post" action="{% url 'app_score:rule_seed_defaults' %}" class="d-inline"
-                        onsubmit="return confirm('قواعد پیش‌فرض برای کدهای خالی ایجاد شود؟');">
-                    {% csrf_token %}
-                    <button class="btn btn-sm btn-outline-success">ایجاد قواعد پیش‌فرض</button>
-                  </form>
-                {% endif %}
-              </div>
-            </div>
+            {% endif %}
 
             <div class="table-responsive">
               <table class="table-hover align-middle mt-3 table text-nowrap table-striped mg-b-0">
@@ -54,57 +46,79 @@
                 </thead>
                 <tbody>
                   {% for r in data.all %}
-                  <tr>
-                    <td><strong>{{ r.get_code_display }}</strong><br><small class="text-muted">{{ r.code }}</small></td>
-                    <td>{{ r.get_calc_type_display }}</td>
-                    <td><strong>{{ r.default_amount }}</strong>{% if r.calc_type == 'percent' %}٪{% endif %}</td>
-                    <td>
-                      {% if r.cap_period %}
-                        {{ r.get_cap_period_display }}{% if r.cap_count %} × {{ r.cap_count }}{% endif %}
-                      {% else %}—{% endif %}
-                    </td>
-                    <td>{{ r.max_amount_per_period|default:"—" }}</td>
-                    <td>{% if r.requires_reference %}<i class="fa fa-check text-info"></i>{% else %}—{% endif %}</td>
-                    <td>{% if r.requires_approval %}<i class="fa fa-check text-warning"></i>{% else %}—{% endif %}</td>
-                    <td>
-                      {% if r.valid_from or r.valid_until %}
-                        <small>{{ r.valid_from|date:"Y/m/d"|default:"∞" }} → {{ r.valid_until|date:"Y/m/d"|default:"∞" }}</small>
-                      {% else %}<small class="text-muted">همیشه</small>{% endif %}
-                    </td>
-                    <td>{{ r.priority }}</td>
-                    <td>
-                      {% if r.is_active %}
-                        <span class="badge bg-success">فعال</span>
-                      {% else %}
-                        <span class="badge bg-secondary">غیرفعال</span>
-                      {% endif %}
-                    </td>
-                    <td class="text-end">
-                      {% if 'ScoreRuleUpdate' in adminAccess %}
-                        <a href="{% url 'app_score:rule_update' r.id %}"
-                           class="btn btn-sm btn-outline-primary">ویرایش</a>
-                        <form method="post" class="d-inline"
-                              action="{% url 'app_score:rule_toggle_active' r.id %}">
-                          {% csrf_token %}
-                          <button class="btn btn-sm btn-outline-warning">
-                            {% if r.is_active %}غیرفعال{% else %}فعال{% endif %}
-                          </button>
-                        </form>
-                      {% endif %}
-                      {% if 'ScoreRuleDelete' in adminAccess %}
-                        <a href="#" data-original-title="حذف"
-                           class="deleteRecordFromTable btn btn-sm btn-outline-danger"
-                           data-deleteId="{{ r.id }}">حذف</a>
-                        <form id="deleteRecordForm_{{ r.id }}"
-                              action="{% url 'app_score:rule_delete' r.id %}"
-                              method="post" style="display: none;">{% csrf_token %}</form>
-                      {% endif %}
-                    </td>
-                  </tr>
+                    <tr>
+                      <td>
+                        <strong>{{ r.get_code_display }}</strong><br /><small class="text-muted">{{ r.code }}</small>
+                      </td>
+                      <td>{{ r.get_calc_type_display }}</td>
+                      <td>
+                        <strong>{{ r.default_amount }}</strong>{% if r.calc_type == 'percent' %}٪{% endif %}
+                      </td>
+                      <td>
+                        {% if r.cap_period %}
+                          {{ r.get_cap_period_display }}{% if r.cap_count %}
+                            × {{ r.cap_count }}
+                          {% endif %}
+                        {% else %}
+                          —
+                        {% endif %}
+                      </td>
+                      <td>{{ r.max_amount_per_period|default:'—' }}</td>
+                      <td>
+                        {% if r.requires_reference %}
+                          <i class="fa fa-check text-info"></i>
+                        {% else %}
+                          —
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if r.requires_approval %}
+                          <i class="fa fa-check text-warning"></i>
+                        {% else %}
+                          —
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if r.valid_from or r.valid_until %}
+                          <small>{{ r.valid_from|date:'Y/m/d'|default:'∞' }} → {{ r.valid_until|date:'Y/m/d'|default:'∞' }}</small>
+                        {% else %}
+                          <small class="text-muted">همیشه</small>
+                        {% endif %}
+                      </td>
+                      <td>{{ r.priority }}</td>
+                      <td>
+                        {% if r.is_active %}
+                          <span class="badge bg-success">فعال</span>
+                        {% else %}
+                          <span class="badge bg-secondary">غیرفعال</span>
+                        {% endif %}
+                      </td>
+                      <td class="text-end">
+                        {% if 'ScoreRuleUpdate' in adminAccess %}
+                          <a href="{% url 'app_score:rule_update' r.id %}" class="btn btn-sm btn-outline-primary">ویرایش</a>
+                          <form method="post" class="d-inline" action="{% url 'app_score:rule_toggle_active' r.id %}">
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-outline-warning">
+                              {% if r.is_active %}
+                                غیرفعال
+                              {% else %}
+                                فعال
+                              {% endif %}
+                            </button>
+                          </form>
+                        {% endif %}
+                        {% if 'ScoreRuleDelete' in adminAccess %}
+                          <a href="#" class="deleteRecordFromTable btn btn-sm btn-outline-danger" data-deleteId="{{ r.id }}">حذف</a>
+                          <form id="deleteRecordForm_{{ r.id }}" action="{% url 'app_score:rule_delete' r.id %}" method="post" style="display: none;">
+                            {% csrf_token %}
+                          </form>
+                        {% endif %}
+                      </td>
+                    </tr>
                   {% empty %}
-                  <tr><td colspan="11" class="text-center text-muted py-4">
-                    قاعده‌ای ثبت نشده — از دکمه «ایجاد قواعد پیش‌فرض» استفاده کنید
-                  </td></tr>
+                    <tr>
+                      <td colspan="11" class="text-center text-muted py-4">قاعده‌ای ثبت نشده — از دکمه «ایجاد قواعد پیش‌فرض» استفاده کنید</td>
+                    </tr>
                   {% endfor %}
                 </tbody>
               </table>
@@ -123,13 +137,4 @@
 {% endblock %}
 
 {% block js %}
-<script>
-  document.getElementById("activeFilter")?.addEventListener("change", function () {
-    var url = new URL(window.location.href);
-    if (this.value) url.searchParams.set("is_active", this.value);
-    else url.searchParams.delete("is_active");
-    url.searchParams.delete("page");
-    window.location.href = url.toString();
-  });
-</script>
 {% endblock %}

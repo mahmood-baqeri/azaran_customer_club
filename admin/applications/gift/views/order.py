@@ -1,13 +1,17 @@
 # applications/gift/views/order.py
 
-import json
 import logging
 
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone
+
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Font, PatternFill
 
 from applications.core.utils import response_msg
 from applications.core.decorators import is_admin_required
@@ -32,12 +36,9 @@ logger = logging.getLogger(__name__)
 
 
 # ═══════════════════════════════════════════════════════════
-# LIST
+# Filter helper — بین لیست و اکسل مشترک
 # ═══════════════════════════════════════════════════════════
-@is_admin_required
-def order_index(request):
-    RequiredAccess(request, "GiftOrderRead")
-
+def _filtered_orders_qs(request):
     qs = GiftOrder.objects.select_related("user", "gift", "assigned_to")
 
     q = (request.GET.get("q") or "").strip()
@@ -71,6 +72,24 @@ def order_index(request):
     sort = request.GET.get("sort", "desc")
     qs = qs.order_by("id") if sort == "asc" else qs.order_by("-id")
 
+    return qs, q, filter_val, filter2_val, df, dt, sort
+
+
+def _user_name(u):
+    if not u:
+        return ""
+    return getattr(u, "full_name", None) or u.get_full_name() or ""
+
+
+# ═══════════════════════════════════════════════════════════
+# LIST
+# ═══════════════════════════════════════════════════════════
+@is_admin_required
+def order_index(request):
+    RequiredAccess(request, "GiftOrderRead")
+
+    qs, q, filter_val, filter2_val, df, dt, sort = _filtered_orders_qs(request)
+
     try:
         count = int(request.GET.get("count", "20"))
     except ValueError:
@@ -82,6 +101,7 @@ def order_index(request):
     data = {
         "pageTitle": "لیست سفارشات هدایا",
         "searchUrl": reverse("app_gift:order_index"),
+        "exportUrl": reverse("app_gift:order_export"),   # ← جدید
         "searchText": q,
         "searchSort": sort,
         "searchCount": count,
@@ -106,6 +126,77 @@ def order_index(request):
 
 
 # ═══════════════════════════════════════════════════════════
+# EXPORT — خروجی اکسل با تمام فیلترها
+# ═══════════════════════════════════════════════════════════
+@is_admin_required
+def order_export(request):
+    RequiredAccess(request, "GiftOrderRead")
+
+    # همان فیلترها — بدون pagination (count نادیده گرفته می‌شود)
+    qs, *_ = _filtered_orders_qs(request)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "سفارشات هدایا"
+    ws.sheet_view.rightToLeft = True
+
+    headers = [
+        "#",
+        "کاربر",
+        "موبایل کاربر",
+        "هدیه",
+        "تعداد",
+        "ارزش کل (آذر)",
+        "گیرنده",
+        "تلفن گیرنده",
+        "آدرس",
+        "کد پستی",
+        "وضعیت",
+        "کد رهگیری",
+        "مسئول پیگیری",
+        "تاریخ ثبت",
+    ]
+    ws.append(headers)
+
+    head_font = Font(bold=True, color="FFFFFF")
+    head_fill = PatternFill("solid", fgColor="4472C4")
+    for cell in ws[1]:
+        cell.font = head_font
+        cell.fill = head_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    for o in qs.iterator():
+        ws.append([
+            o.id,
+            _user_name(o.user),
+            o.user.mobile if o.user else "",
+            o.gift.title if o.gift else "",
+            o.quantity,
+            o.total_azar_value,
+            o.receiver_name,
+            o.receiver_phone,
+            o.address,
+            o.postal_code,
+            o.get_status_display(),
+            o.tracking_code or "",
+            _user_name(o.assigned_to),
+            o.created_at.strftime("%Y-%m-%d %H:%M") if o.created_at else "",
+        ])
+
+    for col_cells in ws.columns:
+        length = max(len(str(c.value or "")) for c in col_cells)
+        ws.column_dimensions[col_cells[0].column_letter].width = min(max(length + 2, 10), 60)
+
+    filename = f"gift_orders_{timezone.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    resp = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+    wb.save(resp)
+    return resp
+
+
+# ═══════════════════════════════════════════════════════════
 # DETAIL
 # ═══════════════════════════════════════════════════════════
 @is_admin_required
@@ -115,12 +206,19 @@ def order_detail(request, id):
         GiftOrder.objects.select_related("user", "gift", "assigned_to"),
         id=id,
     )
+    
+    data = {
+        "pageTitle": 'جزئیات سفارش',
+        "backUrl": reverse('app_gift:order_index'),
+    }
+        
     logs = order.logs.select_related("changed_by").all()
 
     return render(request, "pages/gift/gift_order_detail.html", {
         "order": order,
         "logs": logs,
         "transitions": order__available_transitions(order),
+        "data": data,
         "assign_form": OrderAssignForm(initial={"assigned_to": order.assigned_to_id}),
     })
 

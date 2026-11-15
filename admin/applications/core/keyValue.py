@@ -255,6 +255,8 @@ def Applications():
         ('ScoreRule', 'ScoreRule'),
         ('ScoreLog', 'ScoreLog'),
         ('UserScore', 'UserScore'),
+        
+        ('Notification', 'Notification'),
     )
 
 

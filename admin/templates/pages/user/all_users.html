@@ -15,7 +15,7 @@
         <div class="card custom-card">
           <div class="card-body">
             {% if data.searchUrl %}
-              {% include 'pages/user/user_filters.html' %}
+              {% include 'components/filter_form.html' %}
             {% endif %}
 
             <div class="table-responsive">
@@ -80,7 +80,7 @@
                         <a href="{% url 'app_user:user_detail' item.id %}" class="btn btn-sm btn-outline-info">جزئیات</a>
                         <a href="{% url 'app_user:user_update' item.id %}" class="btn btn-sm btn-outline-primary">ویرایش</a>
                         {% if request.user.id != item.id %}
-                          <a href="" data-toggle="tooltip" data-original-title="حذف" class="deleteRecordFromTable btn btn-sm btn-outline-danger" data-deleteId="{{ item.id }}">حذف</a>
+                          <a href="" data-toggle="tooltip" class="deleteRecordFromTable btn btn-sm btn-outline-danger" data-deleteId="{{ item.id }}">حذف</a>
                           <form id="deleteRecordForm_{{ item.id }}" action="{% url 'app_user:user_delete' item.id %}" method="post" style="display: none;">
                             {% csrf_token %}
                           </form>

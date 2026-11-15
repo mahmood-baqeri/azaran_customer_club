@@ -1,6 +1,7 @@
 # applications/promotion/models.py
 
 from django.db import models
+from applications.core.fileManager import ImageProcessingMixin
 from applications.core.baseModel import BaseModel
 from applications.user.models import User
 
@@ -18,7 +19,7 @@ class Promotion(BaseModel):
         return self.title
 
 
-class PromotionItem(BaseModel): 
+class PromotionItem(ImageProcessingMixin, BaseModel): 
     promotion = models.ForeignKey(Promotion, on_delete=models.PROTECT, related_name="promotion_items_relation")
     title = models.CharField(max_length=200, verbose_name="عنوان")
     badge = models.CharField(max_length=200, null=True, blank=True, verbose_name="برچسب")

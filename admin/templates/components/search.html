@@ -44,6 +44,9 @@
             <option value="200" {% if data.searchCount == 200 %} selected  {% endif %}> 200</option>
             <option value="500" {% if data.searchCount == 500 %} selected  {% endif %}> 500</option>
             <option value="1000" {% if data.searchCount == 1000 %} selected  {% endif %}> 1000</option>
+            <option value="5000" {% if data.searchCount == 5000 %} selected  {% endif %}> 5000</option>
+            <option value="10000" {% if data.searchCount == 10000 %} selected  {% endif %}> 10000</option>
+            <option value="20000" {% if data.searchCount == 20000 %} selected  {% endif %}> 20000</option>
         </select>
     </div>
 
@@ -121,6 +124,18 @@
     <div class="col-sm-1 p-2">
         <button type="submit" class="btn btn-info">جستجو</button>
     </div>
+    
+    {% if data.exportUrl %}
+        <div class="col-sm-1 p-2">
+            <button type="submit"
+                    class="btn btn-success"
+                    formaction="{{ data.exportUrl }}"
+                    formtarget="_blank"
+                    title="خروجی اکسل با فیلترهای فعلی">
+                <i class="fa fa-file-excel-o"></i> اکسل
+            </button>
+        </div>
+    {% endif %}
 
 </form>
 

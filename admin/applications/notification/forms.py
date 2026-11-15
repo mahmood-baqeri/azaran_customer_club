@@ -1,126 +1,230 @@
-# applications/gift/forms.py
+# applications/notification/forms.py
 
+from applications.core.forms import (
+    make_date_item,
+    make_image_item,
+    make_input_item,
+    make_select2_item,
+    pick_value,
+)
 
-from django import forms
+from applications.user.models import User
 
-from admin.applications.user.models import User
-from .models import Gift, GiftOrder
-
-
-class OrderStatusForm(forms.Form):
-    new_status = forms.ChoiceField(
-        choices=GiftOrder.Status.choices,
-        widget=forms.Select(attrs={"class": "form-select"}),
-    )
-    tracking_code = forms.CharField(
-        required=False, max_length=100,
-        widget=forms.TextInput(attrs={"class": "form-control"}),
-    )
-    note = forms.CharField(
-        required=False,
-        widget=forms.Textarea(attrs={"class": "form-control", "rows": 2}),
-    )
-
-
-class OrderAssignForm(forms.Form):
-    assigned_to = forms.ModelChoiceField(
-        queryset=None, required=False,
-        widget=forms.Select(attrs={"class": "form-select"}),
-    )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        from applications.user.models import User
-        self.fields["assigned_to"].queryset = User.objects.filter(
-            is_staff=True, is_active=True
-        ).order_by("first_name", "last_name")
-        
-        
+from .models import Notification
 
 
 # ═══════════════════════════════════════════════════════════
-# GIFT CREATE / UPDATE (با data.items)
+# NOTIFICATION — Form (create / edit)
 # ═══════════════════════════════════════════════════════════
-def gift__form(gift=None, raw_data=None):
-    """ساخت لیست items برای قالب عمومی form.html"""
+def notification__form(notification=None, raw_data=None):
+    """items برای قالب عمومی form.html — نوتیفیکیشن."""
 
-    def val(field, default=""):
-        if raw_data is not None:
-            return raw_data.get(field, default)
-        if gift is not None:
-            return getattr(gift, field, default)
-        return default
+    # ─── گیرندگان فعلی ──────────────────────────────────
+    if raw_data is not None:
+        target_user_ids = raw_data.getlist("target_users") or []
+    elif notification is not None:
+        target_user_ids = list(
+            notification.targets.values_list("user_id", flat=True)
+        )
+    else:
+        target_user_ids = []
 
+    # ─── لیست کاربران فعال ──────────────────────────────
+    user_choices = [
+        {
+            "id": u.pk,
+            "label": f"{u.full_name or u.mobile} — {u.mobile}",
+        }
+        for u in User.objects.filter(is_active=True)
+        .only("id", "first_name", "last_name", "mobile", "username")
+        .order_by("first_name", "last_name")
+    ]
 
-    for_user_val = val("for_user", Gift.ForUser.SELLER)
+    target_type_choices = [
+        {"id": v, "label": l} for v, l in Notification.TargetType.choices
+    ]
+    type_choices = [
+        {"id": v, "label": l} for v, l in Notification.NotificationType.choices
+    ]
+    priority_choices = [
+        {"id": v, "label": l} for v, l in Notification.Priority.choices
+    ]
 
     return [
-        {
-            'l': "عنوان *",
-            'n': 'title',
-            'v': val("title"),
-            'id': 'the_title',
-            'r': True,
-            'c': 'col-md-6',
-            'b': 'textBox.html'
-        }, {
-            'l': "برای *",
-            'n': 'for_user',
-            'v': for_user_val,
-            'id': 'the_for_user',
-            'r': True,
-            'c': 'col-md-6',
-            'data': [{"value": v, "label": l} for v, l in User.objects.filter(is_active=1).all()],
-            'b': 'select2Multi.html',
-        }, {
-            'l': "توضیحات",
-            'n': 'description',
-            'v': val("description"),
-            'id': 'the_description',
-            'r': None,
-            'c': 'col-md-12',
-            'b': 'textarea.html'
-        }, {
-            'l': 'ارزش آذر *',
-            'n': 'azar_value',
-            'v': val("azar_value", 0),
-            'id': 'the_azar_value',
-            'r': True,
-            'c': 'col-md-3',
-            'b': 'number.html'
-        }, {
-            'l': 'موجودی *',
-            'n': 'stock',
-            'v': val("stock", 0),
-            'id': 'the_stock',
-            'r': True,
-            'c': 'col-md-3',
-            'b': 'number.html'
-        }, {
-            'l': 'فعال',
-            'n': 'is_active',
-            'v': (1 if gift.is_active else 0) if gift else 0,
-            'id': 'is_active',
-            'r': None,
-            'c': 'col-md-3',
-            'b': 'switch.html'
-        }, {
-            'l': 'تصویر',
-            'n': 'photo',
-            'v': val("photo"),
-            'id': 'the_photo',
-            'r': None,
-            'c': 'col-md-3',
-            'b': 'photo.html'
-        }, {
-            'l': "گالری",
-            'n': 'gallery',
-            'photos': gift.gallery if gift else [],
-            'theItem': gift if gift else '',
-            'id': 'the_gallery',
-            'r': None,
-            'removeRoute': "gift/api/deletePhoto",
-            'c': 'col-md-9',
-            'b': 'photoMulti.html'
-        }
+        # ─── محتوا ──────────────────────────────────────
+        make_input_item(
+            label="عنوان", name="title", input_id="id_title",
+            value=pick_value(raw_data, notification, "title"),
+            required=True, col_class="col-md-8",
+        ),
+        make_select2_item(
+            label="نوع نوتیفیکیشن", name="notification_type", input_id="id_notification_type",
+            choices=type_choices,
+            value=pick_value(raw_data, notification, "notification_type", "system"),
+            required=True, empty_label=None, col_class="col-md-4",
+        ),
+        make_input_item(
+            label="متن", name="body", input_id="id_body",
+            kind="textarea", rows=5,
+            value=pick_value(raw_data, notification, "body"),
+            required=True, col_class="col-md-12",
+        ),
+        make_image_item(
+            label="تصویر", name="image", input_id="id_image",
+            title="انتخاب تصویر",
+            existing=notification.image if notification else None,
+            col_class="col-md-6",
+        ),
+        make_select2_item(
+            label="اولویت", name="priority", input_id="id_priority",
+            choices=priority_choices,
+            value=pick_value(raw_data, notification, "priority", "normal"),
+            required=True, empty_label=None, col_class="col-md-6",
+        ),
+
+        # ─── هدف‌گیری ────────────────────────────────────
+        make_select2_item(
+            label="نوع هدف‌گیری", name="target_type", input_id="id_target_type",
+            choices=target_type_choices,
+            value=pick_value(raw_data, notification, "target_type", "user"),
+            required=True, empty_label=None, col_class="col-md-4",
+        ),
+        make_select2_item(
+            label="کاربران هدف", name="target_users", input_id="id_target_users",
+            choices=user_choices,
+            value=target_user_ids,
+            multiple=True,
+            empty_label="",
+            placeholder="کاربران را انتخاب کنید…",
+            col_class="col-md-8",
+        ),
+
+        # ─── اقدام (deep link) ──────────────────────────
+        make_input_item(
+            label="نوع اقدام (اختیاری)", name="action_type", input_id="id_action_type",
+            value=pick_value(raw_data, notification, "action_type"),
+            placeholder="مثلاً: open_gift، open_order",
+            col_class="col-md-4",
+        ),
+        make_input_item(
+            label="لینک اقدام (اختیاری)", name="action_url", input_id="id_action_url",
+            value=pick_value(raw_data, notification, "action_url"),
+            placeholder="https://…",
+            col_class="col-md-8",
+        ),
+
+        # ─── زمان‌بندی ──────────────────────────────────
+        make_date_item(
+            label="تاریخ ارسال (خالی = دستی)",
+            name="scheduled_at",
+            input_id="id_scheduled_at",
+            value=pick_value(raw_data, notification, "scheduled_at"),
+            col_class="col-md-6",
+        ),
+        make_date_item(
+            label="تاریخ انقضا",
+            name="expires_at",
+            input_id="id_expires_at",
+            value=pick_value(raw_data, notification, "expires_at"),
+            col_class="col-md-6",
+        ),
     ]
+
+
+# ═══════════════════════════════════════════════════════════
+# NOTIFICATION — Filters
+# ═══════════════════════════════════════════════════════════
+def notification__filters(get_data=None):
+    """items فیلترهای لیست نوتیفیکیشن‌ها."""
+
+    def gv(key, default=""):
+        return ((get_data.get(key) if get_data else None) or default)
+
+    sort_choices = [
+        {"id": "desc",      "label": "جدیدترین"},
+        {"id": "asc",       "label": "قدیمی‌ترین"},
+        {"id": "sent_desc", "label": "تازه‌ترین ارسال"},
+    ]
+    count_choices = [
+        {"id": "20",  "label": "20"},
+        {"id": "50",  "label": "50"},
+        {"id": "100", "label": "100"},
+    ]
+    status_choices = [
+        {"id": v, "label": l} for v, l in Notification.Status.choices
+    ]
+    target_choices = [
+        {"id": v, "label": l} for v, l in Notification.TargetType.choices
+    ]
+    type_choices = [
+        {"id": v, "label": l} for v, l in Notification.NotificationType.choices
+    ]
+    priority_choices = [
+        {"id": v, "label": l} for v, l in Notification.Priority.choices
+    ]
+
+    return {
+        "basic": [
+            make_input_item(
+                label="جستجو", name="q", input_id="filter_q",
+                value=gv("q"),
+                placeholder="عنوان، متن، نام یا موبایل گیرنده…",
+                col_class="col-md-4",
+            ),
+            make_select2_item(
+                label="مرتب‌سازی", name="sort", input_id="filter_sort",
+                choices=sort_choices, value=gv("sort", "desc"),
+                empty_label=None, col_class="col-md-3",
+            ),
+            make_select2_item(
+                label="تعداد نمایش", name="count", input_id="filter_count",
+                choices=count_choices, value=gv("count", "20"),
+                empty_label=None, col_class="col-md-2",
+            ),
+        ],
+        "main": [
+            make_select2_item(
+                label="وضعیت", name="status", input_id="filter_status",
+                choices=status_choices, value=gv("status"),
+                empty_label="— همه —", col_class="col-md-3",
+            ),
+            make_select2_item(
+                label="نوع هدف‌گیری", name="target_type", input_id="filter_target_type",
+                choices=target_choices, value=gv("target_type"),
+                empty_label="— همه —", col_class="col-md-3",
+            ),
+            make_select2_item(
+                label="نوع نوتیفیکیشن", name="notification_type", input_id="filter_notification_type",
+                choices=type_choices, value=gv("notification_type"),
+                empty_label="— همه —", col_class="col-md-3",
+            ),
+            make_select2_item(
+                label="اولویت", name="priority", input_id="filter_priority",
+                choices=priority_choices, value=gv("priority"),
+                empty_label="— همه —", col_class="col-md-3",
+            ),
+        ],
+        "advanced": [
+            {
+                "title": "فیلترهای بیشتر",
+                "items": [
+                    make_date_item(
+                        label="ارسال از", name="sent_from", input_id="filter_sent_from",
+                        value=gv("sent_from"), col_class="col-md-3",
+                    ),
+                    make_date_item(
+                        label="ارسال تا", name="sent_to", input_id="filter_sent_to",
+                        value=gv("sent_to"), col_class="col-md-3",
+                    ),
+                    make_date_item(
+                        label="ایجاد از", name="created_from", input_id="filter_created_from",
+                        value=gv("created_from"), col_class="col-md-3",
+                    ),
+                    make_date_item(
+                        label="ایجاد تا", name="created_to", input_id="filter_created_to",
+                        value=gv("created_to"), col_class="col-md-3",
+                    ),
+                ],
+            },
+        ],
+    }

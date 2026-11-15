@@ -6,7 +6,7 @@ import logging
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -14,7 +14,9 @@ from applications.core.fileManager import deleteFile
 from applications.core.decorators import is_admin_required
 from applications.core.requiredAccess import RequiredAccess
 from applications.core.utils import redirect_back, response_msg
-
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Font, PatternFill
+from django.utils import timezone
 from ..clean_data import gift__clean__data
 from ..forms import gift__form
 from ..models import Gift
@@ -24,12 +26,9 @@ logger = logging.getLogger(__name__)
 
 
 # ═══════════════════════════════════════════════════════════
-# LIST
+# فیلتر مشترک — بین لیست و خروجی اکسل
 # ═══════════════════════════════════════════════════════════
-@is_admin_required
-def gift_index(request):
-    RequiredAccess(request, "GiftRead")
-
+def _filtered_gifts_qs(request):
     qs = Gift.objects.all()
 
     q = (request.GET.get("q") or "").strip()
@@ -50,6 +49,18 @@ def gift_index(request):
     else:
         qs = qs.order_by("-id")
 
+    return qs, q, filter_val, sort
+
+
+# ═══════════════════════════════════════════════════════════
+# LIST
+# ═══════════════════════════════════════════════════════════
+@is_admin_required
+def gift_index(request):
+    RequiredAccess(request, "GiftRead")
+
+    qs, q, filter_val, sort = _filtered_gifts_qs(request)
+
     try:
         count = int(request.GET.get("count", "10"))
     except ValueError:
@@ -62,6 +73,7 @@ def gift_index(request):
         "pageTitle": "لیست هدایا",
         "newUrl": reverse("app_gift:gift_create"),
         "searchUrl": reverse("app_gift:gift_index"),
+        "exportUrl": reverse("app_gift:gift_export"),   # ← جدید
         "searchText": q,
         "searchSort": sort,
         "searchCount": count,
@@ -72,6 +84,55 @@ def gift_index(request):
         "total": qs.count(),
     }
     return render(request, "pages/gift/all_gifts.html", {"data": data})
+
+
+# ═══════════════════════════════════════════════════════════
+# EXPORT — خروجی اکسل با تمام فیلترهای فعلی
+# ═══════════════════════════════════════════════════════════
+@is_admin_required
+def gift_export(request):
+    RequiredAccess(request, "GiftRead")
+
+    qs, _q, _filter_val, _sort = _filtered_gifts_qs(request)
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "هدایا"
+    ws.sheet_view.rightToLeft = True
+
+    headers = ["#", "عنوان", "توضیحات", "برای", "ارزش آذر", "موجودی", "وضعیت", "تاریخ ایجاد"]
+    ws.append(headers)
+
+    head_font = Font(bold=True, color="FFFFFF")
+    head_fill = PatternFill("solid", fgColor="4472C4")
+    for cell in ws[1]:
+        cell.font = head_font
+        cell.fill = head_fill
+        cell.alignment = Alignment(horizontal="center", vertical="center")
+
+    for g in qs.iterator():
+        ws.append([
+            g.id,
+            g.title,
+            g.description or "",
+            g.get_for_user_display(),
+            g.azar_value,
+            g.stock,
+            "فعال" if g.is_active else "غیرفعال",
+            g.created_at.strftime("%Y-%m-%d %H:%M") if getattr(g, "created_at", None) else "",
+        ])
+
+    for col_cells in ws.columns:
+        length = max(len(str(c.value or "")) for c in col_cells)
+        ws.column_dimensions[col_cells[0].column_letter].width = min(max(length + 2, 10), 60)
+
+    filename = f"gifts_{timezone.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+    resp = HttpResponse(
+        content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+    wb.save(resp)
+    return resp
 
 
 # ═══════════════════════════════════════════════════════════

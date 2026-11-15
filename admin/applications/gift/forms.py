@@ -134,7 +134,7 @@ def gift__form(gift=None, raw_data=None):
             name="photo",
             input_id="the_photo",
             existing=gift.photo if gift else None,
-            col_class="col-md-3",
+            col_class="col-md-6",
         ),
 
         # ─── گالری ───────────────────────────────────────

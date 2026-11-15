@@ -12,11 +12,14 @@ from applications.core.forms import (
     pick_value_any,
     pick_bool,
     pick_multi,
-       pick_multi_or_model,
+    pick_multi_or_model,
 )
 from applications.role.models import Role
 
 from .models import User
+
+from applications.setting.models import City, Province
+from applications.role.models import Role
 
 
 GENDER_CHOICES = [("male", "مرد"), ("female", "زن")]
@@ -273,3 +276,191 @@ def user__form(user=None, raw_data=None):
             col_class="col-md-12",
         ),
     ]
+    
+    
+
+# ═══════════════════════════════════════════════════════════
+# USER FILTERS — items برای قالب user_filters.html
+# ═══════════════════════════════════════════════════════════
+
+def user__filters(get_data=None):
+    """items فیلترهای صفحه‌ی لیست کاربران."""
+
+    def gv(key, default=""):
+        return ((get_data.get(key) if get_data else None) or default)
+
+    sort_choices = [
+        {"id": "desc",         "label": "جدیدترین (ID)"},
+        {"id": "asc",          "label": "قدیمی‌ترین (ID)"},
+        {"id": "newest",       "label": "جدیدترین عضویت"},
+        {"id": "oldest",       "label": "قدیمی‌ترین عضویت"},
+        {"id": "active",       "label": "فعال‌ها"},
+        {"id": "deactive",     "label": "غیرفعال‌ها"},
+        {"id": "balance_high", "label": "بیشترین موجودی"},
+        {"id": "balance_low",  "label": "کمترین موجودی"},
+        {"id": "earned_high",  "label": "بیشترین کل کسب"},
+        {"id": "earned_low",   "label": "کمترین کل کسب"},
+        {"id": "kardan",       "label": "سطح کاردان"},
+        {"id": "ostadkar",     "label": "سطح استادکار"},
+    ]
+    count_choices = [
+        {"id": "10",  "label": "10"},
+        {"id": "20",  "label": "20"},
+        {"id": "50",  "label": "50"},
+        {"id": "100", "label": "100"},
+        {"id": "200", "label": "200"},
+        {"id": "300", "label": "300"},
+        {"id": "400", "label": "400"},
+        {"id": "500", "label": "500"},
+        {"id": "1000", "label": "1000"},
+        {"id": "2000", "label": "2000"},
+        {"id": "3000", "label": "3000"},
+        {"id": "4000", "label": "4000"},
+        {"id": "5000", "label": "5000"},
+        {"id": "10000", "label": "10000"},
+    ]
+    nature_choices = [{"id": v, "label": l} for v, l in User.UserNature.choices]
+    level_choices  = [{"id": "kardan", "label": "کاردان"},
+                      {"id": "ostadkar", "label": "استادکار"}]
+    bool_active    = [{"id": "1", "label": "فعال"},       {"id": "0", "label": "غیرفعال"}]
+    bool_verified  = [{"id": "1", "label": "تایید شده"},  {"id": "0", "label": "تایید نشده"}]
+    bool_avatar    = [{"id": "1", "label": "دارد"},       {"id": "0", "label": "ندارد"}]
+    gender_choices = [{"id": "male", "label": "مرد"},     {"id": "female", "label": "زن"}]
+    bool_cert      = [{"id": "1", "label": "دارد"},       {"id": "0", "label": "ندارد"}]
+    bool_invited   = [{"id": "1", "label": "دعوت‌شده"},   {"id": "0", "label": "آزاد"}]
+
+    # role_choices = [{"id": r.pk, "label": r.title} for r in Role.objects.only("id", "title")]
+
+    basic = [
+        make_input_item(
+            label="جستجو عبارت خاص", name="q", input_id="filter_q",
+            value=gv("q"),
+            placeholder="جستجو: نام، موبایل، ایمیل، کد معرف، کد ملی، ID",
+            col_class="col-md-4",
+        ),
+        make_select2_item(
+            label="مرتب سازی", name="sort", input_id="filter_sort",
+            choices=sort_choices, value=gv("sort", "desc"),
+            empty_label=None, col_class="col-md-3",
+        ),
+        make_select2_item(
+            label="تعداد نمایش", name="count", input_id="filter_count",
+            choices=count_choices, value=gv("count", "20"),
+            empty_label=None, col_class="col-md-2",
+        ),
+    ]
+
+    main = [
+        make_select2_item(
+            label="نوع کاربری", name="nature", input_id="filter_nature",
+            choices=nature_choices, value=gv("nature"),
+            empty_label="— نوع کاربری —", col_class="col-md-3",
+        ),
+        make_select2_item(
+            label="سطح", name="level", input_id="filter_level",
+            choices=level_choices, value=gv("level"),
+            empty_label="— سطح —", col_class="col-md-3",
+        ),
+        make_select2_item(
+            label="وضعیت", name="is_active", input_id="filter_is_active",
+            choices=bool_active, value=gv("is_active"),
+            empty_label="— وضعیت —", col_class="col-md-2",
+        ),
+        make_select2_item(
+            label="موبایل", name="is_mobile_verified", input_id="filter_is_mobile_verified",
+            choices=bool_verified, value=gv("is_mobile_verified"),
+            empty_label="— موبایل —", col_class="col-md-2",
+        ),
+        make_select2_item(
+            label="آواتار", name="has_avatar", input_id="filter_has_avatar",
+            choices=bool_avatar, value=gv("has_avatar"),
+            empty_label="— آواتار —", col_class="col-md-2",
+        ),
+    ]
+
+    advanced = [
+        {
+            "title": "مشخصات دموگرافیک",
+            "items": [
+                make_select2_item(
+                    label="جنسیت", name="gender", input_id="filter_gender",
+                    choices=gender_choices, value=gv("gender"),
+                    empty_label="— جنسیت —", col_class="col-md-3",
+                ),
+                make_province_city_item(
+                    label="",
+                    province_name="province", city_name="city",
+                    province_id="filter_province", city_id="filter_city",
+                    province_value=gv("province") or None,
+                    city_value=gv("city") or None,
+                    col_class="col-md-6",
+                ),
+            ],
+        },
+        {
+            "title": "امتیاز",
+            "items": [
+                make_input_item(
+                    label="حداقل موجودی", name="min_balance", input_id="filter_min_balance",
+                    kind="number", value=gv("min_balance"),
+                    placeholder="حداقل موجودی", min=0, step=1,
+                    col_class="col-md-4",
+                ),
+                make_input_item(
+                    label="حداکثر موجودی", name="max_balance", input_id="filter_max_balance",
+                    kind="number", value=gv("max_balance"),
+                    placeholder="حداکثر موجودی", min=0, step=1,
+                    col_class="col-md-4",
+                ),
+                make_input_item(
+                    label="حداقل کل کسب‌شده", name="min_earned", input_id="filter_min_earned",
+                    kind="number", value=gv("min_earned"),
+                    placeholder="حداقل کل کسب‌شده", min=0, step=1,
+                    col_class="col-md-4",
+                ),
+            ],
+        },
+        {
+            "title": "مدارک و دعوت",
+            "items": [
+                make_select2_item(
+                    label="مدرک", name="has_certificate", input_id="filter_has_certificate",
+                    choices=bool_cert, value=gv("has_certificate"),
+                    empty_label="— مدرک —", col_class="col-md-4",
+                ),
+                make_select2_item(
+                    label="تایید مدرک", name="cert_verified", input_id="filter_cert_verified",
+                    choices=bool_verified, value=gv("cert_verified"),
+                    empty_label="— تایید مدرک —", col_class="col-md-4",
+                ),
+                make_select2_item(
+                    label="دعوت", name="invited", input_id="filter_invited",
+                    choices=bool_invited, value=gv("invited"),
+                    empty_label="— دعوت —", col_class="col-md-4",
+                ),
+            ],
+        },
+        {
+            "title": "تاریخ‌ها",
+            "items": [
+                make_date_item(
+                    label="عضویت از", name="joined_from", input_id="filter_joined_from",
+                    value=gv("joined_from"), col_class="col-md-3",
+                ),
+                make_date_item(
+                    label="عضویت تا", name="joined_to", input_id="filter_joined_to",
+                    value=gv("joined_to"), col_class="col-md-3",
+                ),
+                make_date_item(
+                    label="آخرین فعالیت از", name="active_from", input_id="filter_active_from",
+                    value=gv("active_from"), col_class="col-md-3",
+                ),
+                make_date_item(
+                    label="آخرین فعالیت تا", name="active_to", input_id="filter_active_to",
+                    value=gv("active_to"), col_class="col-md-3",
+                ),
+            ],
+        },
+    ]
+
+    return {"basic": basic, "main": main, "advanced": advanced}

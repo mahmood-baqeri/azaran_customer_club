@@ -5,10 +5,7 @@ import logging
 from django.db import transaction
 from django.db.models import F
 
-from applications.core.fileManager import uploadFile
-from applications.core.utils import handle_get_file
 from applications.score import api as score_api
-
 from .models import Gift, GiftOrder, GiftOrderLog
 
 logger = logging.getLogger(__name__)
