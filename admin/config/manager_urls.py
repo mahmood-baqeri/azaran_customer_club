@@ -25,6 +25,7 @@ urlpatterns = [
     path('visit/', include('applications.visit.url')),
     path('gallery/', include('applications.gallery.url')),
     path('review/', include('applications.review.url')),
+    path('faq/', include('applications.faq.url')),
 
 
     # User areas

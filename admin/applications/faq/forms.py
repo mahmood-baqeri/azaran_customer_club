@@ -1,157 +1,178 @@
-from django import forms
-from django.utils.translation import gettext_lazy as _
+# applications/faq/forms.py
 
-from applications.page.models import Category, Page, PageContentItem
+from applications.core.forms import (
+    make_date_item,
+    make_input_item,
+    make_select2_item,
+    make_switch_item,
+    pick_bool,
+    pick_value,
+)
 
-
-class MultipleFileInput(forms.ClearableFileInput):
-    allow_multiple_selected = True
-
-    def __init__(self, attrs=None):
-        default_attrs = {"multiple": True}
-        if attrs:
-            default_attrs.update(attrs)
-        super().__init__(default_attrs)
+from .models import Answer, Category, FAQ
 
 
-class PageForm(forms.ModelForm):
-    """فرم ایجاد/ویرایش صفحه — منطبق با مدل ساده‌شده"""
-
-    gallery_images = forms.FileField(
-        label=_("آپلود تصاویر گالری"),
-        required=False,
-        widget=MultipleFileInput(attrs={"class": "form-control", "accept": "image/*"}),
-    )
-
-    class Meta:
-        model = Page
-        fields = [
-            "category", "type",
-            "title", "summer", "text",
-            "photo", "gallery",
-            "is_active",
-        ]
-        widgets = {
-            "title": forms.TextInput(attrs={"class": "form-control", "maxlength": 120}),
-            "summer": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
-            "text": forms.Textarea(attrs={"class": "form-control online-editor", "rows": 10}),
-            "photo": forms.FileInput(attrs={"class": "form-control"}),
-            "gallery": forms.HiddenInput(),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # category
-        self.fields["category"].required = False
-        self.fields["category"].queryset = Category.objects.filter(is_active=True)
-        self.fields["category"].widget = forms.Select(attrs={"class": "form-control select2"})
-
-        # type
-        self.fields["type"].widget = forms.Select(attrs={"class": "form-control"})
-        self.fields["type"].choices = Page.PageType.choices
-
-        # is_active
-        self.fields["is_active"].required = False
-        self.fields["is_active"].widget = forms.CheckboxInput(
-            attrs={"class": "form-check-input", "role": "switch"}
-        )
-
-        # gallery — فقط برای آپلود مستقیم نیست؛ فیلد مخفی
-        self.fields["gallery"].required = False
-
-        # اگر رکورد موجود است، گالری را مقدار اولیه بده
-        if self.instance and self.instance.pk and isinstance(self.instance.gallery, list):
-            import json
-            self.initial["gallery"] = json.dumps(self.instance.gallery, ensure_ascii=False)
-
-    def clean_title(self):
-        title = (self.cleaned_data.get("title") or "").strip()
-        if not title:
-            raise forms.ValidationError(_("عنوان الزامی است"))
-        return title
-
-    def clean(self):
-        cleaned_data = super().clean()
-        is_active = cleaned_data.get("is_active", False)
-
-        # حداقل یکی از متن کوتاه یا متن اصلی باید باشد
-        if is_active and not (cleaned_data.get("summer") or cleaned_data.get("text")):
-            self.add_error("summer", _("صفحه فعال باید حداقل یک متن کوتاه یا متن اصلی داشته باشد"))
-
-        return cleaned_data
-
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-
-        # فیلد gallery از فرم مخفی — کاربر ممکن است JSON داده باشد
-        gallery_raw = self.cleaned_data.get("gallery")
-        if isinstance(gallery_raw, str) and gallery_raw.strip():
-            import json
-            try:
-                instance.gallery = json.loads(gallery_raw)
-            except Exception:
-                instance.gallery = []
-        elif isinstance(gallery_raw, list):
-            instance.gallery = gallery_raw
-
-        if commit:
-            instance.save()
-        return instance
-
-
-class PageFilterForm(forms.Form):
-    """فرم فیلتر لیست صفحات"""
-
-    search = forms.CharField(
-        required=False,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": _("جستجو در عنوان، متن...")}
+# ═══════════════════════════════════════════════════════════
+# CATEGORY — Form
+# ═══════════════════════════════════════════════════════════
+def category__form(category=None, raw_data=None):
+    return [
+        make_input_item(
+            label="عنوان دسته‌بندی", name="title", input_id="id_title",
+            value=pick_value(raw_data, category, "title"),
+            placeholder="مثلاً: سوالات عمومی، مشکلات فنی…",
+            required=True, col_class="col-md-12",
         ),
-    )
-
-    category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(is_active=True),
-        required=False,
-        empty_label=_("همه دسته‌بندی‌ها"),
-        widget=forms.Select(attrs={"class": "form-control select2"}),
-    )
-
-    type = forms.ChoiceField(
-        choices=[("", _("همه"))] + list(Page.PageType.choices),
-        required=False,
-        widget=forms.Select(attrs={"class": "form-control"}),
-    )
-
-    is_active = forms.ChoiceField(
-        choices=[("", _("همه")), ("True", _("فعال")), ("False", _("غیرفعال"))],
-        required=False,
-        widget=forms.Select(attrs={"class": "form-control"}),
-    )
+        make_switch_item(
+            label="فعال", name="is_active", input_id="id_is_active",
+            value=pick_bool(raw_data, category, "is_active", default=True),
+            col_class="col-md-6",
+        ),
+    ]
 
 
-class PageContentItemForm(forms.ModelForm):
-    """فرم مدیریت محتوای صفحه (Step/FAQ)"""
+# ═══════════════════════════════════════════════════════════
+# ANSWER — Form
+# ═══════════════════════════════════════════════════════════
+def answer__form(answer=None, raw_data=None):
+    return [
+        make_input_item(
+            label="متن پاسخ", name="answer", input_id="id_answer",
+            kind="textarea", rows=6,
+            value=pick_value(raw_data, answer, "answer"),
+            placeholder="پاسخ کامل و جامع به این پرسش…",
+            required=True, col_class="col-md-12",
+        ),
+        make_switch_item(
+            label="نمایش به کاربران (فعال)", name="is_active", input_id="id_is_active",
+            value=pick_bool(raw_data, answer, "is_active"),
+            col_class="col-md-6",
+        ),
+    ]
 
-    class Meta:
-        model = PageContentItem
-        fields = ["kind", "title", "body", "order", "extra"]
-        widgets = {
-            "kind": forms.Select(attrs={"class": "form-control"}),
-            "title": forms.TextInput(attrs={"class": "form-control", "maxlength": 255}),
-            "body": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
-            "order": forms.NumberInput(attrs={"class": "form-control", "min": 0}),
-            "extra": forms.Textarea(
-                attrs={
-                    "class": "form-control",
-                    "rows": 2,
-                    "placeholder": _('{"icon": "fa-icon", "link": "https://..."}'),
-                }
+
+# ═══════════════════════════════════════════════════════════
+# FILTERS — Category
+# ═══════════════════════════════════════════════════════════
+def category__filters(get_data=None):
+    def gv(key, default=""):
+        return ((get_data.get(key) if get_data else None) or default)
+
+    sort_choices = [
+        {"id": "desc",         "label": "جدیدترین"},
+        {"id": "asc",          "label": "قدیمی‌ترین"},
+        {"id": "title_asc",    "label": "عنوان (الفبا)"},
+        {"id": "faqs_desc",    "label": "بیشترین پرسش"},
+    ]
+    count_choices = [
+        {"id": "20",  "label": "20"},
+        {"id": "50",  "label": "50"},
+        {"id": "100", "label": "100"},
+    ]
+    active_choices = [
+        {"id": "1", "label": "فعال"},
+        {"id": "0", "label": "غیرفعال"},
+    ]
+
+    return {
+        "basic": [
+            make_input_item(
+                label="جستجو", name="q", input_id="filter_q",
+                value=gv("q"),
+                placeholder="عنوان دسته…",
+                col_class="col-md-4",
             ),
-        }
+            make_select2_item(
+                label="مرتب‌سازی", name="sort", input_id="filter_sort",
+                choices=sort_choices, value=gv("sort", "desc"),
+                empty_label=None, col_class="col-md-3",
+            ),
+            make_select2_item(
+                label="تعداد نمایش", name="count", input_id="filter_count",
+                choices=count_choices, value=gv("count", "20"),
+                empty_label=None, col_class="col-md-2",
+            ),
+        ],
+        "main": [
+            make_select2_item(
+                label="وضعیت", name="is_active", input_id="filter_is_active",
+                choices=active_choices, value=gv("is_active"),
+                empty_label="— همه —", col_class="col-md-6",
+            ),
+        ],
+    }
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["extra"].required = False
-        self.fields["title"].required = True
-        self.fields["body"].required = False
+
+# ═══════════════════════════════════════════════════════════
+# FILTERS — FAQ
+# ═══════════════════════════════════════════════════════════
+def faq__filters(get_data=None):
+    def gv(key, default=""):
+        return ((get_data.get(key) if get_data else None) or default)
+
+    sort_choices = [
+        {"id": "desc",          "label": "جدیدترین"},
+        {"id": "asc",           "label": "قدیمی‌ترین"},
+        {"id": "answers_desc",  "label": "بیشترین پاسخ"},
+        {"id": "answers_asc",   "label": "بدون/کمترین پاسخ"},
+    ]
+    count_choices = [
+        {"id": "20",  "label": "20"},
+        {"id": "50",  "label": "50"},
+        {"id": "100", "label": "100"},
+    ]
+    active_choices = [
+        {"id": "1", "label": "فعال (تأیید شده)"},
+        {"id": "0", "label": "غیرفعال (در انتظار)"},
+    ]
+    has_answer_choices = [
+        {"id": "1", "label": "دارای پاسخ"},
+        {"id": "0", "label": "بدون پاسخ"},
+    ]
+
+    category_choices = [
+        {"id": c.pk, "label": c.title}
+        for c in Category.objects.only("id", "title").order_by("title")
+    ]
+
+    return {
+        "basic": [
+            make_input_item(
+                label="جستجو", name="q", input_id="filter_q",
+                value=gv("q"),
+                placeholder="متن پرسش، نام کاربر، موبایل…",
+                col_class="col-md-4",
+            ),
+            make_select2_item(
+                label="مرتب‌سازی", name="sort", input_id="filter_sort",
+                choices=sort_choices, value=gv("sort", "desc"),
+                empty_label=None, col_class="col-md-3",
+            ),
+            make_select2_item(
+                label="تعداد نمایش", name="count", input_id="filter_count",
+                choices=count_choices, value=gv("count", "20"),
+                empty_label=None, col_class="col-md-2",
+            ),
+        ],
+        "main": [
+            make_select2_item(
+                label="دسته‌بندی", name="category", input_id="filter_category",
+                choices=category_choices, value=gv("category"),
+                empty_label="— همه —", col_class="col-md-3",
+            ),
+            make_select2_item(
+                label="وضعیت", name="is_active", input_id="filter_is_active",
+                choices=active_choices, value=gv("is_active"),
+                empty_label="— همه —", col_class="col-md-3",
+            ),
+            make_select2_item(
+                label="پاسخ", name="has_answer", input_id="filter_has_answer",
+                choices=has_answer_choices, value=gv("has_answer"),
+                empty_label="— همه —", col_class="col-md-3",
+            ),
+            make_date_item(
+                label="ایجاد از", name="created_from", input_id="filter_created_from",
+                value=gv("created_from"), col_class="col-md-3",
+            ),
+        ],
+    }

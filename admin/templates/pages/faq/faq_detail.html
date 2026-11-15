@@ -1,0 +1,387 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  پرسش #{{ faq.id }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="row g-3">
+          <!-- ستون چپ: پرسش + پاسخ‌ها -->
+          <div class="col-md-8">
+            <!-- کارت پرسش -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span><i class="fe fe-help-circle mr-2 text-primary"></i> متن پرسش</span>
+                <small class="text-muted">#{{ faq.id }}</small>
+              </div>
+              <div class="card-body">
+                <p class="mb-3" style="line-height:1.8;white-space:pre-line;font-size:1rem;">{{ faq.question }}</p>
+
+                <div class="d-flex flex-wrap">
+                  <span class="badge badge-light text-dark border mr-2 mb-1"><i class="fe fe-tag mr-1"></i>{{ faq.category.title }}</span>
+
+                  {% if faq.is_active %}
+                    <span class="badge badge-success mr-2 mb-1"><i class="fe fe-check mr-1"></i>فعال</span>
+                  {% else %}
+                    <span class="badge badge-warning mr-2 mb-1"><i class="fe fe-clock mr-1"></i>در انتظار تأیید</span>
+                  {% endif %}
+
+                  <span class="badge badge-info mb-1">
+                    <i class="fe fe-message-square mr-1"></i>
+                    {{ answers|length }} پاسخ
+                  </span>
+                </div>
+
+                <hr />
+
+                <dl class="row mb-0 small">
+                  <dt class="col-4 text-muted">کاربر پرسش‌کننده</dt>
+                  <dd class="col-8">
+                    <a href="{% url 'app_user:user_detail' faq.user.id %}" class="text-decoration-none">{{ faq.user.full_name }}</a>
+                    <small class="text-muted" style="direction:ltr">({{ faq.user.mobile }})</small>
+                  </dd>
+
+                  <dt class="col-4 text-muted">تاریخ ایجاد</dt>
+                  <dd class="col-8">{{ faq.created_at|date:'Y/m/d H:i' }}</dd>
+
+                  <dt class="col-4 text-muted">آخرین ویرایش</dt>
+                  <dd class="col-8">{{ faq.updated_at|date:'Y/m/d H:i'|default:'—' }}</dd>
+                </dl>
+              </div>
+            </div>
+
+            <!-- کارت پاسخ‌ها -->
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span>
+                  <i class="fe fe-message-square mr-2 text-info"></i>
+                  پاسخ‌ها ({{ answers|length }})
+                </span>
+                <a href="{% url 'app_faq:answer_create' faq.id %}" class="btn btn-sm btn-outline-success"><i class="fe fe-plus mr-1"></i> افزودن پاسخ</a>
+              </div>
+              <div class="card-body p-0">
+                {% if answers %}
+                  {% for a in answers %}
+                    <div class="border-bottom p-3 {% if forloop.last %}border-0{% endif %}
+                              {% if not a.is_active %}bg-light{% endif %}">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                          <strong class="small">
+                            {% if a.user %}
+                              {{ a.user.full_name }}
+                              <small class="text-muted" style="direction:ltr">({{ a.user.mobile }})</small>
+                            {% else %}
+                              <span class="text-muted">—</span>
+                            {% endif %}
+                          </strong>
+                          <br />
+                          <small class="text-muted"><i class="fe fe-clock mr-1"></i>{{ a.created_at|date:'Y/m/d H:i' }}</small>
+                        </div>
+                        <div class="d-flex align-items-center">
+                          {% if a.is_active %}
+                            <span class="badge badge-success mr-1"><i class="fe fe-check mr-1"></i>فعال</span>
+                          {% else %}
+                            <span class="badge badge-secondary mr-1"><i class="fe fe-eye-off mr-1"></i>غیرفعال</span>
+                          {% endif %}
+                        </div>
+                      </div>
+
+                      <p class="mb-3" style="white-space:pre-line;line-height:1.7;">{{ a.answer }}</p>
+
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                          <span class="badge badge-success mr-1"><i class="fe fe-thumbs-up mr-1"></i>{{ a.like_count }}</span>
+                          <span class="badge badge-danger"><i class="fe fe-thumbs-down mr-1"></i>{{ a.dislike_count }}</span>
+                        </div>
+
+                        <div>
+                          <form method="post" class="d-inline" action="{% url 'app_faq:answer_toggle_active' a.id %}">
+                            {% csrf_token %}
+                            <button class="btn btn-sm {% if a.is_active %}
+                                btn-outline-warning
+                              {% else %}
+                                btn-outline-success
+                              {% endif %}">
+                              <i class="fe {% if a.is_active %}
+                                  fe-slash
+                                {% else %}
+                                  fe-check-circle
+                                {% endif %} mr-1">
+
+                              </i>
+                              {% if a.is_active %}
+                                غیرفعال
+                              {% else %}
+                                فعال
+                              {% endif %}
+                            </button>
+                          </form>
+                          <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteAnswerModal{{ a.id }}"><i class="fe fe-trash-2 mr-1"></i> حذف</button>
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center text-muted py-5">
+                    <i class="fe fe-message-square d-block mb-2" style="font-size:2rem;"></i>
+                    هنوز پاسخی ثبت نشده است
+                    <br />
+                    <a href="{% url 'app_faq:answer_create' faq.id %}" class="btn btn-sm btn-primary mt-2"><i class="fe fe-plus mr-1"></i> افزودن اولین پاسخ</a>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- ستون راست: وضعیت + اکشن‌ها -->
+          <div class="col-md-4">
+            <!-- کارت وضعیت -->
+            <div class="card custom-card mb-3 border-0 shadow-sm">
+              <div class="card-body text-center py-4
+                        {% if faq.is_active %}
+                  text-success
+                {% else %}
+                  text-warning
+                {% endif %}"
+                style="background-color:
+                        {% if faq.is_active %}
+                  #d4edda
+
+                {% else %}
+                  #fff3cd
+                {% endif %};">
+                <div class="mb-2" style="font-size:2.2rem;">
+                  {% if faq.is_active %}
+                    <i class="fe fe-check-circle"></i>
+                  {% else %}
+                    <i class="fe fe-clock"></i>
+                  {% endif %}
+                </div>
+                <h6 class="mb-1 fw-bold">
+                  {% if faq.is_active %}
+                    تأیید شده
+                  {% else %}
+                    در انتظار تأیید
+                  {% endif %}
+                </h6>
+                <p class="text-muted small mb-0">
+                  {% if faq.is_active %}
+                    پرسش برای کاربران قابل مشاهده است
+                  {% else %}
+                    پرسش از دید کاربران پنهان است
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+
+            <!-- آمار -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-bar-chart-2 mr-2 text-primary"></i> آمار
+              </div>
+              <div class="card-body">
+                <dl class="row mb-0">
+                  <dt class="col-7 text-muted">کل پاسخ‌ها</dt>
+                  <dd class="col-5 text-right"><strong>{{ answers|length }}</strong></dd>
+
+                  <dt class="col-7 text-muted">تعداد لایک</dt>
+                  <dd class="col-5 text-right">
+                    <span class="text-success">
+                      <i class="fe fe-thumbs-up mr-1"></i>
+                      {% with total_likes=0 %}
+                        {% for a in answers %}{% endfor %}{{ total_likes }}
+                      {% endwith %}
+                    </span>
+                  </dd>
+                </dl>
+              </div>
+            </div>
+
+            <!-- اکشن‌ها -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-zap mr-2 text-primary"></i> اکشن‌ها
+              </div>
+              <div class="card-body d-flex flex-column">
+                <a href="{% url 'app_faq:answer_create' faq.id %}" class="btn btn-primary btn-block mb-2"><i class="fe fe-plus-circle mr-2"></i> افزودن پاسخ</a>
+
+                <button type="button"
+                  class="btn {% if faq.is_active %}
+                    btn-outline-warning
+                  {% else %}
+                    btn-outline-success
+                  {% endif %} btn-block"
+                  data-toggle="modal"
+                  data-target="#toggleFaqModal">
+                  <i class="fe {% if faq.is_active %}
+                      fe-slash
+                    {% else %}
+                      fe-check-circle
+                    {% endif %} mr-2">
+
+                  </i>
+                  {% if faq.is_active %}
+                    غیرفعال کردن
+                  {% else %}
+                    تأیید و فعال‌سازی
+                  {% endif %}
+                </button>
+              </div>
+            </div>
+
+            <!-- ناحیه خطر -->
+            <div class="card custom-card shadow-sm" style="border-color:#f5c6cb;">
+              <div class="card-header fw-bold d-flex align-items-center text-danger" style="background-color:#f8d7da;border-color:#f5c6cb;">
+                <i class="fe fe-alert-triangle mr-2"></i> ناحیه خطر
+              </div>
+              <div class="card-body">
+                <p class="small text-muted mb-2">حذف پرسش، تمام پاسخ‌ها ({{ answers|length }}) و واکنش‌ها را نیز حذف می‌کند.</p>
+                <button type="button" class="btn btn-sm btn-outline-danger btn-block" data-toggle="modal" data-target="#deleteFaqModal"><i class="fe fe-trash-2 mr-1"></i> حذف پرسش</button>
+              </div>
+            </div>
+
+            <a href="{% url 'app_faq:faq_index' %}" class="btn btn-link btn-sm text-secondary btn-block mt-2"><i class="fe fe-arrow-right mr-1"></i> بازگشت به لیست پرسش‌ها</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ═══ مودال فعال/غیرفعال پرسش ═══ #}
+  <div class="modal fade" id="toggleFaqModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold">
+            <i class="fe {% if faq.is_active %}
+                fe-slash text-warning
+              {% else %}
+                fe-check-circle text-success
+              {% endif %} mr-2">
+
+            </i>
+            {% if faq.is_active %}
+              غیرفعال‌سازی
+            {% else %}
+              تأیید و فعال‌سازی
+            {% endif %}پرسش
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">
+            آیا از{% if faq.is_active %}
+              غیرفعال کردن
+            {% else %}
+              تأیید و فعال کردن
+            {% endif %}این پرسش مطمئن هستید؟
+          </p>
+          {% if not faq.is_active %}
+            <div class="alert alert-info small mt-3 mb-0">
+              <i class="fe fe-info mr-1"></i>
+              با تأیید پرسش، برای همه کاربران قابل مشاهده می‌شود.
+            </div>
+          {% else %}
+            <div class="alert alert-warning small mt-3 mb-0">
+              <i class="fe fe-alert-triangle mr-1"></i>
+              با غیرفعال‌سازی، پرسش از دید کاربران پنهان می‌شود — پاسخ‌ها حفظ می‌شوند.
+            </div>
+          {% endif %}
+        </div>
+        <div class="modal-footer border-0">
+          <form method="post" action="{% url 'app_faq:faq_toggle_active' faq.id %}" class="w-100">
+            {% csrf_token %}
+            <div class="d-flex">
+              <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+              <button type="submit"
+                class="btn {% if faq.is_active %}
+                  btn-warning
+                {% else %}
+                  btn-success
+                {% endif %} flex-fill ml-1">
+                بله، ادامه بده
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ═══ مودال حذف پرسش ═══ #}
+  <div class="modal fade" id="deleteFaqModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-color:#f5c6cb;">
+        <div class="modal-header border-0" style="background-color:#f8d7da;">
+          <h5 class="modal-title fw-bold text-danger"><i class="fe fe-alert-triangle mr-2"></i> حذف پرسش</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2">
+            آیا از حذف کامل پرسش
+            <strong>#{{ faq.id }}</strong>
+            مطمئن هستید؟
+          </p>
+          <ul class="small text-muted mb-0">
+            <li>تمام پاسخ‌ها ({{ answers|length }} مورد) حذف می‌شوند</li>
+            <li>تمام واکنش‌ها (لایک/دیس‌لایک) حذف می‌شوند</li>
+            <li>
+              این عملیات <strong class="text-danger">قابل بازگشت نیست</strong>
+            </li>
+          </ul>
+        </div>
+        <div class="modal-footer border-0">
+          <form method="post" action="{% url 'app_faq:faq_delete' faq.id %}" class="w-100">
+            {% csrf_token %}
+            <div class="d-flex">
+              <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+              <button type="submit" class="btn btn-danger flex-fill ml-1"><i class="fe fe-trash-2 mr-1"></i> بله، حذف کن</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ═══ مودال‌های حذف پاسخ ═══ #}
+  {% for a in answers %}
+    <div class="modal fade" id="deleteAnswerModal{{ a.id }}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-color:#f5c6cb;">
+          <div class="modal-header border-0" style="background-color:#f8d7da;">
+            <h5 class="modal-title fw-bold text-danger"><i class="fe fe-alert-triangle mr-2"></i> حذف پاسخ</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-2">آیا از حذف این پاسخ مطمئن هستید؟</p>
+            <p class="small text-muted mb-0">«{{ a.answer|truncatechars:100 }}»</p>
+            <ul class="small text-muted mb-0 mt-2">
+              <li>تمام واکنش‌ها ({{ a.like_count|add:a.dislike_count }} مورد) حذف می‌شوند</li>
+              <li>
+                این عملیات <strong class="text-danger">قابل بازگشت نیست</strong>
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer border-0">
+            <form method="post" action="{% url 'app_faq:answer_delete' a.id %}" class="w-100">
+              {% csrf_token %}
+              <div class="d-flex">
+                <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+                <button type="submit" class="btn btn-danger flex-fill ml-1"><i class="fe fe-trash-2 mr-1"></i> بله، حذف کن</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+{% endblock %}
+{% block js %}
+{% endblock %}
