@@ -122,3 +122,73 @@ def certificate__reject(cert: JobCertificate):
     cert.verified_at = None
     cert.save(update_fields=["is_verified", "verified_at", "updated_at"])
     return True
+
+
+
+
+
+# ═══════════════════════════════════════════════════════════
+# MANAGER — Store (create / update)
+# ═══════════════════════════════════════════════════════════
+@transaction.atomic
+def manager__store(request, cleaned_user, cleaned_profile, item=None):
+    """ایجاد/ویرایش مدیر — از user__store استفاده می‌کند ولی is_staff/nature را قطعی می‌کند."""
+    # اطمینان از مقادیر الزامی مدیر
+    cleaned_user["is_staff"] = True
+    cleaned_user["nature"] = "manager"
+
+    user, generated_password = user__store(
+        request, cleaned_user, cleaned_profile, item=item
+    )
+
+    # در صورت وجود، is_superuser از قبل در cleaned_user هست و در user__store اعمال شده
+    return user, generated_password
+
+
+# ═══════════════════════════════════════════════════════════
+# MANAGER — Delete
+# ═══════════════════════════════════════════════════════════
+@transaction.atomic
+def manager__delete(manager_id, current_user):
+    """حذف مدیر — جلوگیری از حذف خود."""
+    if current_user.id == manager_id:
+        raise ValueError("نمی‌توانید حساب خودتان را حذف کنید")
+
+    item = User.objects.select_for_update().filter(id=manager_id).first()
+    if not item:
+        raise ValueError("مدیر یافت نشد")
+
+    # جلوگیری از حذف آخرین سوپریوزر
+    if item.is_superuser:
+        other_superusers = User.objects.filter(
+            is_superuser=True, is_active=True
+        ).exclude(pk=item.pk).count()
+        if other_superusers == 0:
+            raise ValueError("نمی‌توانید آخرین سوپریوزر را حذف کنید")
+
+    item.delete()
+
+
+# ═══════════════════════════════════════════════════════════
+# MANAGER — Toggle active
+# ═══════════════════════════════════════════════════════════
+def manager__toggle_active(manager_id, current_user):
+    """فعال/غیرفعال — جلوگیری از toggle خود + آخرین سوپریوزر."""
+    if current_user.id == manager_id:
+        raise ValueError("نمی‌توانید وضعیت حساب خودتان را تغییر دهید")
+
+    item = User.objects.filter(id=manager_id).first()
+    if not item:
+        raise ValueError("مدیر یافت نشد")
+
+    # اگر در حال غیرفعال کردن آخرین سوپریوزر فعال هستیم → جلوگیری
+    if item.is_superuser and item.is_active:
+        other_superusers = User.objects.filter(
+            is_superuser=True, is_active=True
+        ).exclude(pk=item.pk).count()
+        if other_superusers == 0:
+            raise ValueError("نمی‌توانید آخرین سوپریوزر فعال را غیرفعال کنید")
+
+    item.is_active = not item.is_active
+    item.save(update_fields=["is_active", "updated_at"])
+    return item.is_active

@@ -124,3 +124,34 @@ def user__clean__data(post, files=None, current_user=None):
     }
 
     return cleaned_user, cleaned_profile, [], generated_password
+
+
+
+
+# ═══════════════════════════════════════════════════════════
+# MANAGER — Clean
+# ═══════════════════════════════════════════════════════════
+def manager__clean__data(post, files=None, current_user=None):
+    """اعتبارسنجی فرم مدیر. از user__clean__data استفاده می‌کند و مقادیر مدیر را cut می‌زند.
+
+    خروجی: (cleaned_user, cleaned_profile, errors, generated_password)
+    """
+    cleaned_user, cleaned_profile, errors, gen_pass = user__clean__data(
+        post, files, current_user
+    )
+
+    if errors:
+        return {}, {}, errors, None
+
+    # ─── فیلدهای مخصوص مدیر ──────────────────────────
+    cleaned_user["is_staff"] = True
+    cleaned_user["nature"] = "manager"
+    cleaned_user["is_superuser"] = str(
+        post.get("is_superuser", "")
+    ).lower() in ("on", "true", "1")
+
+    # ─── نقش‌ها الزامی ──────────────────────────────────
+    if not cleaned_user.get("role_ids"):
+        return {}, {}, ["حداقل یک نقش باید انتخاب شود"], None
+
+    return cleaned_user, cleaned_profile, [], gen_pass

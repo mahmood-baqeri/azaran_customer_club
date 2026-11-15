@@ -62,16 +62,16 @@
 
       {% if user.is_authenticated %}
         <div class="dropdown main-profile-menu">
-          <a class="d-flex" href="#"><span class="main-img-user"><img alt="avatar" src="/media/{{ user.photo }}" onerror="this.onerror=null;this.src='{% static '/' %}adminAssets/img/users/avatar.png';" /></span></a>
+          <a class="d-flex" href="#"><span class="main-img-user"><img alt="avatar" src="/media/{{ user.avatar }}" onerror="this.onerror=null;this.src='{% static '/' %}adminAssets/img/users/avatar.png';" /></span></a>
           <div class="dropdown-menu">
             <div class="header-navheading">
               <h6 class="main-notification-title">{{ user.first_name }} {{ user.last_name }}</h6>
               <p class="main-notification-text">{{ user.get_job_display }}</p>
             </div>
 
-            <a class="dropdown-item border-top" href="{% url 'app_user:admin_profile' %}"><i class="fe fe-user"></i> پروفایل</a>
+            <a class="dropdown-item border-top" href="{% url 'app_user:manager_profile' %}"><i class="fe fe-user"></i> پروفایل</a>
 
-            <a class="dropdown-item" href="{% url 'app_user:admin_change_pass' %}"><i class="fe fe-lock"></i> تغییر رمزعبور</a>
+            <a class="dropdown-item" href="{% url 'app_user:manager_change_password' %}"><i class="fe fe-lock"></i> تغییر رمزعبور</a>
 
             <a class="dropdown-item" href="{% url 'app_user:admin_logout' %}"><i class="fe fe-power"></i> خروج</a>
           </div>
@@ -118,16 +118,16 @@
 
         {% if user.is_authenticated %}
           <div class="dropdown main-profile-menu">
-            <a class="d-flex" href="#"><span class="main-img-user"><img alt="avatar" src="/media/{{ user.photo }}" onerror="this.onerror=null;this.src='{% static '/' %}adminAssets/img/users/avatar.png';" /></span></a>
+            <a class="d-flex" href="#"><span class="main-img-user"><img alt="avatar" src="/media/{{ user.avatar }}" onerror="this.onerror=null;this.src='{% static '/' %}adminAssets/img/users/avatar.png';" /></span></a>
             <div class="dropdown-menu">
               <div class="header-navheading">
                 <h6 class="main-notification-title">{{ user.first_name }} {{ user.last_name }}</h6>
                 <p class="main-notification-text">{{ user.get_job_display }}</p>
               </div>
 
-              <a class="dropdown-item border-top" href="{% url 'app_user:admin_profile' %}"><i class="fe fe-user"></i> پروفایل</a>
+              <a class="dropdown-item border-top" href="{% url 'app_user:manager_profile' %}"><i class="fe fe-user"></i> پروفایل</a>
 
-              <a class="dropdown-item" href="{% url 'app_user:admin_change_pass' %}"><i class="fe fe-lock"></i> تغییر رمزعبور</a>
+              <a class="dropdown-item" href="{% url 'app_user:manager_change_password' %}"><i class="fe fe-lock"></i> تغییر رمزعبور</a>
 
               <a class="dropdown-item" href="{% url 'app_user:admin_logout' %}"><i class="fe fe-power"></i> خروج</a>
             </div>

@@ -1,0 +1,114 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/filter_form.html' %}
+            {% endif %}
+
+            <div class="table-responsive mt-3">
+              <table class="table-hover align-middle table text-nowrap table-striped mg-b-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>مدیر</th>
+                    <th>موبایل</th>
+                    <th>نقش‌ها</th>
+                    <th>دسترسی</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ عضویت</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for m in data.all %}
+                    <tr>
+                      <td>{{ m.id }}</td>
+                      <td>
+                        <div class="d-flex align-items-center">
+                          {% if m.avatar %}
+                            <img src="{{ m.avatar.url }}" width="32" height="32" class="rounded-circle mr-2 object-fit-cover border" alt="" />
+                          {% else %}
+                            <div class="rounded-circle mr-2 d-flex align-items-center justify-content-center text-primary" style="width:32px;height:32px;background-color:#cce5ff;font-size:12px;">
+                              <i class="fe fe-user"></i>
+                            </div>
+                          {% endif %}
+                          <div>
+                            <strong>{{ m.full_name|default:'—' }}</strong>
+                            {% if m.email %}
+                              <br /><small class="text-muted" style="direction:ltr">{{ m.email }}</small>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <span style="direction:ltr">{{ m.mobile }}</span>
+                      </td>
+                      <td>
+                        {% if m.roles_list %}
+                          {% for role in m.roles_list %}
+                            <span class="badge badge-primary mr-1 mb-1">{{ role.title }}</span>
+                          {% endfor %}
+                        {% else %}
+                          <span class="text-muted small">بدون نقش</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if m.is_superuser %}
+                          <span class="badge badge-danger"><i class="fe fe-shield mr-1"></i>سوپریوزر</span>
+                        {% else %}
+                          <span class="badge badge-info"><i class="fe fe-user-check mr-1"></i>مدیر</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if m.is_active %}
+                          <span class="badge badge-success"><i class="fe fe-check mr-1"></i>فعال</span>
+                        {% else %}
+                          <span class="badge badge-secondary"><i class="fe fe-slash mr-1"></i>غیرفعال</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ m.date_joined|date:'Y/m/d' }}</small>
+                      </td>
+                      <td class="text-right">
+                        <a href="{% url 'app_user:manager_detail' m.id %}" class="btn btn-sm btn-outline-primary"><i class="fe fe-eye mr-1"></i> جزئیات</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="8" class="text-center text-muted py-4">
+                        <i class="fe fe-inbox d-block mb-2" style="font-size:2rem;"></i>
+                        مدیری یافت نشد
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block js %}
+
+{% endblock %}
