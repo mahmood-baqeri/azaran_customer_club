@@ -1,5 +1,7 @@
 from django.db import models
 
+from applications.core.forms.helper import pick_value
+from applications.core.forms.input_items import make_input_item
 from applications.core.keyValue import Applications
 
 
@@ -39,21 +41,30 @@ class Role(models.Model):
 #############################################################################
 #############################################################################
 #############################################################################
-def formFields(item=None):
+def formFields(raw_data, item=None):
     select2 = []
     for ac in Actions.objects.all():
         select2.append({'label': ac.title, 'id': ac.id, 'model': ac.get_model_display()})
 
     data = [
-        {
-            'l': 'نام',
-            'n': 'title',
-            'v': item.title if item else '',
-            'id': 'thetitle',
-            'r': None,
-            'c': 'col-md-12',
-            'b': 'textBox.html'
-        },
+        make_input_item(
+            label="نام", 
+            name="title", 
+            input_id="id_title",
+            value=pick_value(raw_data, item, "title"),
+            required=True, 
+            col_class="col-md-12",
+        ),
+                
+        # {
+        #     'l': 'نام',
+        #     'n': 'title',
+        #     'v': item.title if item else '',
+        #     'id': 'thetitle',
+        #     'r': None,
+        #     'c': 'col-md-12',
+        #     'b': 'textBox.html'
+        # },
         {
             'l': 'نقش',
             'n': 'action_id',

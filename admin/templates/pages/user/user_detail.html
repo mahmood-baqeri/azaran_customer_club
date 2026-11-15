@@ -13,60 +13,63 @@
         {% include 'layout/pageHeader.html' %}
 
         <div class="row g-3">
-          <!-- ═══════ ستون چپ: اطلاعات ═══════ -->
+          <!-- ستون چپ -->
           <div class="col-md-7">
             <!-- اطلاعات کاربر -->
-            <div class="card custom-card mb-3">
-              <div class="card-header fw-bold">اطلاعات کاربر</div>
+            <div class="card custom-card mb-3 shadow-sm">
               <div class="card-body">
-                <div class="d-flex align-items-center mb-3">
+                <div class="d-flex align-items-center">
                   {% if user.avatar %}
-                    <img src="{{ user.avatar.url }}" width="64" height="64" class="rounded-circle me-3 object-fit-cover" alt="" />
+                    <img src="{{ user.avatar.url }}" width="72" height="72" class="rounded-circle mr-3 object-fit-cover border" alt="" />
+                  {% else %}
+                    <div class="rounded-circle mr-3 d-flex align-items-center justify-content-center text-primary" style="width:72px;height:72px;font-size:1.8rem;background-color:#cce5ff;">
+                      <i class="fe fe-user"></i>
+                    </div>
                   {% endif %}
-                  <div>
+                  <div class="flex-grow-1">
                     <h5 class="mb-1">{{ user.full_name }}</h5>
-                    <p class="mb-0 text-muted small">
-                      {{ user.get_nature_display }} ·{% if user.is_ostadkar %}
-                        استادکار
+                    <div class="d-flex flex-wrap align-items-center">
+                      <span class="badge badge-secondary mr-1">{{ user.get_nature_display }}</span>
+                      {% if user.is_ostadkar %}
+                        <span class="badge badge-primary mr-1"><i class="fe fe-award mr-1"></i>استادکار</span>
                       {% else %}
-                        کاردان
+                        <span class="badge badge-light text-dark border mr-1"><i class="fe fe-user mr-1"></i>کاردان</span>
                       {% endif %}
-                    </p>
+                      {% if user.is_mobile_verified %}
+                        <span class="badge badge-success mr-1"><i class="fe fe-check mr-1"></i>موبایل تایید</span>
+                      {% else %}
+                        <span class="badge badge-warning mr-1"><i class="fe fe-alert-triangle mr-1"></i>موبایل تایید نشده</span>
+                      {% endif %}
+                      {% if user.is_active %}
+                        <span class="badge badge-success">فعال</span>
+                      {% else %}
+                        <span class="badge badge-secondary">غیرفعال</span>
+                      {% endif %}
+                    </div>
                   </div>
                 </div>
+              </div>
+            </div>
 
+            <!-- جزئیات حساب -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold d-flex align-items-center">
+                <i class="fe fe-user mr-2 text-primary"></i>
+                <span>جزئیات حساب</span>
+              </div>
+              <div class="card-body">
                 <dl class="row mb-0">
-                  <dt class="col-4">موبایل</dt>
-                  <dd class="col-8">
-                    <span style="direction: ltr">{{ user.mobile }}</span>
-                    {% if user.is_mobile_verified %}
-                      <span class="badge bg-success ms-1">تایید شده</span>
-                    {% else %}
-                      <span class="badge bg-warning text-dark ms-1">تایید نشده</span>
-                    {% endif %}
-                  </dd>
-
+                  <dt class="col-4 text-muted">موبایل</dt>
+                  <dd class="col-8"><span style="direction:ltr">{{ user.mobile }}</span></dd>
                   {% if user.email %}
-                    <dt class="col-4">ایمیل</dt>
-                    <dd class="col-8" style="direction: ltr">{{ user.email }}</dd>
+                    <dt class="col-4 text-muted">ایمیل</dt>
+                    <dd class="col-8"><span style="direction:ltr">{{ user.email }}</span></dd>
                   {% endif %}
-
-                  <dt class="col-4">کد معرف</dt>
-                  <dd class="col-8"><small style="direction: ltr">{{ user.referral_code|default:'—' }}</small></dd>
-
-                  <dt class="col-4">وضعیت</dt>
-                  <dd class="col-8">
-                    {% if user.is_active %}
-                      <span class="badge bg-success">فعال</span>
-                    {% else %}
-                      <span class="badge bg-secondary">غیرفعال</span>
-                    {% endif %}
-                  </dd>
-
-                  <dt class="col-4">تاریخ عضویت</dt>
+                  <dt class="col-4 text-muted">کد معرف</dt>
+                  <dd class="col-8"><code>{{ user.referral_code|default:'—' }}</code></dd>
+                  <dt class="col-4 text-muted">تاریخ عضویت</dt>
                   <dd class="col-8">{{ user.date_joined|date:'Y/m/d H:i' }}</dd>
-
-                  <dt class="col-4">آخرین فعالیت</dt>
+                  <dt class="col-4 text-muted">آخرین فعالیت</dt>
                   <dd class="col-8">{{ user.last_active_at|date:'Y/m/d H:i' }}</dd>
                 </dl>
               </div>
@@ -74,195 +77,391 @@
 
             <!-- پروفایل -->
             {% if profile %}
-              <div class="card custom-card mb-3">
-                <div class="card-header fw-bold">اطلاعات پروفایل</div>
+              <div class="card custom-card mb-3 shadow-sm">
+                <div class="card-header fw-bold d-flex align-items-center">
+                  <i class="fe fe-id-card mr-2 text-info"></i>
+                  <span>اطلاعات پروفایل</span>
+                </div>
                 <div class="card-body">
                   <dl class="row mb-0">
-                    <dt class="col-4">کد ملی</dt>
-                    <dd class="col-8"><span style="direction: ltr">{{ profile.national_code|default:'—' }}</span></dd>
-
-                    <dt class="col-4">تاریخ تولد</dt>
+                    <dt class="col-4 text-muted">کد ملی</dt>
+                    <dd class="col-8"><span style="direction:ltr">{{ profile.national_code|default:'—' }}</span></dd>
+                    <dt class="col-4 text-muted">تاریخ تولد</dt>
                     <dd class="col-8">{{ profile.birth_date|date:'Y/m/d'|default:'—' }}</dd>
-
-                    <dt class="col-4">جنسیت</dt>
+                    <dt class="col-4 text-muted">جنسیت</dt>
                     <dd class="col-8">{{ profile.get_gender_display|default:'—' }}</dd>
-
-                    <dt class="col-4">استان</dt>
-                    <dd class="col-8">{{ profile.province.name|default:'—' }}</dd>
-
-                    <dt class="col-4">شهر</dt>
-                    <dd class="col-8">{{ profile.city.name|default:'—' }}</dd>
-
-                    <dt class="col-4">آدرس</dt>
+                    <dt class="col-4 text-muted">استان / شهر</dt>
+                    <dd class="col-8">
+                      {{ profile.province.name|default:'—' }}
+                      {% if profile.city %}
+                        / {{ profile.city.name }}
+                      {% endif %}
+                    </dd>
+                    <dt class="col-4 text-muted">آدرس</dt>
                     <dd class="col-8">{{ profile.address|default:'—' }}</dd>
-
-                    <dt class="col-4">کد پستی</dt>
-                    <dd class="col-8"><span style="direction: ltr">{{ profile.post_code|default:'—' }}</span></dd>
-
-                    <dt class="col-4">عنوان شغلی</dt>
+                    <dt class="col-4 text-muted">کد پستی</dt>
+                    <dd class="col-8"><span style="direction:ltr">{{ profile.post_code|default:'—' }}</span></dd>
+                    <dt class="col-4 text-muted">عنوان شغلی</dt>
                     <dd class="col-8">{{ profile.job_title|default:'—' }}</dd>
-
-                    <dt class="col-4">نام شرکت</dt>
+                    <dt class="col-4 text-muted">نام شرکت</dt>
                     <dd class="col-8">{{ profile.company_name|default:'—' }}</dd>
                   </dl>
                 </div>
               </div>
             {% endif %}
 
-            <!-- مدارک شغلی -->
-            <div class="card custom-card mb-3">
-              <div class="card-header fw-bold">مدارک شغلی</div>
-              <div class="card-body">
-                <table class="table table-sm align-middle mb-0">
-                  <thead>
-                    <tr>
-                      <th>نوع</th>
-                      <th>فایل</th>
-                      <th>حجم</th>
-                      <th>وضعیت</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for cert in certificates %}
-                      <tr>
-                        <td>{{ cert.get_type_display }}</td>
-                        <td>
-                          {% if cert.file %}
-                            <a href="{{ cert.file.url }}" target="_blank" class="btn btn-sm btn-outline-info">مشاهده</a>
-                          {% else %}
-                            —
-                          {% endif %}
-                        </td>
-                        <td>
-                          <small>{{ cert.file_size|filesizeformat }}</small>
-                        </td>
-                        <td>
-                          {% if cert.is_verified %}
-                            <span class="badge bg-success">تایید شده</span>
-                          {% else %}
-                            <span class="badge bg-warning text-dark">در انتظار تایید</span>
-                          {% endif %}
-                        </td>
-                        <td class="text-end">
-                          {% if not cert.is_verified %}
-                            <form method="post" class="d-inline" action="{% url 'app_user:user_certificate_approve' user.id cert.id %}">
-                              {% csrf_token %}
-                              <button class="btn btn-sm btn-outline-success">تایید</button>
-                            </form>
-                          {% else %}
-                            <form method="post" class="d-inline" action="{% url 'app_user:user_certificate_reject' user.id cert.id %}" onsubmit="return confirm('رد این مدرک؟');">
-                              {% csrf_token %}
-                              <button class="btn btn-sm btn-outline-danger">رد</button>
-                            </form>
-                          {% endif %}
-                        </td>
-                      </tr>
-                    {% empty %}
-                      <tr>
-                        <td colspan="5" class="text-center text-muted py-3">مدرکی ثبت نشده است</td>
-                      </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
+            <!-- مدارک -->
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-award mr-2 text-warning"></i>
+                مدارک شغلی ({{ certificates|length }})
+              </div>
+              <div class="card-body p-0">
+                {% if certificates %}
+                  <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                      <thead class="thead-light">
+                        <tr>
+                          <th>نوع</th>
+                          <th>حجم</th>
+                          <th>وضعیت</th>
+                          <th style="width:180px" class="text-right">اکشن</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for cert in certificates %}
+                          <tr>
+                            <td>
+                              <strong>{{ cert.get_type_display }}</strong>
+                            </td>
+                            <td>
+                              {% if cert.file %}
+                                <a href="{{ cert.file.url }}" target="_blank" class="btn btn-sm btn-outline-info"><i class="fe fe-eye mr-1"></i> مشاهده</a>
+                                <small class="text-muted ml-1">{{ cert.file_size|filesizeformat }}</small>
+                              {% else %}
+                                <span class="text-muted">—</span>
+                              {% endif %}
+                            </td>
+                            <td>
+                              {% if cert.is_verified %}
+                                <span class="badge badge-success"><i class="fe fe-check mr-1"></i>تایید شده</span>
+                              {% else %}
+                                <span class="badge badge-warning"><i class="fe fe-clock mr-1"></i>در انتظار</span>
+                              {% endif %}
+                            </td>
+                            <td class="text-right">
+                              {% if not cert.is_verified %}
+                                <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#approveCertModal{{ cert.id }}"><i class="fe fe-check mr-1"></i> تایید</button>
+                              {% else %}
+                                <button type="button" class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#rejectCertModal{{ cert.id }}"><i class="fe fe-x mr-1"></i> رد</button>
+                              {% endif %}
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                {% else %}
+                  <div class="text-center text-muted py-4">
+                    <i class="fe fe-file-x d-block mb-2" style="font-size:2rem;"></i>
+                    مدرکی ثبت نشده است
+                  </div>
+                {% endif %}
               </div>
             </div>
           </div>
 
-          <!-- ═══════ ستون راست: اکشن‌ها ═══════ -->
+          <!-- ستون راست -->
           <div class="col-md-5">
             <!-- امتیاز -->
             {% if score %}
-              <div class="card custom-card mb-3">
-                <div class="card-header fw-bold">امتیاز</div>
-                <div class="card-body">
-                  <dl class="row mb-0">
-                    <dt class="col-6">موجودی فعلی</dt>
-                    <dd class="col-6 text-end"><strong>{{ score.current_balance }}</strong></dd>
-
-                    <dt class="col-6">کل کسب‌شده</dt>
-                    <dd class="col-6 text-end text-success">{{ score.total_earned }}</dd>
-
-                    <dt class="col-6">کل خرج‌شده</dt>
-                    <dd class="col-6 text-end text-danger">{{ score.total_spent }}</dd>
-                  </dl>
+              <div class="card custom-card mb-3 shadow-sm border-0">
+                <div class="card-body text-center py-4 rounded" style="background-color:#cce5ff;">
+                  <div class="mb-2 text-primary" style="font-size:2rem;">
+                    <i class="fe fe-star"></i>
+                  </div>
+                  <div class="text-muted small">موجودی فعلی</div>
+                  <h2 class="mb-3 fw-bold text-primary">{{ score.current_balance }}</h2>
+                  <div class="row text-center">
+                    <div class="col-6">
+                      <div class="border rounded p-2 bg-white">
+                        <div class="text-muted small">کل کسب‌شده</div>
+                        <strong class="text-success">{{ score.total_earned }}</strong>
+                      </div>
+                    </div>
+                    <div class="col-6">
+                      <div class="border rounded p-2 bg-white">
+                        <div class="text-muted small">کل خرج‌شده</div>
+                        <strong class="text-danger">{{ score.total_spent }}</strong>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             {% endif %}
 
-            <!-- اکشن‌ها -->
-            <div class="card custom-card mb-3">
-              <div class="card-header fw-bold">اکشن‌ها</div>
-              <div class="card-body d-grid gap-2">
-                <a href="{% url 'app_user:user_update' user.id %}" class="btn btn-sm btn-outline-primary">ویرایش اطلاعات</a>
-
+            <!-- اکشن‌های اصلی -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-zap mr-2 text-primary"></i>
+                اکشن‌های اصلی
+              </div>
+              <div class="card-body">
+                <a href="{% url 'app_user:user_update' user.id %}" class="btn btn-primary btn-block mb-2"><i class="fe fe-edit-2 mr-2"></i> ویرایش اطلاعات کاربر</a>
+                {% if score %}
+                  <a href="{% url 'app_score:user_score_detail' user.id %}" class="btn btn-outline-info btn-block mb-2"><i class="fe fe-bar-chart-2 mr-2"></i> تاریخچه امتیازات</a>
+                {% endif %}
                 {% if not user.is_mobile_verified %}
-                  <form method="post" action="{% url 'app_user:user_verify_mobile' user.id %}">
-                    {% csrf_token %}
-                    <button class="btn btn-sm btn-outline-success">تایید موبایل</button>
-                  </form>
+                  <button type="button" class="btn btn-outline-success btn-block" data-toggle="modal" data-target="#verifyMobileModal"><i class="fe fe-check-circle mr-2"></i> تایید موبایل</button>
                 {% endif %}
-
-                {% if request.user.id != user.id %}
-                  <form method="post"
-                    action="{% url 'app_user:user_toggle_active' user.id %}"
-                    onsubmit="return confirm('{% if user.is_active %}
-                      
-                      غیرفعال
-
-                    {% else %}
-                      
-                      فعال
-
-                    {% endif %} کردن این کاربر؟');">
-                    {% csrf_token %}
-                    <button class="btn btn-sm {% if user.is_active %}
-                        
-                        btn-outline-warning
-
-                      {% else %}
-                        
-                        btn-outline-success
-
-                      {% endif %}">
-                      {% if user.is_active %}
-                        غیرفعال کردن
-                      {% else %}
-                        فعال کردن
-                      {% endif %}
-                    </button>
-                  </form>
-                {% endif %}
-
-                <a href="{% url 'app_user:user_index' %}" class="btn btn-sm btn-outline-secondary">بازگشت به لیست</a>
               </div>
             </div>
 
             <!-- دستگاه‌ها -->
-            <div class="card custom-card">
-              <div class="card-header fw-bold">دستگاه‌های فعال</div>
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-smartphone mr-2 text-info"></i>
+                دستگاه‌های فعال ({{ devices|length }})
+              </div>
               <div class="card-body">
-                {% for d in devices %}
-                  <div class="border-bottom py-2">
-                    <strong>{{ d.device_name }}</strong>
-                    <span class="badge bg-secondary ms-1">{{ d.get_device_type_display }}</span>
-                    <div class="small text-muted">
-                      IP: <span style="direction: ltr">{{ d.ip_address }}</span>
-                      · {{ d.last_active|date:'Y/m/d H:i' }}
+                {% if devices %}
+                  {% for d in devices %}
+                    <div class="d-flex align-items-start border-bottom py-2 {% if forloop.last %}border-0 pb-0{% endif %}">
+                      <div class="flex-shrink-0 mr-2">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-info" style="width:32px;height:32px;background-color:#d1ecf1;">
+                          <i class="fe
+                                  {% if d.device_type == 'mobile' %}
+                              fe-smartphone
+
+                            {% elif d.device_type == 'tablet' %}
+                              fe-tablet
+
+                            {% elif d.device_type == 'desktop' %}
+                              fe-monitor
+
+                            {% elif d.device_type == 'bot' %}
+                              fe-cpu
+
+                            {% else %}
+                              fe-help-circle
+                            {% endif %}">
+
+                          </i>
+                        </div>
+                      </div>
+                      <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between">
+                          <strong class="small">{{ d.device_name }}</strong>
+                          {% if d.is_trusted %}
+                            <span class="badge badge-success"><i class="fe fe-shield mr-1"></i>معتمد</span>
+                          {% endif %}
+                        </div>
+                        <div class="small text-muted">
+                          {{ d.get_device_type_display }} · <span style="direction:ltr">{{ d.ip_address }}</span>
+                        </div>
+                        <small class="text-muted"><i class="fe fe-clock mr-1"></i>{{ d.last_active|date:'Y/m/d H:i' }}</small>
+                      </div>
                     </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center text-muted py-3">
+                    <i class="fe fe-monitor d-block mb-2" style="font-size:1.6rem;"></i>
+                    دستگاه فعالی وجود ندارد
                   </div>
-                {% empty %}
-                  <p class="text-muted mb-0">دستگاه فعالی وجود ندارد</p>
-                {% endfor %}
+                {% endif %}
               </div>
             </div>
+
+            <!-- ناحیه خطر -->
+            {% if request.user.id != user.id %}
+              <div class="card custom-card shadow-sm" style="border-color:#f5c6cb;">
+                <div class="card-header fw-bold d-flex align-items-center text-danger" style="background-color:#f8d7da; border-color:#f5c6cb;">
+                  <i class="fe fe-alert-triangle mr-2"></i>
+                  <span>ناحیه خطر</span>
+                </div>
+                <div class="card-body">
+                  <p class="small text-muted mb-2">
+                    {% if user.is_active %}
+                      با غیرفعال‌سازی، کاربر نمی‌تواند وارد سیستم شود.
+                    {% else %}
+                      با فعال‌سازی، کاربر دوباره به سیستم دسترسی پیدا می‌کند.
+                    {% endif %}
+                  </p>
+                  <button type="button"
+                    class="btn btn-sm {% if user.is_active %}
+                      btn-outline-warning
+                    {% else %}
+                      btn-outline-success
+                    {% endif %} btn-block"
+                    data-toggle="modal"
+                    data-target="#toggleActiveModal">
+                    <i class="fe {% if user.is_active %}
+                        fe-slash
+                      {% else %}
+                        fe-check-circle
+                      {% endif %} mr-1">
+
+                    </i>
+                    {% if user.is_active %}
+                      غیرفعال کردن
+                    {% else %}
+                      فعال کردن
+                    {% endif %}
+                  </button>
+                </div>
+              </div>
+            {% endif %}
+
+            <a href="{% url 'app_user:user_index' %}" class="btn btn-link btn-sm text-secondary btn-block mt-2"><i class="fe fe-arrow-right mr-1"></i> بازگشت به لیست کاربران</a>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  {# ═══ مودال تایید موبایل ═══ #}
+  {% if not user.is_mobile_verified %}
+    <div class="modal fade" id="verifyMobileModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold"><i class="fe fe-check-circle text-success mr-2"></i> تایید موبایل</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-0">
+              آیا موبایل <strong style="direction:ltr">{{ user.mobile }}</strong> را دستی تایید می‌کنید؟
+            </p>
+          </div>
+          <div class="modal-footer border-0">
+            <form method="post" action="{% url 'app_user:user_verify_mobile' user.id %}" class="w-100">
+              {% csrf_token %}
+              <div class="d-flex">
+                <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+                <button type="submit" class="btn btn-success flex-fill ml-1"><i class="fe fe-check mr-1"></i> بله، تایید کن</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# ═══ مودال فعال/غیرفعال ═══ #}
+  {% if request.user.id != user.id %}
+    <div class="modal fade" id="toggleActiveModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold">
+              <i class="fe fe-alert-triangle text-warning mr-2"></i>
+              {% if user.is_active %}
+                غیرفعال‌سازی
+              {% else %}
+                فعال‌سازی
+              {% endif %}حساب
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-0">
+              آیا از{% if user.is_active %}
+                غیرفعال کردن
+              {% else %}
+                فعال کردن
+              {% endif %}حساب
+              <strong>{{ user.full_name }}</strong> مطمئن هستید؟
+            </p>
+          </div>
+          <div class="modal-footer border-0">
+            <form method="post" action="{% url 'app_user:user_toggle_active' user.id %}" class="w-100">
+              {% csrf_token %}
+              <div class="d-flex">
+                <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+                <button type="submit"
+                  class="btn {% if user.is_active %}
+                    btn-warning
+                  {% else %}
+                    btn-success
+                  {% endif %} flex-fill ml-1">
+                  <i class="fe {% if user.is_active %}
+                      fe-slash
+                    {% else %}
+                      fe-check
+                    {% endif %} mr-1">
+
+                  </i> بله، ادامه بده
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# ═══ مودال مدارک ═══ #}
+  {% for cert in certificates %}
+    {% if not cert.is_verified %}
+      <div class="modal fade" id="approveCertModal{{ cert.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header border-0">
+              <h5 class="modal-title fw-bold"><i class="fe fe-check-circle text-success mr-2"></i> تایید مدرک</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+              <p class="mb-2">آیا این مدرک را تایید می‌کنید؟</p>
+              <p class="small text-muted mb-0">
+                <strong>{{ cert.get_type_display }}</strong>
+              </p>
+              <div class="alert alert-info small mt-3 mb-0">
+                <i class="fe fe-star mr-1"></i> با تایید مدرک، امتیاز مربوطه به کاربر اعطا می‌شود.
+              </div>
+            </div>
+            <div class="modal-footer border-0">
+              <form method="post" action="{% url 'app_user:user_certificate_approve' user.id cert.id %}" class="w-100">
+                {% csrf_token %}
+                <div class="d-flex">
+                  <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+                  <button type="submit" class="btn btn-success flex-fill ml-1"><i class="fe fe-check mr-1"></i> بله، تایید کن</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="modal fade" id="rejectCertModal{{ cert.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header border-0">
+              <h5 class="modal-title fw-bold"><i class="fe fe-x-circle text-danger mr-2"></i> رد مدرک</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+              <p class="mb-2">آیا این مدرک را رد می‌کنید؟</p>
+              <p class="small text-muted mb-0">
+                <strong>{{ cert.get_type_display }}</strong>
+              </p>
+              <div class="alert alert-warning small mt-3 mb-0">
+                <i class="fe fe-alert-triangle mr-1"></i> امتیاز قبلی استرداد نمی‌شود.
+              </div>
+            </div>
+            <div class="modal-footer border-0">
+              <form method="post" action="{% url 'app_user:user_certificate_reject' user.id cert.id %}" class="w-100">
+                {% csrf_token %}
+                <div class="d-flex">
+                  <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+                  <button type="submit" class="btn btn-danger flex-fill ml-1"><i class="fe fe-x mr-1"></i> بله، رد کن</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
 {% endblock %}
-
 {% block js %}
-
 {% endblock %}

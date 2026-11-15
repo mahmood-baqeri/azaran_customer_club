@@ -1,0 +1,101 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/filter_form.html' %}
+            {% endif %}
+
+            <div class="table-responsive mt-3">
+              <table class="table-hover align-middle table text-nowrap table-striped mg-b-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>نوع</th>
+                    <th>عنوان</th>
+                    <th>صاحب</th>
+                    <th>آدرس</th>
+                    <th>متره</th>
+                    <th>وضعیت</th>
+                    <th>همکاران</th>
+                    <th>تاریخ</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for p in data.all %}
+                    <tr>
+                      <td>{{ p.id }}</td>
+                      <td>
+                        <small>{{ p.get_type_display }}</small>
+                      </td>
+                      <td>
+                        <strong>{{ p.title|default:'—' }}</strong>
+                        {% if p.completion_at %}
+                          <br /><small class="text-muted">اتمام: {{ p.completion_at|date:'Y/m/d' }}</small>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {{ p.user.full_name|default:'—' }}<br />
+                        <small class="text-muted" style="direction:ltr">{{ p.user.mobile }}</small>
+                      </td>
+                      <td>
+                        <small>{{ p.address|default:'—'|truncatechars:30 }}</small>
+                      </td>
+                      <td>
+                        <small>واحد: {{ p.unit_count|default:'0' }} | شیرآبی: {{ p.number_water_taps|default:'0' }} | شیرگازی: {{ p.number_gas_taps|default:'0' }} | اتصالات: {{ p.number_connections|default:'0' }} | لوله: {{ p.pipe_length|default:'0' }}m</small>
+                      </td>
+                      <td>
+                        {% if p.status == 'pending' %}
+                          <span class="badge bg-warning text-dark">در انتظار</span>
+                        {% elif p.status == 'approved' %}
+                          <span class="badge bg-success">تأیید شده</span>
+                        {% else %}
+                          <span class="badge bg-danger">رد شده</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ p.colleagues.count }} نفر</small>
+                      </td>
+                      <td>
+                        <small>{{ p.created_at|date:'Y/m/d' }}</small>
+                      </td>
+                      <td class="text-end">
+                        <a href="{% url 'project:project_detail' p.id %}" class="btn btn-sm btn-outline-primary">جزئیات</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="10" class="text-center text-muted py-4">پروژه‌ای یافت نشد</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

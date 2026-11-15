@@ -3,7 +3,7 @@
 {% load customTags %}
 
 {% block title %}
-  سفارش #{{ order.id }}
+  سفارش هدیه #{{ order.id }}
 {% endblock %}
 
 {% block content %}
@@ -12,132 +12,381 @@
       <div class="inner-body">
         {% include 'layout/pageHeader.html' %}
 
-        <div class="card custom-card">
-          <div class="card-body">
-            <div class="row g-3">
-              <!-- ═══ ستون اطلاعات ═══ -->
-              <div class="col-md-7">
-                <!-- اطلاعات سفارش -->
-                <div class="card mb-3">
-                  <div class="card-header fw-bold">اطلاعات سفارش</div>
-                  <div class="card-body">
-                    <dl class="row mb-0">
-                      <dt class="col-4">کاربر</dt>
-                      <dd class="col-8">{{ order.user.full_name }} ({{ order.user.mobile }})</dd>
-
-                      <dt class="col-4">هدیه</dt>
-                      <dd class="col-8">{{ order.gift.title }} — {{ order.gift.azar_value }} آذر</dd>
-
-                      <dt class="col-4">تعداد</dt>
-                      <dd class="col-8">{{ order.quantity }}</dd>
-
-                      <dt class="col-4">ارزش کل</dt>
-                      <dd class="col-8">{{ order.total_azar_value }} آذر</dd>
-
-                      <dt class="col-4">گیرنده</dt>
-                      <dd class="col-8">{{ order.receiver_name }} — {{ order.receiver_phone }}</dd>
-
-                      <dt class="col-4">آدرس</dt>
-                      <dd class="col-8">{{ order.address }}</dd>
-
-                      <dt class="col-4">کد پستی</dt>
-                      <dd class="col-8">{{ order.postal_code }}</dd>
-
-                      <dt class="col-4">کد رهگیری</dt>
-                      <dd class="col-8">{{ order.tracking_code|default:'—' }}</dd>
-
-                      <dt class="col-4">وضعیت</dt>
-                      <dd class="col-8">{{ order.get_status_display }}</dd>
-
-                      <dt class="col-4">مسئول</dt>
-                      <dd class="col-8">{{ order.assigned_to.full_name|default:'—' }}</dd>
-
-                      <dt class="col-4">تاریخ ثبت</dt>
-                      <dd class="col-8">{{ order.created_at|date:'Y/m/d H:i' }}</dd>
-                    </dl>
-                  </div>
-                </div>
-
-                <!-- یادداشت داخلی -->
-                <div class="card mb-3">
-                  <div class="card-header fw-bold">یادداشت داخلی</div>
-                  <div class="card-body">
-                    <form method="post" action="{% url 'app_gift:order_note' order.id %}">
-                      {% csrf_token %}
-                      <textarea name="internal_note" class="form-control" rows="3" placeholder="یادداشت داخلی (فقط ادمین)">{{ order.internal_note|default_if_none:'' }}</textarea>
-                      <button class="btn btn-sm btn-outline-primary mt-2">ذخیره یادداشت</button>
-                    </form>
-                  </div>
-                </div>
-
-                <!-- تاریخچه -->
-                <div class="card">
-                  <div class="card-header fw-bold">تاریخچه</div>
-                  <div class="card-body">
-                    {% for l in logs %}
-                      <div class="d-flex justify-content-between border-bottom py-2">
-                        <div>
-                          <strong>{{ l.action }}</strong>
-                          {% if l.from_status or l.to_status %}
-                            <span class="text-muted small">{{ l.from_status }} → {{ l.to_status }}</span>
-                          {% endif %}
-                          {% if l.note %}
-                            <div class="small text-muted">{{ l.note }}</div>
-                          {% endif %}
-                        </div>
-                        <small class="text-muted">{{ l.changed_by.full_name|default:'سیستم' }} — {{ l.created_at|date:'Y/m/d H:i' }}</small>
-                      </div>
-                    {% empty %}
-                      <p class="text-muted mb-0">تاریخچه‌ای موجود نیست</p>
-                    {% endfor %}
-                  </div>
-                </div>
+        <div class="row g-3">
+          <!-- ستون چپ -->
+          <div class="col-md-7">
+            <!-- اطلاعات سفارش -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span><i class="fe fe-package mr-2 text-primary"></i> اطلاعات سفارش</span>
+                <small class="text-muted">#{{ order.id }}</small>
               </div>
-
-              <!-- ═══ ستون اکشن‌ها ═══ -->
-              <div class="col-md-5">
-                <!-- تغییر وضعیت -->
-                <div class="card mb-3">
-                  <div class="card-header fw-bold">تغییر وضعیت</div>
-                  <div class="card-body">
-                    {% if transitions %}
-                      {% for t in transitions %}
-                        <form method="post" action="{% url 'app_gift:order_update_status' order.id %}" class="mb-2">
-                          {% csrf_token %}
-                          <input type="hidden" name="new_status" value="{{ t.value }}" />
-                          {% if t.value == 'shipped' %}
-                            <input type="text" name="tracking_code" class="form-control mb-1" placeholder="کد رهگیری *" required />
-                          {% endif %}
-                          <input type="text" name="note" class="form-control mb-1" placeholder="یادداشت (اختیاری)" />
-                          <button class="btn btn-sm btn-primary w-100">→ {{ t.label }}</button>
-                        </form>
-                      {% endfor %}
+              <div class="card-body">
+                <dl class="row mb-0">
+                  <dt class="col-4 text-muted">کاربر</dt>
+                  <dd class="col-8">
+                    <a href="{% url 'app_user:user_detail' order.user.id %}" class="text-decoration-none">{{ order.user.full_name }}</a>
+                    <small class="text-muted" style="direction:ltr">({{ order.user.mobile }})</small>
+                  </dd>
+                  <dt class="col-4 text-muted">هدیه</dt>
+                  <dd class="col-8">
+                    <strong>{{ order.gift.title }}</strong>
+                    <span class="badge badge-info ml-1">{{ order.gift.azar_value }} آذر</span>
+                  </dd>
+                  <dt class="col-4 text-muted">تعداد</dt>
+                  <dd class="col-8">{{ order.quantity }}</dd>
+                  <dt class="col-4 text-muted">ارزش کل</dt>
+                  <dd class="col-8"><strong class="text-success">{{ order.total_azar_value }} آذر</strong></dd>
+                  <dt class="col-4 text-muted">گیرنده</dt>
+                  <dd class="col-8">
+                    {{ order.receiver_name }}
+                    <small class="text-muted" style="direction:ltr">— {{ order.receiver_phone }}</small>
+                  </dd>
+                  <dt class="col-4 text-muted">آدرس</dt>
+                  <dd class="col-8">{{ order.address }}</dd>
+                  <dt class="col-4 text-muted">کد پستی</dt>
+                  <dd class="col-8"><span style="direction:ltr">{{ order.postal_code }}</span></dd>
+                  <dt class="col-4 text-muted">کد رهگیری</dt>
+                  <dd class="col-8">
+                    {% if order.tracking_code %}
+                      <code>{{ order.tracking_code }}</code>
                     {% else %}
-                      <p class="text-muted mb-0">این سفارش در وضعیت نهایی است.</p>
+                      <span class="text-muted">—</span>
                     {% endif %}
-                  </div>
-                </div>
-
-                <!-- واگذاری -->
-                {% comment %} <div class="card">
-                  <div class="card-header fw-bold">واگذاری به مسئول</div>
-                  <div class="card-body">
-                    <form method="post" action="{% url 'app_gift:order_assign' order.id %}">
-                      {% csrf_token %}
-                      {{ assign_form.assigned_to }}
-                      <button class="btn btn-sm btn-outline-primary w-100 mt-2">ذخیره</button>
-                    </form>
-                  </div>
-                </div> {% endcomment %}
+                  </dd>
+                  <dt class="col-4 text-muted">مسئول پیگیری</dt>
+                  <dd class="col-8">{{ order.assigned_to.full_name|default:'—' }}</dd>
+                  <dt class="col-4 text-muted">تاریخ ثبت</dt>
+                  <dd class="col-8">{{ order.created_at|date:'Y/m/d H:i' }}</dd>
+                </dl>
               </div>
             </div>
+
+            <!-- یادداشت داخلی -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold d-flex align-items-center">
+                <i class="fe fe-message-square mr-2 text-warning"></i>
+                <span>یادداشت داخلی</span>
+                <span class="badge badge-secondary ml-2 small">فقط ادمین</span>
+              </div>
+              <div class="card-body">
+                <form method="post" action="{% url 'app_gift:order_note' order.id %}">
+                  {% csrf_token %}
+                  <textarea name="internal_note" class="form-control" rows="3" placeholder="یادداشت خصوصی برای پیگیری…">{{ order.internal_note|default_if_none:'' }}</textarea>
+                  <div class="text-right mt-2">
+                    <button class="btn btn-sm btn-primary"><i class="fe fe-save mr-1"></i> ذخیره یادداشت</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <!-- تاریخچه -->
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold d-flex align-items-center">
+                <i class="fe fe-activity mr-2 text-info"></i>
+                <span>تاریخچه ({{ logs|length }})</span>
+              </div>
+              <div class="card-body">
+                {% if logs %}
+                  {% for l in logs %}
+                    <div class="d-flex mb-3 position-relative">
+                      <div class="flex-shrink-0 mr-3 text-center" style="width:36px;">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center
+                                  {% if l.action == 'status_change' %}
+                            text-primary
+
+                          {% elif l.action == 'assign' %}
+                            text-info
+
+                          {% elif l.action == 'refund' %}
+                            text-warning
+
+                          {% else %}
+                            text-secondary
+                          {% endif %}"
+                          style="width:36px;height:36px;
+                                  background-color:
+                                  {% if l.action == 'status_change' %}
+                            #cce5ff
+
+                          {% elif l.action == 'assign' %}
+                            #d1ecf1
+
+                          {% elif l.action == 'refund' %}
+                            #fff3cd
+
+                          {% else %}
+                            #e2e3e5
+                          {% endif %};">
+                          <i class="fe
+                                  {% if l.action == 'status_change' %}
+                              fe-refresh-cw
+
+                            {% elif l.action == 'assign' %}
+                              fe-user-check
+
+                            {% elif l.action == 'refund' %}
+                              fe-corner-up-left
+
+                            {% else %}
+                              fe-circle
+                            {% endif %}">
+
+                          </i>
+                        </div>
+                      </div>
+                      <div class="flex-grow-1">
+                        <div class="d-flex justify-content-between">
+                          <strong>
+                            {% if l.action == 'status_change' %}
+                              تغییر وضعیت
+                            {% elif l.action == 'assign' %}
+                              واگذاری
+                            {% elif l.action == 'refund' %}
+                              استرداد
+                            {% else %}
+                              {{ l.action }}
+                            {% endif %}
+                          </strong>
+                          <small class="text-muted">{{ l.created_at|date:'Y/m/d H:i' }}</small>
+                        </div>
+                        {% if l.from_status or l.to_status %}
+                          <div class="small text-muted mt-1">
+                            {% if l.from_status %}
+                              <span class="badge badge-light text-dark border">{{ l.from_status }}</span>
+                            {% endif %}
+                            {% if l.to_status %}
+                              <i class="fe fe-arrow-left mx-1"></i><span class="badge badge-primary">{{ l.to_status }}</span>
+                            {% endif %}
+                          </div>
+                        {% endif %}
+                        {% if l.note %}
+                          <div class="small text-muted mt-1 font-italic">
+                            <i class="fe fe-message-circle mr-1"></i>{{ l.note }}
+                          </div>
+                        {% endif %}
+                        <small class="text-muted"><i class="fe fe-user mr-1"></i>{{ l.changed_by.full_name|default:'سیستم' }}</small>
+                      </div>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  <div class="text-center text-muted py-4">
+                    <i class="fe fe-inbox d-block mb-2" style="font-size:2rem;"></i>
+                    تاریخچه‌ای موجود نیست
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- ستون راست -->
+          <div class="col-md-5">
+            <!-- وضعیت -->
+            <div class="card custom-card mb-3 border-0 shadow-sm">
+              <div class="card-body text-center py-4
+                        {% if order.status == 'pending' %}
+                  text-warning
+
+                {% elif order.status == 'approved' %}
+                  text-info
+
+                {% elif order.status == 'shipped' %}
+                  text-primary
+
+                {% elif order.status == 'delivered' %}
+                  text-success
+
+                {% elif order.status == 'rejected' or order.status == 'cancelled' %}
+                  text-danger
+
+                {% elif order.status == 'returned' %}
+                  text-secondary
+
+                {% else %}
+                  text-muted
+                {% endif %}"
+                style="background-color:
+                        {% if order.status == 'pending' %}
+                  #fff3cd
+
+                {% elif order.status == 'approved' %}
+                  #d1ecf1
+
+                {% elif order.status == 'shipped' %}
+                  #cce5ff
+
+                {% elif order.status == 'delivered' %}
+                  #d4edda
+
+                {% elif order.status == 'rejected' or order.status == 'cancelled' %}
+                  #f8d7da
+
+                {% elif order.status == 'returned' %}
+                  #e2e3e5
+
+                {% else %}
+                  #f8f9fa
+                {% endif %};">
+                <div class="mb-2" style="font-size:2.2rem;">
+                  {% if order.status == 'pending' %}
+                    <i class="fe fe-clock"></i>
+                  {% elif order.status == 'approved' %}
+                    <i class="fe fe-check-circle"></i>
+                  {% elif order.status == 'shipped' %}
+                    <i class="fe fe-truck"></i>
+                  {% elif order.status == 'delivered' %}
+                    <i class="fe fe-award"></i>
+                  {% elif order.status == 'rejected' %}
+                    <i class="fe fe-x-circle"></i>
+                  {% elif order.status == 'cancelled' %}
+                    <i class="fe fe-slash"></i>
+                  {% elif order.status == 'returned' %}
+                    <i class="fe fe-corner-up-left"></i>
+                  {% endif %}
+                </div>
+                <h6 class="mb-1 fw-bold">{{ order.get_status_display }}</h6>
+                <p class="text-muted small mb-0">
+                  {% if order.status == 'pending' %}
+                    در انتظار بررسی و تأیید
+                  {% elif order.status == 'approved' %}
+                    تأیید شده — آماده ارسال
+                  {% elif order.status == 'shipped' %}
+                    {% if order.tracking_code %}
+                      کد رهگیری: <code>{{ order.tracking_code }}</code>
+                    {% else %}
+                      ارسال شده به پست
+                    {% endif %}
+                  {% elif order.status == 'delivered' %}
+                    تحویل مشتری شده
+                  {% elif order.status == 'rejected' %}
+                    رد شده
+                  {% elif order.status == 'cancelled' %}
+                    لغو شده
+                  {% elif order.status == 'returned' %}
+                    مرجوع شده
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+
+            <!-- تغییر وضعیت -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold d-flex align-items-center">
+                <i class="fe fe-arrow-right-circle mr-2 text-primary"></i>
+                <span>تغییر وضعیت</span>
+              </div>
+              <div class="card-body">
+                {% if transitions %}
+                  {% for t in transitions %}
+                    <button type="button" class="btn btn-outline-primary btn-block d-flex align-items-center justify-content-between mb-2" data-toggle="modal" data-target="#statusModal{{ t.value }}">
+                      <span>
+                        <i class="fe
+                                {% if t.value == 'approved' %}
+                            fe-check-circle
+
+                          {% elif t.value == 'shipped' %}
+                            fe-truck
+
+                          {% elif t.value == 'delivered' %}
+                            fe-award
+
+                          {% elif t.value == 'rejected' %}
+                            fe-x-circle
+
+                          {% elif t.value == 'cancelled' %}
+                            fe-slash
+
+                          {% elif t.value == 'returned' %}
+                            fe-corner-up-left
+
+                          {% else %}
+                            fe-arrow-right
+                          {% endif %} mr-2">
+
+                        </i>
+                        {{ t.label }}
+                      </span>
+                      <i class="fe fe-chevron-left"></i>
+                    </button>
+                  {% endfor %}
+                {% else %}
+                  <div class="alert alert-info mb-0 small">
+                    <i class="fe fe-info mr-1"></i>
+                    این سفارش در وضعیت نهایی است.
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- واگذاری -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold d-flex align-items-center">
+                <i class="fe fe-user-check mr-2 text-info"></i>
+                <span>واگذاری به مسئول</span>
+              </div>
+              <div class="card-body">
+                <form method="post" action="{% url 'app_gift:order_assign' order.id %}">
+                  {% csrf_token %}
+                  {{ assign_form.assigned_to }}
+                  <button class="btn btn-sm btn-outline-info btn-block mt-2"><i class="fe fe-save mr-1"></i> ذخیره واگذاری</button>
+                </form>
+                <p class="small text-muted mt-2 mb-0">
+                  <i class="fe fe-info mr-1"></i>
+                  مسئول فعلی: <strong>{{ order.assigned_to.full_name|default:'تعیین نشده' }}</strong>
+                </p>
+              </div>
+            </div>
+
+            <a href="{% url 'app_gift:order_index' %}" class="btn btn-link btn-sm text-secondary btn-block"><i class="fe fe-arrow-right mr-1"></i> بازگشت به لیست سفارشات</a>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  {# ═══ مودال‌های تغییر وضعیت ═══ #}
+  {% for t in transitions %}
+    <div class="modal fade" id="statusModal{{ t.value }}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold">
+              <i class="fe fe-arrow-right-circle text-primary mr-2"></i>
+              تغییر وضعیت به «{{ t.label }}»
+            </h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <form method="post" action="{% url 'app_gift:order_update_status' order.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="new_status" value="{{ t.value }}" />
+            <div class="modal-body">
+              {% if t.value == 'shipped' %}
+                <div class="alert alert-info small mb-3">
+                  <i class="fe fe-info mr-1"></i>
+                  برای ارسال، وارد کردن کد رهگیری پستی الزامی است.
+                </div>
+                <label class="form-label fw-bold small">کد رهگیری <span class="text-danger">*</span></label>
+                <input type="text" name="tracking_code" class="form-control mb-2" placeholder="مثلاً: 12345678901234567890" required />
+              {% elif t.value == 'rejected' or t.value == 'cancelled' or t.value == 'returned' %}
+                {% if order.status == 'approved' or order.status == 'shipped' or order.status == 'delivered' %}
+                  <div class="alert alert-warning small mb-3">
+                    <i class="fe fe-alert-triangle mr-1"></i>
+                    با این تغییر، موجودی هدیه بازمی‌گردد و امتیاز کاربر استرداد می‌شود.
+                  </div>
+                {% endif %}
+              {% endif %}
+              <label class="form-label fw-bold small">یادداشت (اختیاری)</label>
+              <textarea name="note" class="form-control" rows="2" placeholder="توضیح برای این تغییر وضعیت…"></textarea>
+            </div>
+            <div class="modal-footer border-0">
+              <button type="button" class="btn btn-light" data-dismiss="modal">انصراف</button>
+              <button type="submit" class="btn btn-primary"><i class="fe fe-check mr-1"></i> اعمال تغییر</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
 {% endblock %}
-
 {% block js %}
-
 {% endblock %}

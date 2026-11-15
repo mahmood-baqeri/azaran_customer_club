@@ -61,7 +61,7 @@ def create(request):
     data["pageTitle"] = 'اضافه کردن نقش جدید'
     data["backUrl"] = reverse('role:index')
     data["storeUrl"] = reverse('role:create')
-    data["items"] = formFields()
+    data["items"] = formFields(request.POST)
 
     if request.method == "POST":
         title = request.POST.get('title')
@@ -104,7 +104,7 @@ def update(request, id):
     data["pageTitle"] = 'بروزرسانی نقش'
     data["backUrl"] = reverse('role:index')
     data["storeUrl"] = reverse('role:update', kwargs={"id": role.id})
-    data["items"] = formFields(role)
+    data["items"] = formFields(request.POST, role)
 
     if request.method == "POST":
         title = request.POST.get('title')

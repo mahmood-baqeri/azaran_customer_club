@@ -1,0 +1,475 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  پروژه #{{ project.id }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="row g-3">
+          <!-- ═══════════════════════════════════════════════════ -->
+          <!-- ستون چپ: اطلاعات، همکاران، پیوست‌ها -->
+          <!-- ═══════════════════════════════════════════════════ -->
+          <div class="col-md-7">
+            <!-- ─── کارت اطلاعات پروژه ─── -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span>
+                  <i class="fe fe-file-text me-2 text-primary"></i>
+                  اطلاعات پروژه
+                </span>
+                {% if project.status == 'pending' %}
+                  <span class="badge bg-warning text-dark">در انتظار</span>
+                {% elif project.status == 'approved' %}
+                  <span class="badge bg-success">تأیید شده</span>
+                {% else %}
+                  <span class="badge bg-danger">رد شده</span>
+                {% endif %}
+              </div>
+              <div class="card-body">
+                <dl class="row mb-0">
+                  <dt class="col-4 text-muted">نوع پروژه</dt>
+                  <dd class="col-8">
+                    {% if project.type == 'water' %}
+                      <span class="badge bg-info text-dark"><i class="fe fe-droplet me-1"></i>{{ project.get_type_display }}</span>
+                    {% else %}
+                      <span class="badge bg-warning text-dark"><i class="fe fe-wind me-1"></i>{{ project.get_type_display }}</span>
+                    {% endif %}
+                  </dd>
+
+                  <dt class="col-4 text-muted">عنوان</dt>
+                  <dd class="col-8"><strong>{{ project.title|default:'—' }}</strong></dd>
+
+                  <dt class="col-4 text-muted">صاحب پروژه</dt>
+                  <dd class="col-8">
+                    {{ project.user.full_name|default:'—' }}
+                    <small class="text-muted" style="direction:ltr">({{ project.user.mobile }})</small>
+                  </dd>
+
+                  <dt class="col-4 text-muted">موبایل مالک</dt>
+                  <dd class="col-8"><span style="direction:ltr">{{ project.owner_mobile|default:'—' }}</span></dd>
+
+                  <dt class="col-4 text-muted">آدرس</dt>
+                  <dd class="col-8">{{ project.address|default:'—' }}</dd>
+
+                  <dt class="col-4 text-muted">تاریخ اتمام</dt>
+                  <dd class="col-8">{{ project.completion_at|date:'Y/m/d'|default:'—' }}</dd>
+                </dl>
+
+                <hr class="my-3" />
+
+                <h6 class="text-muted small fw-bold mb-2"><i class="fe fe-layers me-1"></i> متره و برآورد</h6>
+                <div class="row g-2">
+                  <div class="col-6 col-md-3">
+                    <div class="border rounded p-2 text-center bg-light">
+                      <div class="text-muted small">تعداد واحد</div>
+                      <strong class="d-block">{{ project.unit_count|default:'0' }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="border rounded p-2 text-center bg-light">
+                      <div class="text-muted small">شیرآبی</div>
+                      <strong class="d-block">{{ project.number_water_taps|default:'0' }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="border rounded p-2 text-center bg-light">
+                      <div class="text-muted small">شیرگازی</div>
+                      <strong class="d-block">{{ project.number_gas_taps|default:'0' }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-6 col-md-3">
+                    <div class="border rounded p-2 text-center bg-light">
+                      <div class="text-muted small">اتصالات</div>
+                      <strong class="d-block">{{ project.number_connections|default:'0' }}</strong>
+                    </div>
+                  </div>
+                  <div class="col-12">
+                    <div class="border rounded p-2 text-center bg-light">
+                      <div class="text-muted small">متراژ لوله</div>
+                      <strong class="d-block">{{ project.pipe_length|default:'0' }} متر</strong>
+                    </div>
+                  </div>
+                </div>
+
+                <hr class="my-3" />
+
+                <dl class="row mb-0">
+                  <dt class="col-4 text-muted">تاریخ ایجاد</dt>
+                  <dd class="col-8">{{ project.created_at|date:'Y/m/d H:i' }}</dd>
+
+                  {% if project.approved_by %}
+                    <dt class="col-4 text-muted">تأییدکننده</dt>
+                    <dd class="col-8">
+                      {{ project.approved_by.full_name|default:'—' }}
+                      <small class="text-muted">({{ project.approved_at|date:'Y/m/d H:i' }})</small>
+                    </dd>
+                  {% endif %}
+
+                  {% if project.rejection_reason %}
+                    <dt class="col-4 text-muted">دلیل رد</dt>
+                    <dd class="col-8"><span class="text-danger">{{ project.rejection_reason }}</span></dd>
+                  {% endif %}
+                </dl>
+              </div>
+            </div>
+
+            <!-- ─── کارت همکاران ─── -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span>
+                  <i class="fe fe-users me-2 text-info"></i>
+                  همکاران ({{ colleagues|length }}) — مجموع {{ total_percent }}٪
+                </span>
+                {% if can_edit %}
+                  <a href="{% url 'project:project_colleague_add' project.id %}" class="btn btn-sm btn-outline-success"><i class="fe fe-plus me-1"></i> افزودن</a>
+                {% endif %}
+              </div>
+              <div class="card-body p-0">
+                {% if total_percent > 100 %}
+                  <div class="alert alert-danger m-2 mb-0 small">
+                    <i class="fe fe-alert-triangle me-1"></i>
+                    مجموع درصد مشارکت ({{ total_percent }}٪) بیشتر از ۱۰۰٪ است — تأیید پروژه مسدود است.
+                  </div>
+                {% endif %}
+                <div class="table-responsive">
+                  <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th style="width:40px">#</th>
+                        <th>کاربر</th>
+                        <th>موبایل</th>
+                        <th style="width:90px">درصد</th>
+                        <th style="width:80px"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for c in colleagues %}
+                        <tr>
+                          <td>{{ forloop.counter }}</td>
+                          <td>{{ c.user.full_name }}</td>
+                          <td>
+                            <span style="direction:ltr">{{ c.user.mobile }}</span>
+                          </td>
+                          <td>
+                            <span class="badge bg-primary">{{ c.percent }}٪</span>
+                          </td>
+                          <td class="text-end">
+                            {% if can_edit %}
+                              <form method="post" class="d-inline" action="{% url 'project:project_colleague_delete' project.id c.id %}" onsubmit="return confirm('حذف این همکار؟');">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-outline-danger"><i class="fe fe-trash-2"></i></button>
+                              </form>
+                            {% endif %}
+                          </td>
+                        </tr>
+                      {% empty %}
+                        <tr>
+                          <td colspan="5" class="text-center text-muted py-3">
+                            <i class="fe fe-user-x me-1"></i> همکاری ثبت نشده است
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- ─── کارت پیوست‌ها ─── -->
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span>
+                  <i class="fe fe-paperclip me-2 text-warning"></i>
+                  پیوست‌ها ({{ attachments|length }})
+                </span>
+                {% if can_edit %}
+                  <a href="{% url 'project:project_attachment_upload' project.id %}" class="btn btn-sm btn-outline-success"><i class="fe fe-upload me-1"></i> افزودن</a>
+                {% endif %}
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th style="width:40px">#</th>
+                        <th>نوع</th>
+                        <th>حجم</th>
+                        <th style="width:100px">فایل</th>
+                        <th style="width:80px"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for a in attachments %}
+                        <tr>
+                          <td>{{ forloop.counter }}</td>
+                          <td>{{ a.get_type_display }}</td>
+                          <td>
+                            <small>{{ a.file_size|filesizeformat }}</small>
+                          </td>
+                          <td>
+                            <a href="{{ a.file.url }}" target="_blank" class="btn btn-sm btn-outline-info"><i class="fe fe-eye me-1"></i> مشاهده</a>
+                          </td>
+                          <td class="text-end">
+                            {% if can_edit %}
+                              <form method="post" class="d-inline" action="{% url 'project:project_attachment_delete' project.id a.id %}" onsubmit="return confirm('حذف این پیوست؟');">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-outline-danger"><i class="fe fe-trash-2"></i></button>
+                              </form>
+                            {% endif %}
+                          </td>
+                        </tr>
+                      {% empty %}
+                        <tr>
+                          <td colspan="5" class="text-center text-muted py-3">
+                            <i class="fe fe-file-x me-1"></i> پیوستی ثبت نشده است
+                          </td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════════════════ -->
+          <!-- ستون راست: وضعیت + اکشن‌ها + مدیریت + حذف -->
+          <!-- ═══════════════════════════════════════════════════ -->
+          <div class="col-md-5">
+            <!-- ─── کارت وضعیت ─── -->
+            <div class="card custom-card mb-3 border-0 shadow-sm">
+              <div class="card-body text-center py-4
+                          {% if project.status == 'pending' %}
+                  bg-warning-subtle
+
+                {% elif project.status == 'approved' %}
+                  bg-success-subtle
+
+                {% else %}
+                  bg-danger-subtle
+                {% endif %}">
+                <div class="mb-2" style="font-size:2.2rem;">
+                  {% if project.status == 'pending' %}
+                    <i class="fe fe-clock text-warning"></i>
+                  {% elif project.status == 'approved' %}
+                    <i class="fe fe-check-circle text-success"></i>
+                  {% else %}
+                    <i class="fe fe-x-circle text-danger"></i>
+                  {% endif %}
+                </div>
+                <h6 class="mb-1 fw-bold">{{ project.get_status_display }}</h6>
+                <p class="text-muted small mb-0">
+                  {% if project.status == 'pending' %}
+                    پروژه در انتظار بررسی و تأیید مدیر است
+                  {% elif project.status == 'approved' %}
+                    تأیید شده توسط {{ project.approved_by.full_name|default:'مدیر' }}
+                  {% else %}
+                    دلیل رد: {{ project.rejection_reason|default:'—' }}
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+
+            <!-- ─── کارت اکشن‌های اصلی ─── -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold d-flex align-items-center">
+                <i class="fe fe-zap me-2 text-primary"></i>
+                <span>اکشن‌های اصلی</span>
+              </div>
+              <div class="card-body">
+                {% if can_edit %}
+                  <a href="{% url 'project:project_update' project.id %}" class="btn btn-primary w-100 mb-2 d-flex align-items-center justify-content-center"><i class="fe fe-edit-2 me-2"></i> ویرایش اطلاعات پروژه</a>
+                {% endif %}
+
+                {% if can_approve %}
+                  <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-success w-100 d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#approveModal"><i class="fe fe-check-circle me-2"></i> تأیید پروژه و اعطای امتیاز</button>
+                    <button type="button" class="btn btn-outline-danger w-100 d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#rejectModal"><i class="fe fe-x-circle me-2"></i> رد پروژه</button>
+                  </div>
+                {% endif %}
+
+                {% if not can_edit and not can_approve %}
+                  <div class="alert alert-info mb-0 small">
+                    <i class="fe fe-info me-1"></i>
+                    این پروژه در وضعیت نهایی است و قابل ویرایش نیست.
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- ─── کارت مدیریت محتوا (فقط pending) ─── -->
+            {% if can_edit %}
+              <div class="card custom-card mb-3 shadow-sm">
+                <div class="card-header fw-bold d-flex align-items-center">
+                  <i class="fe fe-layers me-2 text-info"></i>
+                  <span>مدیریت محتوا</span>
+                </div>
+                <div class="card-body d-grid gap-2">
+                  <a href="{% url 'project:project_colleague_add' project.id %}" class="btn btn-sm btn-outline-info d-flex align-items-center justify-content-between">
+                    <span>
+                      <i class="fe fe-user-plus me-1"></i>
+                      افزودن همکار
+                    </span>
+                    <i class="fe fe-chevron-left"></i>
+                  </a>
+                  <a href="{% url 'project:project_attachment_upload' project.id %}" class="btn btn-sm btn-outline-info d-flex align-items-center justify-content-between">
+                    <span>
+                      <i class="fe fe-upload me-1"></i>
+                      افزودن پیوست
+                    </span>
+                    <i class="fe fe-chevron-left"></i>
+                  </a>
+                </div>
+              </div>
+            {% endif %}
+
+            <!-- ─── کارت ناحیه خطر ─── -->
+            {% if can_delete %}
+              <div class="card custom-card border-danger-subtle shadow-sm">
+                <div class="card-header fw-bold d-flex align-items-center text-danger bg-danger-subtle">
+                  <i class="fe fe-alert-triangle me-2"></i>
+                  <span>ناحیه خطر</span>
+                </div>
+                <div class="card-body">
+                  <p class="small text-muted mb-2">حذف پروژه غیرقابل بازگشت است و تمام همکاران و پیوست‌ها نیز حذف می‌شوند.</p>
+                  <button type="button" class="btn btn-sm btn-outline-danger w-100 d-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#deleteModal"><i class="fe fe-trash-2 me-1"></i> حذف کامل پروژه</button>
+                </div>
+              </div>
+            {% endif %}
+
+            <!-- ─── بازگشت ─── -->
+            <a href="{% url 'project:project_index' %}" class="btn btn-link btn-sm text-secondary w-100 mt-2"><i class="fe fe-arrow-right me-1"></i> بازگشت به لیست پروژه‌ها</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ═══════════════════════════════════════════════════════════ #}
+  {# مودال‌ها — خارج از grid برای جلوگیری از stacking issue #}
+  {# ═══════════════════════════════════════════════════════════ #}
+
+  {# ─── مودال تأیید ─── #}
+  {% if can_approve %}
+    <div class="modal fade" id="approveModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold">
+              <i class="fe fe-check-circle text-success me-2"></i>
+              تأیید پروژه
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-info small mb-3">
+              <i class="fe fe-info me-1"></i>
+              با تأیید این پروژه، امتیاز به صاحب پروژه و همکاران (به‌نسبت درصد مشارکت) اعطا می‌شود.
+            </div>
+            <dl class="row mb-0 small">
+              <dt class="col-5 text-muted">صاحب پروژه</dt>
+              <dd class="col-7">
+                {{ project.user.full_name }}
+                <small class="text-muted" style="direction:ltr">({{ project.user.mobile }})</small>
+              </dd>
+              <dt class="col-5 text-muted">تعداد همکاران</dt>
+              <dd class="col-7">{{ colleagues|length }} نفر</dd>
+              <dt class="col-5 text-muted">مجموع مشارکت</dt>
+              <dd class="col-7"><strong>{{ total_percent }}٪</strong></dd>
+            </dl>
+          </div>
+          <div class="modal-footer border-0">
+            <form method="post" action="{% url 'project:project_approve' project.id %}" class="d-inline w-100">
+              {% csrf_token %}
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-light flex-fill" data-bs-dismiss="modal">انصراف</button>
+                <button type="submit" class="btn btn-success flex-fill"><i class="fe fe-check me-1"></i> بله، تأیید کن</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {# ─── مودال رد ─── #}
+    <div class="modal fade" id="rejectModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold">
+              <i class="fe fe-x-circle text-danger me-2"></i>
+              رد پروژه
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+          </div>
+          <form method="post" action="{% url 'project:project_reject' project.id %}">
+            {% csrf_token %}
+            <div class="modal-body">
+              <div class="alert alert-warning small mb-3">
+                <i class="fe fe-alert-triangle me-1"></i>
+                این عملیات قابل بازگشت نیست. لطفاً دلیل رد را دقیق وارد کنید.
+              </div>
+              <label class="form-label fw-bold small">دلیل رد <span class="text-danger">*</span></label>
+              <textarea name="reason" class="form-control" rows="4" placeholder="مثلاً: مدارک ناقص است، آدرس نامعتبر است…" required maxlength="2000"></textarea>
+              <small class="text-muted">حداکثر ۲۰۰۰ کاراکتر</small>
+            </div>
+            <div class="modal-footer border-0">
+              <button type="button" class="btn btn-light" data-bs-dismiss="modal">انصراف</button>
+              <button type="submit" class="btn btn-danger"><i class="fe fe-x me-1"></i> رد پروژه</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# ─── مودال حذف ─── #}
+  {% if can_delete %}
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger-subtle">
+          <div class="modal-header border-0 bg-danger-subtle">
+            <h5 class="modal-title fw-bold text-danger">
+              <i class="fe fe-alert-triangle me-2"></i>
+              حذف پروژه
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="بستن"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-2">
+              آیا از حذف کامل پروژه
+              <strong>«{{ project.title|default:project.id }}»</strong>
+              مطمئن هستید؟
+            </p>
+            <ul class="small text-muted mb-0">
+              <li>تمام همکاران ({{ colleagues|length }} نفر) حذف می‌شوند</li>
+              <li>تمام پیوست‌ها ({{ attachments|length }} فایل) حذف می‌شوند</li>
+              <li>
+                این عملیات <strong class="text-danger">قابل بازگشت نیست</strong>
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer border-0">
+            <form method="post" action="{% url 'project:project_delete' project.id %}" class="w-100">
+              {% csrf_token %}
+              <div class="d-flex gap-2">
+                <button type="button" class="btn btn-light flex-fill" data-bs-dismiss="modal">انصراف</button>
+                <button type="submit" class="btn btn-danger flex-fill"><i class="fe fe-trash-2 me-1"></i> بله، حذف کن</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block js %}
+{% endblock %}

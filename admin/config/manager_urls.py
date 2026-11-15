@@ -18,6 +18,7 @@ urlpatterns = [
     path('promotion/', include('applications.promotion.url')),
     path('score/', include('applications.score.urls')),
     path('notification/', include('applications.notification.url')),
+    path('project/', include('applications.project.url')),
 
 
     # User areas

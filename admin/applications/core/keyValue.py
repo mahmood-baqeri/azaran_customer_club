@@ -257,6 +257,14 @@ def Applications():
         ('UserScore', 'UserScore'),
         
         ('Notification', 'Notification'),
+        ('Project', 'Project'),
+        ('Factor', 'Factor'),
+        ('Learn', 'Learn'),
+        ('Gallery', 'Gallery'),
+        ('Faq', 'Faq'),
+        ('Review', 'Review'),
+        ('Support', 'Support'),
+        ('Visit', 'Visit'),
     )
 
 

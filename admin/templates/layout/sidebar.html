@@ -176,14 +176,104 @@
         </li>
       {% endif %}
 
+      <!-- اعلانات -->
       {% if 'NotificationRead' in adminAccess %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'notification:notification_index' %}">
-            <span class="shape1"></span><span class="shape2"></span><i class="ti-bell sidemenu-icon"></i>
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-bell sidemenu-icon"></i>
             <span class="sidemenu-label">اعلانات</span>
           </a>
         </li>
       {% endif %}
+
+      <!-- پروژه -->
+      {% if 'ProjectRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'project:project_index' %}">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-briefcase sidemenu-icon"></i>
+            <span class="sidemenu-label">پروژه‌ها</span>
+          </a>
+        </li>
+      {% endif %}
+      {% comment %}
+      <!-- فاکتور -->
+      {% if 'InvoiceRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'invoice:invoice_index' %}">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-receipt sidemenu-icon"></i>
+            <span class="sidemenu-label">فاکتورها</span>
+          </a>
+        </li>
+      {% endif %}
+
+      <!-- آموزش -->
+      {% if 'CourseRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'course:course_index' %}">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-book sidemenu-icon"></i>
+            <span class="sidemenu-label">آموزش‌ها</span>
+          </a>
+        </li>
+      {% endif %}
+
+      <!-- گالری -->
+      {% if 'GalleryRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'gallery:gallery_index' %}">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-gallery sidemenu-icon"></i>
+            <span class="sidemenu-label">گالری</span>
+          </a>
+        </li>
+      {% endif %}
+
+      <!-- بازدید -->
+      {% if 'VisitRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'visit:visit_index' %}">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-eye sidemenu-icon"></i>
+            <span class="sidemenu-label">بازدیدها</span>
+          </a>
+        </li>
+      {% endif %}
+
+      <!-- پشتیبانی -->
+      {% if 'SupportRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'support:support_index' %}">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-headphone-alt sidemenu-icon"></i>
+            <span class="sidemenu-label">پشتیبانی</span>
+          </a>
+        </li>
+      {% endif %}
+
+      <!-- سوالات -->
+      {% if 'FaqRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'faq:faq_index' %}">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-help-alt sidemenu-icon"></i>
+            <span class="sidemenu-label">سوالات متداول</span>
+          </a>
+        </li>
+      {% endif %}
+
+      <!-- بازنگری -->
+      {% if 'ReviewRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'review:review_index' %}">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-reload sidemenu-icon"></i>
+            <span class="sidemenu-label">بازنگری</span>
+          </a>
+        </li>
+      {% endif %} {% endcomment %}
     </ul>
   </div>
 </div>
