@@ -13,7 +13,7 @@ urlpatterns = [
     path("<int:id>/delete/", views.gift_delete, name="gift_delete"),
 
     # AJAX
-    path("api/deletePhoto", views.delete_gallery_photo, name="delete_photo"),
+    path("api/remove_attachment", views.remove_attachment, name="delete_photo"),
 
     # Orders
     path("orders/", views.order_index, name="order_index"),

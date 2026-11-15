@@ -1,0 +1,140 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  امتیاز «{{ target_user.full_name }}»
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="row g-3">
+          <!-- ستون چپ -->
+          <div class="col-md-4">
+            <div class="card custom-card mb-3">
+              <div class="card-header fw-bold">اطلاعات کاربر</div>
+              <div class="card-body">
+                <h5 class="mb-1">{{ target_user.full_name }}</h5>
+                <p class="text-muted small mb-3">
+                  <span style="direction:ltr">{{ target_user.mobile }}</span>
+                </p>
+                <p class="mb-1">
+                  {% if target_user.is_ostadkar %}
+                    <span class="badge bg-primary">استادکار</span>
+                  {% else %}
+                    <span class="badge bg-secondary">کاردان</span>
+                  {% endif %}
+                </p>
+                <a href="{% url 'app_user:user_detail' target_user.id %}" class="btn btn-sm btn-outline-secondary mt-2 w-100">پروفایل کامل</a>
+              </div>
+            </div>
+
+            <div class="card custom-card mb-3">
+              <div class="card-header fw-bold">خلاصه امتیاز</div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <small class="text-muted">موجودی فعلی</small>
+                  <h3 class="mb-0 text-success">{{ score.current_balance|default:'0' }}</h3>
+                </div>
+                <div class="row text-center">
+                  <div class="col-6">
+                    <small class="text-muted">کل کسب</small>
+                    <p class="mb-0 text-info">{{ score.total_earned|default:'0' }}</p>
+                  </div>
+                  <div class="col-6">
+                    <small class="text-muted">کل مصرف</small>
+                    <p class="mb-0 text-danger">{{ score.total_spent|default:'0' }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {% if 'UserScoreAdjust' in adminAccess %}
+              <div class="card custom-card">
+                <div class="card-header fw-bold">تنظیم دستی امتیاز</div>
+                <div class="card-body">
+                  <a href="{% url 'app_score:user_score_adjust' target_user.id %}" class="btn btn-warning w-100">تنظیم امتیاز</a>
+                  <p class="small text-muted mt-2 mb-0">برای اصلاح دستی موجودی کاربر (ADMIN_ADJUST) استفاده می‌شود.</p>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+
+          <!-- ستون راست: لاگ‌ها -->
+          <div class="col-md-8">
+            <div class="card custom-card">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span>آخرین تراکنش‌ها</span>
+                <a href="{% url 'app_score:log_index' %}?q={{ target_user.mobile }}" class="btn btn-sm btn-outline-secondary">همه‌ی تراکنش‌ها ({{ log_count_total }})</a>
+              </div>
+              <div class="card-body">
+                <table class="table table-sm align-middle mb-0">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>کد</th>
+                      <th>مقدار</th>
+                      <th>موجودی قبل → بعد</th>
+                      <th>دلیل/منبع</th>
+                      <th>تاریخ</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for l in logs %}
+                      <tr>
+                        <td>{{ l.id }}</td>
+                        <td>
+                          <small>{{ l.get_transaction_code_display }}</small>
+                        </td>
+                        <td>
+                          <span class="badge {% if l.direction == 'earned' %}
+                              bg-success
+                            {% else %}
+                              bg-danger
+                            {% endif %}">
+                            {% if l.direction == 'earned' %}
+                              +
+                            {% else %}
+                              -
+                            {% endif %}{{ l.amount }}
+                          </span>
+                        </td>
+                        <td>
+                          <small>{{ l.balance_before }} → {{ l.balance_after }}</small>
+                        </td>
+                        <td>
+                          {% if l.reason %}
+                            <small>{{ l.reason|truncatechars:30 }}</small>
+                          {% endif %}
+                          <br /><small class="text-muted">{{ l.get_source_display }}</small>
+                        </td>
+                        <td>
+                          <small>{{ l.created_at|date:'Y/m/d H:i' }}</small>
+                        </td>
+                        <td>
+                          <a href="{% url 'app_score:log_detail' l.id %}" class="btn btn-sm btn-outline-info">→</a>
+                        </td>
+                      </tr>
+                    {% empty %}
+                      <tr>
+                        <td colspan="7" class="text-center text-muted py-3">تراکنشی ثبت نشده</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

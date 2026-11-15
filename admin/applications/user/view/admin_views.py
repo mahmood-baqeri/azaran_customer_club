@@ -175,6 +175,7 @@ def storeAndUpdateAdmin(request, user, _type):
     adRoles = []
     for role in request.POST.getlist('roles'):
         adRoles.append(int(role))
+    #user.role_ids = pick_multi(request.POST, "role_ids")
 
     if user is None:
         user = User(

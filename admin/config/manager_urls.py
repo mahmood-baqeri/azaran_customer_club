@@ -16,13 +16,13 @@ urlpatterns = [
     
     path('gift/', include('applications.gift.url')),
     path('promotion/', include('applications.promotion.url')),
+    path('score/', include('applications.score.urls')),
 
 
     # User areas
     path(f"users/", include('applications.user.urls.base')),
 
     path('api/', include('config.urls_rest_api')),
-    path("api/", include("applications.rest_api.url")),
     path("tinymce/", include("tinymce.urls")),
 
     # Admin & tools

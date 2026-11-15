@@ -1,0 +1,137 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}{{ data.pageTitle }}{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/search.html' %}
+            {% endif %}
+
+            {# ─── فیلترهای اضافی ─── #}
+            <form method="get" action="{{ data.searchUrl }}" class="row gx-2 gy-2 mt-2">
+              {# پارامترهای قبلی را حفظ کن #}
+              {% for key, values in request.GET.lists %}
+                {% if key != 'source' and key != 'reference_type' and key != 'is_reversed' and key != 'min_amount' and key != 'max_amount' %}
+                  {% for v in values %}<input type="hidden" name="{{ key }}" value="{{ v }}">{% endfor %}
+                {% endif %}
+              {% endfor %}
+
+              <div class="col-sm-2">
+                <select class="form-select" name="source">
+                  <option value="">— منبع —</option>
+                  <option value="user" {% if data.source == 'user' %}selected{% endif %}>کاربر</option>
+                  <option value="system" {% if data.source == 'system' %}selected{% endif %}>سیستم</option>
+                  <option value="admin" {% if data.source == 'admin' %}selected{% endif %}>ادمین</option>
+                </select>
+              </div>
+              <div class="col-sm-2">
+                <input type="text" name="reference_type" class="form-control" placeholder="نوع مرجع (invoice، gift_order...)"
+                       value="{{ data.reference_type }}">
+              </div>
+              <div class="col-sm-2">
+                <select class="form-select" name="is_reversed">
+                  <option value="">— برگشت —</option>
+                  <option value="1" {% if data.is_reversed == '1' %}selected{% endif %}>برگشت‌خورده</option>
+                  <option value="0" {% if data.is_reversed == '0' %}selected{% endif %}>عادی</option>
+                </select>
+              </div>
+              <div class="col-sm-2">
+                <input type="number" name="min_amount" class="form-control" placeholder="حداقل مقدار"
+                       value="{{ data.min_amount }}">
+              </div>
+              <div class="col-sm-2">
+                <input type="number" name="max_amount" class="form-control" placeholder="حداکثر مقدار"
+                       value="{{ data.max_amount }}">
+              </div>
+              <div class="col-sm-2">
+                <button class="btn btn-info w-100">اعمال</button>
+              </div>
+            </form>
+
+            <div class="table-responsive mt-3">
+              <table class="table-hover align-middle table text-nowrap table-striped mg-b-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>کاربر</th>
+                    <th>کد</th>
+                    <th>جهت</th>
+                    <th>مقدار</th>
+                    <th>موجودی قبل → بعد</th>
+                    <th>منبع</th>
+                    <th>مرجع</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for l in data.all %}
+                  <tr>
+                    <td>{{ l.id }}</td>
+                    <td>
+                      <a href="{% url 'app_score:user_score_detail' l.user.id %}" class="text-decoration-none">
+                        {{ l.user.full_name }}
+                      </a><br>
+                      <small class="text-muted" style="direction:ltr">{{ l.user.mobile }}</small>
+                    </td>
+                    <td>
+                      <span class="badge bg-secondary">{{ l.get_transaction_code_display }}</span>
+                    </td>
+                    <td>
+                      {% if l.direction == 'earned' %}
+                        <span class="badge bg-success">دریافت</span>
+                      {% else %}
+                        <span class="badge bg-danger">مصرف</span>
+                      {% endif %}
+                    </td>
+                    <td><strong>{{ l.amount }}</strong></td>
+                    <td><small>{{ l.balance_before }} → {{ l.balance_after }}</small></td>
+                    <td><small>{{ l.get_source_display }}</small></td>
+                    <td>
+                      {% if l.reference_type %}
+                        <small>{{ l.reference_type }}:{{ l.reference_id }}</small>
+                      {% else %}—{% endif %}
+                    </td>
+                    <td>
+                      {% if l.is_reversed %}
+                        <span class="badge bg-warning text-dark">برگشت</span>
+                      {% elif l.reverses_log %}
+                        <span class="badge bg-info text-dark">برگشتِ #{{ l.reverses_log_id }}</span>
+                      {% else %}—{% endif %}
+                    </td>
+                    <td><small>{{ l.created_at|date:"Y/m/d H:i" }}</small></td>
+                    <td>
+                      <a href="{% url 'app_score:log_detail' l.id %}"
+                         class="btn btn-sm btn-outline-primary">جزئیات</a>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr><td colspan="11" class="text-center text-muted py-4">تراکنشی یافت نشد</td></tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}{% endblock %}

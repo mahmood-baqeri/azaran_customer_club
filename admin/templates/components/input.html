@@ -1,0 +1,35 @@
+{% firstof item.t kind_override 'text' as input_kind %}
+<div class="{{ item.c }}">
+    <div class="form-group">
+        {% if item.r %}<span class="text-danger">*</span>{% endif %}
+        <label class="mg-b-10" for="{{ item.id }}"><b>{{ item.l }}</b></label>
+
+        {% if input_kind == 'textarea' %}
+            <textarea class="form-control"
+                      rows="{{ item.rows|default:5 }}"
+                      name="{{ item.n }}"
+                      placeholder="{{ item.pl|default:item.l }}"
+                      id="{{ item.id }}"
+                      {% if item.ac %}autocomplete="{{ item.ac }}"{% endif %}
+                      {% if item.r %}required{% endif %}
+                      {% if item.d %}disabled{% endif %}
+                      {% if item.ro %}readonly{% endif %}>{{ item.v|default_if_none:'' }}</textarea>
+        {% else %}
+            <input type="{{ input_kind }}"
+                   class="form-control"
+                   name="{{ item.n }}"
+                   placeholder="{{ item.pl|default:item.l }}"
+                   id="{{ item.id }}"
+                   {% if input_kind != 'password' %}value="{{ item.v|default_if_none:'' }}"{% endif %}
+                   {% if item.ac %}autocomplete="{{ item.ac }}"{% endif %}
+                   {% if item.r %}required{% endif %}
+                   {% if item.d %}disabled{% endif %}
+                   {% if item.ro %}readonly{% endif %}
+                   {% if item.min is not None and item.min != '' %}min="{{ item.min }}"{% endif %}
+                   {% if item.max is not None and item.max != '' %}max="{{ item.max }}"{% endif %}
+                   {% if item.step is not None and item.step != '' %}step="{{ item.step }}"{% endif %}
+                   {% if item.maxlength is not None and item.maxlength != '' %}maxlength="{{ item.maxlength }}"{% endif %}
+                   {% if item.pattern %}pattern="{{ item.pattern }}"{% endif %}>
+        {% endif %}
+    </div>
+</div>

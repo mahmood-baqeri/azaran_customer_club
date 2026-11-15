@@ -2,11 +2,20 @@
 
 from django import forms
 
+# ← یک import، همه‌ی helperها و make_*_itemها
+from applications.core.forms import (
+    make_input_item,
+    make_switch_item,
+    make_image_item,
+    pick_value,
+    pick_bool,
+)
+
 from .models import Promotion, PromotionItem, PromotionOrder
 
 
 # ═══════════════════════════════════════════════════════════
-# Action Forms
+# Action Forms (Django Forms مستقل — بدون تغییر)
 # ═══════════════════════════════════════════════════════════
 class OrderStatusForm(forms.Form):
     new_status = forms.ChoiceField(
@@ -43,39 +52,22 @@ class OrderAssignForm(forms.Form):
 def promotion__form(promotion=None, raw_data=None):
     """items برای قالب عمومی form.html"""
 
-    def val(field, default=""):
-        if raw_data is not None:
-            return raw_data.get(field, default)
-        if promotion is not None:
-            return getattr(promotion, field, default)
-        return default
-
-    def is_active_value():
-        if raw_data is not None:
-            return 1 if str(raw_data.get("is_active", "")).lower() in ("on", "true", "1") else 0
-        if promotion is not None:
-            return 1 if promotion.is_active else 0
-        return 1  # پیش‌فرض: فعال
-
     return [
-        {
-            "l": "عنوان پک *",
-            "n": "title",
-            "v": val("title"),
-            "id": "the_title",
-            "r": True,
-            "c": "col-md-9",
-            "b": "textBox.html",
-        },
-        {
-            "l": "فعال",
-            "n": "is_active",
-            "v": is_active_value(),
-            "id": "is_active",
-            "r": None,
-            "c": "col-md-3",
-            "b": "switch.html",
-        },
+        make_input_item(
+            label="عنوان پک",
+            name="title",
+            input_id="the_title",
+            value=pick_value(raw_data, promotion, "title"),
+            required=True,
+            col_class="col-md-9",
+        ),
+        make_switch_item(
+            label="فعال",
+            name="is_active",
+            input_id="is_active",
+            value=pick_bool(raw_data, promotion, "is_active", default=True),
+            col_class="col-md-3",
+        ),
     ]
 
 
@@ -85,63 +77,35 @@ def promotion__form(promotion=None, raw_data=None):
 def promotion_item__form(item=None, raw_data=None):
     """items برای قالب عمومی form.html — آیتم داخل پک"""
 
-    def val(field, default=""):
-        if raw_data is not None:
-            return raw_data.get(field, default)
-        if item is not None:
-            return getattr(item, field, default)
-        return default
-
-    def photo_url():
-        if not item or not item.photo:
-            return ""
-        try:
-            return item.photo.url
-        except ValueError:
-            return ""
-
-    def is_active_value():
-        if raw_data is not None:
-            return 1 if str(raw_data.get("is_active", "")).lower() in ("on", "true", "1") else 0
-        if item is not None:
-            return 1 if item.is_active else 0
-        return 1
-
     return [
-        {
-            "l": "عنوان آیتم *",
-            "n": "title",
-            "v": val("title"),
-            "id": "the_title",
-            "r": True,
-            "c": "col-md-6",
-            "b": "textBox.html",
-        },
-        {
-            "l": "برچسب",
-            "n": "badge",
-            "v": val("badge"),
-            "id": "the_badge",
-            "r": None,
-            "c": "col-md-3",
-            "b": "textBox.html",
-        },
-        {
-            "l": "فعال",
-            "n": "is_active",
-            "v": is_active_value(),
-            "id": "is_active",
-            "r": None,
-            "c": "col-md-3",
-            "b": "switch.html",
-        },
-        {
-            "l": "تصویر",
-            "n": "photo",
-            "v": photo_url(),
-            "id": "the_photo",
-            "r": None,
-            "c": "col-md-6",
-            "b": "photo.html",
-        },
+        make_input_item(
+            label="عنوان آیتم",
+            name="title",
+            input_id="the_title",
+            value=pick_value(raw_data, item, "title"),
+            required=True,
+            col_class="col-md-6",
+        ),
+        make_input_item(
+            label="برچسب",
+            name="badge",
+            input_id="the_badge",
+            value=pick_value(raw_data, item, "badge"),
+            col_class="col-md-3",
+        ),
+        make_switch_item(
+            label="فعال",
+            name="is_active",
+            input_id="is_active",
+            value=pick_bool(raw_data, item, "is_active", default=True),
+            col_class="col-md-3",
+        ),
+        make_image_item(
+            label="تصویر",
+            title="تصویر آیتم",
+            name="photo",
+            input_id="the_photo",
+            existing=item.photo if item else None,
+            col_class="col-md-6",
+        ),
     ]

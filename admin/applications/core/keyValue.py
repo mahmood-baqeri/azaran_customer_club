@@ -251,6 +251,10 @@ def Applications():
         ('GiftOrder', 'GiftOrder'),
         ('Promotion', 'Promotion'),
         ('PromotionOrder', 'PromotionOrder'),
+        
+        ('ScoreRule', 'ScoreRule'),
+        ('ScoreLog', 'ScoreLog'),
+        ('UserScore', 'UserScore'),
     )
 
 

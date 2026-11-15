@@ -1,7 +1,7 @@
 # applications/gift/views/__init__.py
 
 from .gift import (
-    delete_gallery_photo,
+    remove_attachment,
     gift_create,
     gift_delete,
     gift_index,
@@ -21,7 +21,7 @@ __all__ = [
     "gift_create",
     "gift_update",
     "gift_delete",
-    "delete_gallery_photo",
+    "remove_attachment",
     # order
     "order_index",
     "order_detail",

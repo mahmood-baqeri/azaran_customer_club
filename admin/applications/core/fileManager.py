@@ -1,85 +1,116 @@
+# applications/core/fileManager.py
+
 import os
-import datetime
-from PIL import Image
-from django.core.files.base import ContentFile
-from io import BytesIO
-from django.db import models
-import tempfile
 import shutil
+import datetime
+import tempfile
+from io import BytesIO
+from pathlib import Path
 
-import string
-import random
-import uuid
+from PIL import Image
 
-from django_dump_die.middleware import dd
-from jdatetime import GregorianToJalali
-from persiantools.jdatetime import JalaliDate
-
-from config import settings
+from django.conf import settings
+from django.db import models
 
 
-def uploadFile(file):
-    dateFolder = f'{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}'
-    path = f'static_media/{dateFolder}'
-    if not os.path.exists(path):
-        os.makedirs(path)
+# ═══════════════════════════════════════════════════════════
+# helpers
+# ═══════════════════════════════════════════════════════════
+def _media_root() -> Path:
+    """MEDIA_ROOT به‌صورت Path — مستقل از نوع تنظیمات (str یا Path)."""
+    return Path(str(settings.MEDIA_ROOT))
 
-    filename = f'{customFileName()}{os.path.splitext(file.name)[1]}'
-    fd, filepath = tempfile.mkstemp(prefix=file.name, dir=settings.MEDIA_ROOT + '/' + dateFolder)
-    filepath = filepath.split(file.name)[0] + filename
-    with open(filepath, 'wb+') as dest:
+
+def _date_folder() -> str:
+    now = datetime.datetime.now()
+    return f"{now.year}-{now.month}-{now.day}"
+
+
+def _ensure_dir(path: Path) -> Path:
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def customFileName() -> str:
+    now = datetime.datetime.now()
+    return f"{now.hour}-{now.minute}-{now.second}-{now.microsecond}"
+
+
+# ═══════════════════════════════════════════════════════════
+# Upload / Delete
+# ═══════════════════════════════════════════════════════════
+def uploadFile(file) -> str:
+    """فایل را در MEDIA_ROOT/<date>/<uuid><ext> ذخیره می‌کند. مسیر نسبی برمی‌گرداند."""
+    date_folder = _date_folder()
+    target_dir = _ensure_dir(_media_root() / date_folder)
+
+    ext = os.path.splitext(file.name)[1]
+    filename = f"{customFileName()}{ext}"
+    target_path = target_dir / filename
+
+    with open(target_path, "wb+") as dest:
         shutil.copyfileobj(file, dest)
 
-    return dateFolder + '/' + filename
+    return f"{date_folder}/{filename}"
 
 
-def uploadFileFastAPI(file):
-    dateFolder = f'{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}'
-    path = os.path.join(settings.MEDIA_ROOT, dateFolder)
-    os.makedirs(path, exist_ok=True)
+def uploadFileWithPath(file, path: str) -> str:
+    """ذخیره فایل در MEDIA_ROOT/<path>/ با نام تاریخ شمسی."""
+    from persiantools.jdatetime import JalaliDate
 
-    filename = f'{customFileName()}{os.path.splitext(file.filename)[1]}'
-    filepath = os.path.join(path, filename)
-
-    with open(filepath, 'wb+') as dest:
-        shutil.copyfileobj(file.file, dest)  # 👈 استفاده از stream اصلی فایل
-
-    return f'{dateFolder}/{filename}'
-
-
-def uploadFileWithPath(file, path):
-    newPath = f'static_media/{path}'
-    if not os.path.exists(newPath):
-        os.makedirs(newPath)
+    target_dir = _ensure_dir(_media_root() / path)
 
     today = datetime.datetime.now()
-    jalali = JalaliDate(datetime.date(today.year, today.month, today.day)).strftime("%Y-%m-%d")
-    name = str(jalali) + '-' + str(today.hour) + '-' + str(today.minute) + os.path.splitext(file.name)[1]
-    fd, filepath = tempfile.mkstemp(prefix=file.name, dir=settings.MEDIA_ROOT + '/' + path)
-    filepath = filepath.split(file.name)[0] + name
-    with open(filepath, 'wb+') as dest:
+    jalali = JalaliDate(today.date()).strftime("%Y-%m-%d")
+    name = f"{jalali}-{today.hour}-{today.minute}{os.path.splitext(file.name)[1]}"
+
+    target_path = target_dir / name
+    with open(target_path, "wb+") as dest:
         shutil.copyfileobj(file, dest)
 
-    return path + '/' + name
+    return f"{path}/{name}"
 
 
-def uploadExcel(file):
+def uploadExcel(file) -> None:
+    """ذخیره اکسل در MEDIA_ROOT/perferazhExcel/<date>.xlsx."""
+    from persiantools.jdatetime import JalaliDate
+
     today = datetime.datetime.now()
-    jalali = JalaliDate(datetime.date(today.year, today.month, today.day)).strftime("%Y-%m-%d")
-    name = str(jalali) + '-' + str(today.hour) + '-' + str(today.minute) + '.xlsx'
+    jalali = JalaliDate(today.date()).strftime("%Y-%m-%d")
+    name = f"{jalali}-{today.hour}-{today.minute}.xlsx"
 
-    # custom_name = f"{uuid.uuid4()}.xlsx"
-
-    file_path = os.path.join(settings.MEDIA_ROOT, 'perferazhExcel', name)
-    with open(file_path, 'wb+') as destination:
+    target_dir = _ensure_dir(_media_root() / "perferazhExcel")
+    with open(target_dir / name, "wb+") as dest:
         for chunk in file.chunks():
-            destination.write(chunk)
+            dest.write(chunk)
 
 
-def uploadFileFromModel(instance, filename):
-    ext = filename.split('.')[-1]
-    filename = f'{customFileName()}.{ext}'
-    return os.path.join(f'{datetime.date.today().year}-{datetime.date.today().month}-{datetime.date.today().day}', filename)
+def uploadFileFromModel(instance, filename) -> str:
+    """callable برای upload_to — نام یونیک + پوشه‌ی تاریخ."""
+    ext = filename.rsplit(".", 1)[-1]
+    date_folder = _date_folder()
+    return f"{date_folder}/{customFileName()}.{ext}"
+
+
+def deleteFile(path: str) -> None:
+    """حذف فایل با مسیر نسبی (مثل '2025-1-15/abc.jpg')."""
+    if not path:
+        return
+
+    # اگر URL کامل آمد، نرمال کن
+    path = str(path)
+    media_url = (settings.MEDIA_URL or "/media/")
+    if path.startswith(media_url):
+        path = path[len(media_url):]
+    if path.startswith("/"):
+        path = path[1:]
+
+    full = _media_root() / path
+    if full.is_file():
+        try:
+            full.unlink()
+        except OSError:
+            pass
 
 
 def getFilename(file):
@@ -90,94 +121,73 @@ def getMimetype(file):
     return file.content_type
 
 
-def deleteFile(path):
-    if os.path.isfile(settings.MEDIA_ROOT + '/' + path):
-        os.remove(settings.MEDIA_ROOT + '/' + path)
-
-
-def checkFileExtension(file):
-    if file:
-        ext = os.path.splitext(file.name)[1]  # [0] returns path+filename
-        photoList = ['.png', '.gif', '.jpg', '.jpeg', '.jfif', '.pjpeg', '.pjp', '.svg', '.webp']
-        videoList = ['.mp4', '.wmv', '.mov', '.flv', '.webm', '.avi', '.kmv', '.3gp']
-        audioList = ['.mp3', '.wma', '.alag', '.aac', '.flac', '.aiff', '.wav', 'ogg']
-        if ext.lower() in photoList:
-            return 0
-        elif ext.lower() in videoList:
-            return 1
-        elif ext.lower() in audioList:
-            return 2
+def checkFileExtension(file) -> int:
+    """0=عکس، 1=ویدیو، 2=صوت، 3=نامشخص."""
+    if not file:
+        return 3
+    ext = os.path.splitext(file.name)[1].lower()
+    if ext in ('.png', '.gif', '.jpg', '.jpeg', '.jfif', '.pjpeg', '.pjp', '.svg', '.webp'):
+        return 0
+    if ext in ('.mp4', '.wmv', '.mov', '.flv', '.webm', '.avi', '.kmv', '.3gp'):
+        return 1
+    if ext in ('.mp3', '.wma', '.alag', '.aac', '.flac', '.aiff', '.wav', '.ogg'):
+        return 2
     return 3
 
 
-def customFileName():
-    return f'{datetime.datetime.now().hour}-{datetime.datetime.now().minute}-{datetime.datetime.now().second}-{datetime.datetime.now().microsecond}'
+def detect_file_type(file) -> str:
+    kind = checkFileExtension(file)
+    return {0: "Image", 1: "Video", 2: "Audio"}.get(kind, "Unknown")
 
 
-def detect_file_type(file):
-    if file:
-        ext = os.path.splitext(file.name)[1]  # [0] returns path+filename
-        photoList = ['.png', '.gif', '.jpg', '.jpeg', '.jfif', '.pjpeg', '.pjp', '.svg', '.webp']
-        videoList = ['.mp4', '.wmv', '.mov', '.flv', '.webm', '.avi', '.kmv', '.3gp']
-        audioList = ['.mp3', '.wma', '.alag', '.aac', '.flac', '.aiff', '.wav', 'ogg']
-        if ext.lower() in photoList:
-            return "Image"
-        elif ext.lower() in videoList:
-            return "Video"
-        elif ext.lower() in audioList:
-            return "Audio"
-    return "Unknown"
+def uploadFileFastAPI(file) -> str:
+    """همان uploadFile، برای UploadFile فست‌API."""
+    date_folder = _date_folder()
+    target_dir = _ensure_dir(_media_root() / date_folder)
+
+    filename = f"{customFileName()}{os.path.splitext(file.filename)[1]}"
+    target_path = target_dir / filename
+
+    with open(target_path, "wb+") as dest:
+        shutil.copyfileobj(file.file, dest)
+
+    return f"{date_folder}/{filename}"
 
 
-##################################################
-# ==============================
-# پردازش تصویر به WebP با حفظ شفافیت
-# ==============================
-def process_image_with_transparency(file, folder_prefix='static_media', max_width=1200, quality=80):
-    """
-    تصویر رو به WebP تبدیل می‌کنه، سایز رو محدود می‌کنه، و شفافیت PNG رو حفظ می‌کنه
-    """
-    dateFolder = f'{datetime.datetime.now().year}-{datetime.datetime.now().month}-{datetime.datetime.now().day}'
-    path = os.path.join(folder_prefix, dateFolder)
-    if not os.path.exists(path):
-        os.makedirs(path)
+# ═══════════════════════════════════════════════════════════
+# Image → WebP (با حفظ شفافیت)
+# ═══════════════════════════════════════════════════════════
+def process_image_with_transparency(file, max_width=1200, quality=80) -> str:
+    """تصویر → WebP، محدود به max_width، با حفظ شفافیت."""
+    date_folder = _date_folder()
+    target_dir = _ensure_dir(_media_root() / date_folder)
 
     img = Image.open(file)
-    img_format = img.format
-
-    # تغییر سایز اگر لازم بود
     if img.width > max_width:
         ratio = max_width / float(img.width)
-        height = int(img.height * ratio)
-        img = img.resize((max_width, height), Image.Resampling.LANCZOS)
+        img = img.resize((max_width, int(img.height * ratio)),
+                         Image.Resampling.LANCZOS)
 
     buffer = BytesIO()
-
-    # بررسی شفافیت
     if img.mode in ("RGBA", "LA") or (img.mode == "P" and "transparency" in img.info):
-        # حفظ شفافیت با WebP
         img.save(buffer, format="WEBP", quality=quality, lossless=False, method=6)
     else:
-        # تبدیل به RGB اگر شفافیت نیست
-        img = img.convert("RGB")
-        img.save(buffer, format="WEBP", quality=quality, method=6)
-
+        img.convert("RGB").save(buffer, format="WEBP", quality=quality, method=6)
     buffer.seek(0)
 
-    filename = f'{customFileName()}.webp'
-    final_path = os.path.join(path, filename)
-
-    with open(final_path, 'wb') as out_file:
-        out_file.write(buffer.read())
+    filename = f"{customFileName()}.webp"
+    with open(target_dir / filename, "wb") as out:
+        out.write(buffer.read())
     buffer.close()
 
-    return f'{dateFolder}/{filename}'
+    return f"{date_folder}/{filename}"
 
 
-# ==============================
-# Mixin جامع پردازش تصاویر
-# ==============================
+# ═══════════════════════════════════════════════════════════
+# Mixins
+# ═══════════════════════════════════════════════════════════
 class ImageProcessingMixin(models.Model):
+    """تبدیل خودکار ImageFieldها به WebP هنگام ذخیره‌ی فایل تازه."""
     max_width = 1200
     webp_quality = 80
 
@@ -185,61 +195,41 @@ class ImageProcessingMixin(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
-        # پردازش همه ImageField ها
         for field in self._meta.fields:
-            if isinstance(field, models.ImageField):
-                image_field = getattr(self, field.name)
-                if image_field and hasattr(image_field, 'file'):
-                    new_path = process_image_with_transparency(
-                        image_field.file,
-                        max_width=self.max_width,
-                        quality=self.webp_quality
-                    )
-                    image_field.name = new_path
+            if not isinstance(field, models.ImageField):
+                continue
+            img = getattr(self, field.name)
+            # ✅ فقط فایل تازه‌آپلودشده — نه فایل لودشده از DB
+            if not img or getattr(img, "_committed", True):
+                continue
+            try:
+                img.file.seek(0)
+            except Exception:
+                pass
+            new_name = process_image_with_transparency(
+                img.file,
+                max_width=self.max_width,
+                quality=self.webp_quality,
+            )
+            img.name = new_name
+            img._committed = True
+
         super().save(*args, **kwargs)
 
     def process_gallery(self, gallery_field_name, files, replace=False):
-        """
-        پردازش و ذخیره گالری
-        replace: اگر True باشد، تصاویر قبلی جایگزین می‌شوند، اگر False اضافه می‌شوند
-        """
-        gallery = [] if replace else (getattr(self, gallery_field_name) or [])
+        """پردازش فایل‌های گالری و ذخیره به‌صورت لیست JSON."""
+        gallery = [] if replace else list(getattr(self, gallery_field_name) or [])
         for f in files:
             gallery.append(process_image_with_transparency(
                 f,
                 max_width=self.max_width,
-                quality=self.webp_quality
+                quality=self.webp_quality,
             ))
         setattr(self, gallery_field_name, gallery)
         self.save(update_fields=[gallery_field_name])
 
 
-class ImageProcessingMixinInTranslate:
-    max_width = 1200
-    webp_quality = 80
-
-    def save(self, *args, **kwargs):
-        for field in self._meta.fields:
-            if isinstance(field, models.ImageField):
-                image_field = getattr(self, field.name)
-                if image_field and hasattr(image_field, 'file'):
-                    new_path = process_image_with_transparency(
-                        image_field.file,
-                        max_width=self.max_width,
-                        quality=self.webp_quality
-                    )
-                    image_field.name = new_path
-        super().save(*args, **kwargs)
-
-    def process_gallery(self, gallery_field_name, files, replace=False):
-        gallery = [] if replace else (getattr(self, gallery_field_name) or [])
-        for f in files:
-            gallery.append(
-                process_image_with_transparency(
-                    f,
-                    max_width=self.max_width,
-                    quality=self.webp_quality
-                )
-            )
-        setattr(self, gallery_field_name, gallery)
-        self.save(update_fields=[gallery_field_name])
+class ImageProcessingMixinInTranslate(ImageProcessingMixin):
+    """همان ImageProcessingMixin، برای مدل‌های ترجمه‌ای."""
+    class Meta:
+        abstract = True

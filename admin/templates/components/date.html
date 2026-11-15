@@ -1,42 +1,95 @@
-{% comment %} templates/components/date.html {% endcomment %}
-
-
 {% load static %}
 {% load customTags %}
-{% gregorian_to_jalali item.v as created %}
 
-<div class="{{item.c}}">
+{% if item.v %}
+    {% gregorian_to_jalali item.v as jalaliValue %}
+{% endif %}
+
+<div class="{{ item.c }}">
     <div class="form-group">
-        {% if item.r  %}
-            <span class="text-danger">*</span>
-        {% endif %}
-        <label class="mg-b-10" for="{{item.id}}"><b>{{item.l}}</b></label>
-        <input type="text" class="form-control pdate"
-               placeholder="{{item.l}}" 
-               id="{{item.id}}"
-               value="{{created}}"
-                {% if item.d  %} disabled {% endif %}
-               {% if item.r  %} required {% endif %}
-        >
-        <input type="hidden" id="hidden_{{item.id}}" name="{{item.n}}" value="{{item.v|date:'Y-m-d' }}">
+        {% if item.r %}<span class="text-danger">*</span>{% endif %}
+        <label class="mg-b-10" for="{{ item.id }}"><b>{{ item.l }}</b></label>
+
+        <input type="text"
+               class="form-control pdate"
+               placeholder="{{ item.l }}"
+               id="{{ item.id }}"
+               data-hidden-target="hidden_{{ item.id }}"
+               value="{{ jalaliValue|default:'' }}"
+               autocomplete="off"
+               {% if item.d %}disabled{% endif %}
+               {% if item.r %}required{% endif %}>
+
+        <input type="hidden"
+               id="hidden_{{ item.id }}"
+               name="{{ item.n }}"
+               value="{{ item.hiddenValue }}">
     </div>
 </div>
 
-
-<link rel="stylesheet" href="{% static '/' %}myPlugins/persianDateTimePicker/jspc-royal_blue.css">
-<script type="text/javascript" src="{% static '/' %}myPlugins/persianDateTimePicker/js-persian-cal.min.js"></script>
+{# CSS و JS کتابخانه — یک‌بار ثبت می‌شوند حتی اگر کامپوننت چند بار include شود #}
 <script>
-    new AMIB.persianCalendar("{{item.id}}", {
-        extraInputID: "hidden_{{item.id}}",
-        extraInputFormat: "YYYY-MM-DD"
+(function () {
+    if (window.__datePickerBootstrapped) return;
+    window.__datePickerBootstrapped = true;
+
+    // استایل‌ها فقط یک‌بار به head اضافه می‌شوند
+    function addStylesOnce() {
+        if (document.getElementById('pcal-royal-blue-css')) return;
+        const link = document.createElement('link');
+        link.id   = 'pcal-royal-blue-css';
+        link.rel  = 'stylesheet';
+        link.href = "{% static '/' %}myPlugins/persianDateTimePicker/jspc-royal_blue.css";
+        document.head.appendChild(link);
+
+        const style = document.createElement('style');
+        style.id    = 'pcal-overrides';
+        style.textContent = `
+            a.pcalBtn { top: 32px !important; width: 38px !important; height: 38px !important; }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // بارگذاری اسکریپت کتابخانه فقط یک‌بار
+    function loadLibraryOnce(cb) {
+        if (window.AMIB && window.AMIB.persianCalendar) return cb();
+        if (window.__pcalLoading) {
+            document.addEventListener('pcal-loaded', cb, { once: true });
+            return;
+        }
+        window.__pcalLoading = true;
+        const s = document.createElement('script');
+        s.src = "{% static '/' %}myPlugins/persianDateTimePicker/js-persian-cal.min.js";
+        s.onload = function () {
+            window.__pcalLoading = false;
+            document.dispatchEvent(new Event('pcal-loaded'));
+            cb();
+        };
+        document.head.appendChild(s);
+    }
+
+    function initAll() {
+        if (!window.AMIB || !window.AMIB.persianCalendar) return;
+        document.querySelectorAll('input.pdate[data-hidden-target]').forEach(function (el) {
+            if (el.dataset.pcalInitialized === '1') return;
+            new AMIB.persianCalendar(el.id, {
+                extraInputID:     el.dataset.hiddenTarget,
+                extraInputFormat: 'YYYY-MM-DD',
+            });
+            el.dataset.pcalInitialized = '1';
+        });
+    }
+
+    addStylesOnce();
+    loadLibraryOnce(function () {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAll, { once: true });
+        } else {
+            initAll();
+        }
     });
 
+    // برای محتوای داینامیک (بعد از AJAX): window.DatePicker.init()
+    window.DatePicker = { init: initAll };
+})();
 </script>
-<style>
-    a.pcalBtn{
-        top: 32px !important;
-        width: 38px !important;
-        height: 38px !important;
-    }
-</style>
-

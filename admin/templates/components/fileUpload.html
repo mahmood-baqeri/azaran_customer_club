@@ -1,0 +1,139 @@
+{# templates/components/fileUpload.html #}
+<div class="{{ item.c }}">
+    <div class="form-group">
+        {% if item.r %}<span class="text-danger">*</span>{% endif %}
+        <label class="mg-b-10" for="{{ item.id }}">{{ item.l }}</label>
+
+        <input type="file"
+               class="form-control fileUploadInput"
+               name="{{ item.n }}"
+               id="{{ item.id }}"
+               autocomplete="off"
+               {% if item.m %}multiple{% endif %}
+               {% if item.r %}required{% endif %}
+               {% if item.accept %}accept="{{ item.accept }}"{% endif %}>
+
+        {% if item.files %}
+            <div class="fileItems d-flex flex-wrap mt-2"
+                 data-input-id="{{ item.id }}">
+                {% for file in item.files %}
+                    <div class="imageItem"
+                         data-file-id="{{ file.id|default:'' }}"
+                         data-path="{{ file.url }}"
+                         data-index="{{ file.index }}">
+                        {% if item.allowDelete %}
+                            <span class="btnRemoveFileIndex"
+                                  data-route="{{ item.removeRoute }}"
+                                  data-parent-id="{{ item.parentId }}"
+                                  data-file-id="{{ file.id|default:'' }}"
+                                  data-path="{{ file.url }}"
+                                  data-index="{{ file.index }}"
+                                  title="حذف">×</span>
+                        {% endif %}
+                        <a href="{{ file.url }}"
+                           target="_blank"
+                           rel="noopener">{{ file.name|default:'مشاهده' }}</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+(function () {
+    if (window.__fileUploadBootstrapped) return;
+    window.__fileUploadBootstrapped = true;
+
+    // ─── استایل — یک‌بار تزریق می‌شود ─────────────────────
+    if (!document.getElementById('file-upload-styles')) {
+        const style = document.createElement('style');
+        style.id = 'file-upload-styles';
+        style.textContent = `
+            .fileItems .imageItem{
+                margin-left: 20px; padding-right: 22px;
+                position: relative; margin-top: 10px;
+                background: #f8f9fa; padding-left: 10px;
+                border-radius: 4px; padding-top: 3px; padding-bottom: 3px;
+            }
+            .fileItems .btnRemoveFileIndex{
+                position: absolute; border-radius: 3px;
+                width: 15px; height: 15px; margin-right: 2px;
+                cursor: pointer; right: 0; top: 50%;
+                transform: translateY(-50%);
+                background: white; color: #f00;
+                box-shadow: 0 0 0 1px red;
+                text-align: center; line-height: 1;
+                font-size: 11px; font-weight: bold;
+                display: flex; align-items: center; justify-content: center;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    // ─── CSRF ────────────────────────────────────────────
+    function getCsrf() {
+        const m = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+        return m ? decodeURIComponent(m.pop()) : '';
+    }
+
+    // ─── حذف فایل (event delegation) ─────────────────────
+    $(document).on('click', '.btnRemoveFileIndex', function (e) {
+        e.preventDefault();
+        const $btn = $(this);
+
+        const route    = $btn.data('route');
+        const parentId = $btn.data('parent-id');
+        const fileId   = $btn.data('file-id');
+        const path     = $btn.data('path');
+        const index    = $btn.data('index');
+
+        if (!route) {
+            if (window.MyNotification) MyNotification('خطا !', 'مسیر حذف تعریف نشده', 'error');
+            return;
+        }
+        if (parentId === undefined || parentId === null || parentId === '') {
+            if (window.MyNotification) MyNotification('خطا !', 'شناسه‌ی رکورد والد نامشخص است', 'error');
+            return;
+        }
+
+        // ─── payload مطابق بک‌اند: {param: {itemId, fileId, fileIndex, path}} ───
+        const payload = {
+            param: {
+                itemId:    String(parentId),
+                fileId:    (fileId !== undefined && fileId !== null && fileId !== '') ? String(fileId) : null,
+                fileIndex: (index !== undefined && index !== null && index !== '') ? parseInt(index, 10) : null,
+                path:      path || null,
+            },
+        };
+
+        $btn.css('opacity', 0.4).css('pointer-events', 'none');
+
+        $.ajax({
+            url: route,
+            method: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            headers: { 'X-CSRFToken': getCsrf() },
+            data: JSON.stringify(payload),
+        })
+        .done(function (resp) {
+            if (resp && resp.data === 'ok') {
+                $btn.closest('.imageItem').remove();
+            } else {
+                $btn.css('opacity', 1).css('pointer-events', 'auto');
+                if (window.MyNotification) {
+                    MyNotification('خطا !', (resp && resp.data) || 'unknown', 'error');
+                }
+            }
+        })
+        .fail(function (xhr) {
+            $btn.css('opacity', 1).css('pointer-events', 'auto');
+            if (window.MyNotification) {
+                const msg = (xhr && xhr.responseJSON && xhr.responseJSON.data) || 'خطای شبکه';
+                MyNotification('خطا !', msg, 'error');
+            }
+        });
+    });
+})();
+</script>

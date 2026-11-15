@@ -1,19 +1,95 @@
-<div class="{{item.c}}">
+{% if item.m %}
+{# ───────── گروهی (multiple) ───────── #}
+<div class="{{ item.c }}"
+     {% if item.r %}data-require-one="1"{% endif %}
+     data-group-id="{{ item.id }}">
     <div class="form-group">
-        <label class="custom-switch" style="display: flex;flex-direction: column;align-items: flex-start;">
-            <p class="">
-                {% if item.r  %}
-                    <span class="text-danger">*</span>
-                {% endif %}
-                <b>{{item.l}}</b>
+        {% if item.l %}
+            <p class="mb-2">
+                {% if item.r %}<span class="text-danger">*</span>{% endif %}
+                <b>{{ item.l }}</b>
             </p>
-            <p>
-                <input type="checkbox" name="{{item.n}}" class="custom-switch-input" id="{{item.id}}"
-                       {% if item.v == 1 or item.v == 'on' %}  checked {% endif %}
-                        {% if item.r  %} required {% endif %}
-                >
+        {% endif %}
+
+        <div class="switchContent row w-100">
+            {% for opt in item.choices %}
+                <div class="{{ item.choiceCol }}">
+                    <div class="form-group">
+                        <label class="custom-switch"
+                               for="{{ item.id }}_{{ opt.id }}"
+                               style="display:flex;flex-direction:column;align-items:flex-start;">
+                            <p class="m-0">{{ opt.label }}</p>
+                            <p class="m-0">
+                                <input type="checkbox"
+                                       name="{{ item.n }}#{{ opt.id }}"
+                                       id="{{ item.id }}_{{ opt.id }}"
+                                       class="custom-switch-input"
+                                       {% if opt.id in item.selected %}checked{% endif %}
+                                       {% if item.d %}disabled{% endif %}>
+                                <span class="custom-switch-indicator"></span>
+                            </p>
+                        </label>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% else %}
+{# ───────── تک‌تایی (single) ───────── #}
+<div class="{{ item.c }}">
+    <div class="form-group">
+        <label class="custom-switch"
+               for="{{ item.id }}"
+               style="display:flex;flex-direction:column;align-items:flex-start;">
+            <p class="m-0">
+                {% if item.r %}<span class="text-danger">*</span>{% endif %}
+                <b>{{ item.l }}</b>
+            </p>
+            <p class="m-0">
+                <input type="checkbox"
+                       name="{{ item.n }}"
+                       value="{{ item.valueOn }}"
+                       class="custom-switch-input"
+                       id="{{ item.id }}"
+                       {% if item.checked %}checked{% endif %}
+                       {% if item.r %}required{% endif %}
+                       {% if item.d %}disabled{% endif %}>
                 <span class="custom-switch-indicator"></span>
             </p>
         </label>
     </div>
 </div>
+{% endif %}
+
+{# اعتبارسنجی «حداقل یکی» برای گروه‌های اجباری #}
+<script>
+(function () {
+    if (window.__switchBootstrapped) return;
+    window.__switchBootstrapped = true;
+
+    document.addEventListener('submit', function (e) {
+        const $form = e.target;
+        if (!( $form instanceof HTMLFormElement )) return;
+
+        const groups = $form.querySelectorAll('[data-require-one="1"]');
+        for (const g of groups) {
+            const groupId = g.dataset.groupId || '';
+            const prefix  = groupId ? `[name^="${groupId}#"]` : '[name*="#"]';
+            const checked = g.querySelector(`input[type="checkbox"]${prefix}:checked`) ||
+                            Array.from(g.querySelectorAll('input[type="checkbox"]')).some(x => x.checked);
+            if (!checked) {
+                e.preventDefault();
+                const label = g.querySelector('b')?.textContent || 'این گروه';
+                if (window.MyNotification) {
+                    MyNotification('خطا !', `حداقل یکی از «${label}» را انتخاب کنید.`, 'error');
+                }
+                g.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                break;
+            }
+        }
+    }, true);
+})();
+</script>
+

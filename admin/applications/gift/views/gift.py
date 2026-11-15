@@ -197,7 +197,7 @@ def gift_delete(request, id):
 # AJAX — حذف عکس گالری (ساختار response جدا از messages)
 # ═══════════════════════════════════════════════════════════
 @is_admin_required
-def delete_gallery_photo(request):
+def remove_attachment(request):
     if request.method != "POST":
         return JsonResponse({"data": "درخواست نامعتبر"}, status=400)
 
@@ -208,30 +208,41 @@ def delete_gallery_photo(request):
 
     param = body.get("param") or {}
     item_id = param.get("itemId")
-    gallery_index = param.get("galleryIndex")
+    path    = param.get("path")
+    g_index = param.get("galleryIndex")
 
-    if not item_id or gallery_index is None:
-        return JsonResponse({"data": "پارامتر ناقص"}, status=400)
+    if not item_id:
+        return JsonResponse({"data": "شناسه الزامی است"}, status=400)
 
-    try:
-        index = int(gallery_index)
-    except (ValueError, TypeError):
-        return JsonResponse({"data": "index نامعتبر"}, status=400)
-
-    gift = Gift.objects.filter(id=item_id).first()
-    if not gift:
-        return JsonResponse({"data": "هدیه یافت نشد"}, status=404)
-
+    gift = get_object_or_404(Gift, pk=item_id)
     gallery = list(gift.gallery or [])
-    if index < 0 or index >= len(gallery):
-        return JsonResponse({"data": "index خارج از محدوده"}, status=400)
+
+    target_index = None
+
+    if path:
+        filename = path.rsplit("/", 1)[-1]
+        for i, p in enumerate(gallery):
+            if str(p).rsplit("/", 1)[-1] == filename:
+                target_index = i
+                break
+
+    if target_index is None and g_index is not None:
+        try:
+            i = int(g_index)
+            if 0 <= i < len(gallery):
+                target_index = i
+        except (TypeError, ValueError):
+            pass
+
+    if target_index is None:
+        return JsonResponse({"data": "تصویر یافت نشد"}, status=404)
 
     try:
-        deleteFile(gallery[index])
+        deleteFile(gallery[target_index])
     except Exception:
-        logger.warning("Could not delete file %s for gift %s", gallery[index], gift.id)
+        logger.warning("Could not delete %s for gift %s", gallery[target_index], gift.pk)
 
-    gallery.pop(index)
+    gallery.pop(target_index)
     gift.gallery = gallery
     gift.save(update_fields=["gallery", "updated_at"])
 

@@ -17,44 +17,37 @@ logger = logging.getLogger(__name__)
 # ═══════════════════════════════════════════════════════════
 # GIFT — Store (create / update)
 # ═══════════════════════════════════════════════════════════
+@transaction.atomic
 def gift__store(request, cleaned, item=None):
-    """ذخیره/به‌روزرسانی هدیه بر اساس داده‌های معتبرشده.
-
-    Args:
-        request: HttpRequest (برای فایل‌ها)
-        cleaned: dict خروجی gift__clean__data (تضمین‌شده معتبر)
-        item: نمونه‌ی موجود برای update؛ None برای create
-    """
     if not cleaned:
         raise ValueError("cleaned data is required")
 
     fields = {
-        "title": cleaned["title"],
-        "for_user": cleaned["for_user"],
-        "description": cleaned["description"],
-        "azar_value": cleaned["azar_value"],
-        "stock": cleaned["stock"],
-        "is_active": cleaned["is_active"],
+        "title":       cleaned["title"],
+        "for_user":    cleaned["for_user"],
+        "description": cleaned["description"] or "",
+        "azar_value":  cleaned["azar_value"],
+        "stock":       cleaned["stock"],
+        "is_active":   cleaned["is_active"],
     }
 
-    new_photo = handle_get_file(request, "photo")
-
     if item is None:
-        item = Gift.objects.create(**fields, photo=new_photo or None)
+        item = Gift(**fields)
     else:
-        for key, value in fields.items():
-            setattr(item, key, value)
-        if new_photo:
-            item.photo = new_photo
-        item.save()
+        for k, v in fields.items():
+            setattr(item, k, v)
 
-    # گالری — فایل‌های جدید اضافه می‌شوند
-    new_gallery_files = request.FILES.getlist("gallery") or []
-    if new_gallery_files:
-        gallery = list(item.gallery or [])
-        gallery += [uploadFile(img) for img in new_gallery_files]
-        item.gallery = gallery
-        item.save(update_fields=["gallery", "updated_at"])
+    # photo → میکسین خودش WebP می‌کند (چون _committed فیکس شد)
+    new_photo = request.FILES.get("photo")
+    if new_photo:
+        item.photo = new_photo
+
+    item.save()
+
+    # gallery → process_gallery از میکسین (WebP + لیست JSON)
+    new_gallery = request.FILES.getlist("gallery") or []
+    if new_gallery:
+        item.process_gallery("gallery", new_gallery, replace=False)
 
     return item
 

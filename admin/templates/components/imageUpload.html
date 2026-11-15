@@ -1,0 +1,186 @@
+{% load static %}
+
+<div class="{{ item.c }}">
+    <div class="form-group imageUploadBox">
+        {% if item.r %}<span class="text-danger">*</span>{% endif %}
+        <label><b>{{ item.title }}</b></label>
+
+        <label class="mg-b-10 mainLabel"
+               for="{{ item.id }}"
+               style="width:100%;padding:8px;border-radius:5px;background:#fff;border:1px solid #eee">
+            {{ item.l }}
+            <i class="fa fa-plus-circle"></i>
+        </label>
+
+        <input type="file"
+               class="form-control browse-file d-none"
+               name="{{ item.n }}"
+               id="{{ item.id }}"
+               data-upload-input
+               {% if item.m %}multiple{% endif %}
+               {% if item.r %}required{% endif %}
+               accept="{{ item.accept }}">
+
+        <div class="imagePreviewList d-flex flex-wrap" data-preview-list>
+            {% for img in item.existing %}
+                <div class="imageItem"
+                     data-existing="1"
+                     data-image-id="{{ img.id|default:'' }}"
+                     data-path="{{ img.url }}"
+                     data-index="{{ img.index }}">
+                    {% if item.allowDelete %}
+                        <span class="removeImageBtn"
+                              data-remove-existing
+                              data-route="{{ item.removeRoute }}"
+                              data-parent-id="{{ item.parentId }}"
+                              data-image-id="{{ img.id|default:'' }}"
+                              data-path="{{ img.url }}"
+                              data-index="{{ img.index }}"
+                              title="حذف">×</span>
+                    {% endif %}
+                    <img src="{{ img.url }}" alt="{{ img.name }}"
+                         onerror="this.onerror=null;this.src='{% static 'images/banner.png' %}'">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+(function () {
+    if (window.__imageUploadBootstrapped) return;
+    window.__imageUploadBootstrapped = true;
+
+    if (!document.getElementById('image-upload-styles')) {
+        const style = document.createElement('style');
+        style.id = 'image-upload-styles';
+        style.textContent = `
+            .imageUploadBox .imagePreviewList { gap: 10px; margin-top: 15px; }
+            .imageUploadBox .imageItem { width: 180px; position: relative; }
+            .imageUploadBox .imageItem img {
+                width: 100%; height: 160px; object-fit: cover;
+                border: 1px solid #ddd; border-radius: 5px;
+            }
+            .imageUploadBox .removeImageBtn {
+                position: absolute; top: 4px; right: 4px;
+                width: 22px; height: 22px;
+                background: #fff; color: #f00;
+                box-shadow: 0 0 0 1px red;
+                border-radius: 3px; text-align: center;
+                line-height: 20px; cursor: pointer;
+                font-weight: bold; font-size: 14px;
+                z-index: 2;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    function getCsrf() {
+        const m = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+        return m ? decodeURIComponent(m.pop()) : '';
+    }
+
+    function removeFileFromInput(input, indexToRemove) {
+        try {
+            const dt = new DataTransfer();
+            for (let i = 0; i < input.files.length; i++) {
+                if (i !== indexToRemove) dt.items.add(input.files[i]);
+            }
+            input.files = dt.files;
+        } catch (e) {
+            input.value = '';
+        }
+    }
+
+    function renderNewSelections($box) {
+        const input = $box.find('[data-upload-input]')[0];
+        const $list = $box.find('[data-preview-list]');
+        $list.find('[data-new="1"]').remove();
+        if (!input || !input.files) return;
+
+        for (let i = 0; i < input.files.length; i++) {
+            const $item = $('<div class="imageItem" data-new="1">' +
+                            '<span class="removeImageBtn" data-remove-new>×</span>' +
+                            '<img alt=""></div>');
+            $item.attr('data-file-index', i);
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                $item.find('img').attr('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[i]);
+            $list.append($item);
+        }
+    }
+
+    $(document).on('change', '[data-upload-input]', function () {
+        renderNewSelections($(this).closest('.imageUploadBox'));
+    });
+
+    $(document).on('click', '[data-remove-new]', function (e) {
+        e.preventDefault();
+        const $btn = $(this);
+        const $box = $btn.closest('.imageUploadBox');
+        const input = $box.find('[data-upload-input]')[0];
+        const fileIndex = parseInt($btn.closest('.imageItem').attr('data-file-index'), 10);
+        if (isNaN(fileIndex)) return;
+        removeFileFromInput(input, fileIndex);
+        renderNewSelections($box);
+    });
+
+    /* حذف تصویر موجود (از سرور) — payload مطابق بک‌اند */
+    $(document).on('click', '[data-remove-existing]', function (e) {
+        e.preventDefault();
+        const $btn = $(this);
+
+        const route    = $btn.data('route');
+        const parentId = $btn.data('parent-id');
+        const imageId  = $btn.data('image-id');
+        const path     = $btn.data('path');
+        const index    = $btn.data('index');
+
+        if (!route) { $btn.closest('.imageItem').remove(); return; }
+        if (parentId === undefined || parentId === null || parentId === '') {
+            if (window.MyNotification) MyNotification('خطا !', 'شناسه‌ی والد نامشخص است', 'error');
+            return;
+        }
+
+        const payload = {
+            param: {
+                itemId:       String(parentId),
+                imageId:      (imageId !== undefined && imageId !== null && imageId !== '')
+                              ? String(imageId) : null,
+                galleryIndex: (index !== undefined && index !== null && index !== '')
+                              ? parseInt(index, 10) : null,
+                path:         path || null,
+            },
+        };
+
+        $btn.css('opacity', 0.4).css('pointer-events', 'none');
+
+        $.ajax({
+            url: route,
+            method: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            headers: { 'X-CSRFToken': getCsrf() },
+            data: JSON.stringify(payload),
+        })
+        .done(function (resp) {
+            if (resp && resp.data === 'ok') {
+                $btn.closest('.imageItem').remove();
+            } else {
+                $btn.css('opacity', 1).css('pointer-events', 'auto');
+                if (window.MyNotification)
+                    MyNotification('خطا !', (resp && resp.data) || 'unknown', 'error');
+            }
+        })
+        .fail(function (xhr) {
+            $btn.css('opacity', 1).css('pointer-events', 'auto');
+            if (window.MyNotification) {
+                const msg = (xhr && xhr.responseJSON && xhr.responseJSON.data) || 'خطای شبکه';
+                MyNotification('خطا !', msg, 'error');
+            }
+        });
+    });
+})();
+</script>

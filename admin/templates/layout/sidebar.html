@@ -101,6 +101,34 @@
         </li>
       {% endif %}
 
+      {% if 'ScoreRuleRead' in adminAccess or 'ScoreLogRead' in adminAccess or 'UserScoreRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link with-sub" href="#">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-star sidemenu-icon"></i>
+            <span class="sidemenu-label">امتیازات</span>
+            <i class="angle fe fe-chevron-left"></i>
+          </a>
+          <ul class="nav-sub">
+            {% if 'ScoreRuleRead' in adminAccess %}
+              <li class="nav-sub-item">
+                <a class="nav-sub-link" href="{% url 'app_score:rule_index' %}">قواعد امتیاز</a>
+              </li>
+            {% endif %}
+            {% if 'UserScoreRead' in adminAccess %}
+              <li class="nav-sub-item">
+                <a class="nav-sub-link" href="{% url 'app_score:user_score_index' %}">امتیاز کاربران</a>
+              </li>
+            {% endif %}
+            {% if 'ScoreLogRead' in adminAccess %}
+              <li class="nav-sub-item">
+                <a class="nav-sub-link" href="{% url 'app_score:log_index' %}">تاریخچه تراکنش‌ها</a>
+              </li>
+            {% endif %}
+          </ul>
+        </li>
+      {% endif %}
+
       {% if 'GiftRead' in adminAccess or 'GiftOrderRead' in adminAccess %}
         <li class="nav-item">
           <a class="nav-link with-sub" href="#">

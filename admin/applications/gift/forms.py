@@ -1,12 +1,22 @@
 # applications/gift/forms.py
 
 from django import forms
+from django.urls import NoReverseMatch, reverse
+
+from applications.core.forms import (
+    make_input_item,
+    make_select2_item,
+    make_switch_item,
+    make_image_item,
+    pick_value,
+    pick_bool,
+)
 
 from .models import Gift, GiftOrder
 
 
 # ═══════════════════════════════════════════════════════════
-# Action Forms (داخل صفحه‌ی جزئیات سفارش)
+# Action Forms (Django Forms مستقل — بدون تغییر)
 # ═══════════════════════════════════════════════════════════
 class OrderStatusForm(forms.Form):
     new_status = forms.ChoiceField(
@@ -43,104 +53,101 @@ class OrderAssignForm(forms.Form):
 def gift__form(gift=None, raw_data=None):
     """ساخت لیست items برای قالب عمومی form.html"""
 
-    def val(field, default=""):
-        if raw_data is not None:
-            return raw_data.get(field, default)
-        if gift is not None:
-            return getattr(gift, field, default)
-        return default
-
-    def photo_url():
-        """✅ URL رشته برمی‌گرداند (نه ImageFieldFile)"""
-        if not gift or not gift.photo:
-            return ""
+    # ✅ برای کامپوننت گالری، Route حذف را از reverse() می‌سازیم
+    # (جلوگیری از باگ مسیر نسبی)
+    gallery_remove_route = None
+    if gift is not None:
         try:
-            return gift.photo.url
-        except ValueError:
-            return ""
-
-    def is_active_value():
-        """✅ raw_data را هم در نظر می‌گیرد"""
-        if raw_data is not None:
-            v = str(raw_data.get("is_active", "")).lower()
-            return 1 if v in ("on", "true", "1") else 0
-        if gift is not None:
-            return 1 if gift.is_active else 0
-        return 0
-
-    def gallery_photos():
-        """گالری از DB (منبع حقیقت — AJAX delete فوری ذخیره می‌شود)"""
-        if gift is not None:
-            return list(gift.gallery or [])
-        return []
+            gallery_remove_route = reverse("app_gift:delete_photo")
+        except Exception:
+            # اگر URL هنوز تعریف نشده، بدون قابلیت حذف ادامه بده
+            gallery_remove_route = None
 
     return [
-        {
-            'l': "عنوان *",
-            'n': 'title',
-            'v': val("title"),
-            'id': 'the_title',
-            'r': True,
-            'c': 'col-md-6',
-            'b': 'textBox.html'
-        }, {
-            'l': "برای *",
-            'n': 'for_user',
-            'v': val("for_user", Gift.ForUser.SELLER),
-            'id': 'the_for_user',
-            'r': True,
-            'c': 'col-md-6',
-            'data': [{"id": v, "label": l} for v, l in Gift.ForUser.choices],
-            'b': 'select2Single.html',
-        }, {
-            'l': "توضیحات",
-            'n': 'description',
-            'v': val("description"),
-            'id': 'the_description',
-            'r': None,
-            'c': 'col-md-12',
-            'b': 'textarea.html'
-        }, {
-            'l': 'ارزش آذر *',
-            'n': 'azar_value',
-            'v': val("azar_value", 0),
-            'id': 'the_azar_value',
-            'r': True,
-            'c': 'col-md-3',
-            'b': 'number.html'
-        }, {
-            'l': 'موجودی *',
-            'n': 'stock',
-            'v': val("stock", 0),
-            'id': 'the_stock',
-            'r': True,
-            'c': 'col-md-3',
-            'b': 'number.html'
-        }, {
-            'l': 'فعال',
-            'n': 'is_active',
-            'v': is_active_value(),
-            'id': 'is_active',
-            'r': None,
-            'c': 'col-md-3',
-            'b': 'switch.html'
-        }, {
-            'l': 'تصویر',
-            'n': 'photo',
-            'v': photo_url(),
-            'id': 'the_photo',
-            'r': None,
-            'c': 'col-md-3',
-            'b': 'photo.html'
-        }, {
-            'l': "گالری",
-            'n': 'gallery',
-            'photos': gallery_photos(),
-            'theItem': gift if gift else '',
-            'id': 'the_gallery',
-            'r': None,
-            'removeRoute': "gift/api/deletePhoto",
-            'c': 'col-md-12',
-            'b': 'photoMulti.html'
-        }
+        # ─── عنوان ────────────────────────────────────────
+        make_input_item(
+            label="عنوان",
+            name="title",
+            input_id="the_title",
+            value=pick_value(raw_data, gift, "title"),
+            required=True,
+            col_class="col-md-6",
+        ),
+
+        # ─── برای کاربر ──────────────────────────────────
+        make_select2_item(
+            label="برای",
+            name="for_user",
+            input_id="the_for_user",
+            choices=[{"id": v, "label": l} for v, l in Gift.ForUser.choices],
+            value=pick_value(raw_data, gift, "for_user", Gift.ForUser.SELLER),
+            required=True,
+            col_class="col-md-6",
+        ),
+
+        # ─── توضیحات ─────────────────────────────────────
+        make_input_item(
+            label="توضیحات",
+            name="description",
+            input_id="the_description",
+            kind="textarea",
+            value=pick_value(raw_data, gift, "description"),
+            rows=4,
+            col_class="col-md-12",
+        ),
+
+        # ─── ارزش / موجودی / فعال ────────────────────────
+        make_input_item(
+            label="ارزش آذر",
+            name="azar_value",
+            input_id="the_azar_value",
+            kind="number",
+            value=pick_value(raw_data, gift, "azar_value", 0),
+            min=0,
+            step=1,
+            required=True,
+            col_class="col-md-3",
+        ),
+        make_input_item(
+            label="موجودی",
+            name="stock",
+            input_id="the_stock",
+            kind="number",
+            value=pick_value(raw_data, gift, "stock", 0),
+            min=0,
+            step=1,
+            required=True,
+            col_class="col-md-3",
+        ),
+        make_switch_item(
+            label="فعال",
+            name="is_active",
+            input_id="is_active",
+            value=pick_bool(raw_data, gift, "is_active"),
+            col_class="col-md-3",
+        ),
+
+        # ─── تصویر شاخص ──────────────────────────────────
+        make_image_item(
+            label="تصویر",
+            title="تصویر شاخص",
+            name="photo",
+            input_id="the_photo",
+            existing=gift.photo if gift else None,
+            col_class="col-md-3",
+        ),
+
+        # ─── گالری ───────────────────────────────────────
+        make_image_item(
+            label="گالری",
+            title="گالری تصاویر",
+            name="gallery",
+            input_id="the_gallery",
+            multiple=True,
+            existing=gift.gallery if gift else None,
+            allow_delete=bool(gift and gallery_remove_route),
+            remove_route=gallery_remove_route,
+            parent_id=gift.pk if gift else None,  
+            col_class="col-md-12",
+        ),
     ]

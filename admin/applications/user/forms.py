@@ -1,178 +1,20 @@
-
-from applications.role.models import Role
-
-
-def backend__userForm(item):
-    is_active = 0
-    if item:
-        if item.is_active:
-            is_active = 1
-
-    data = [
-        {
-            'l': 'نام',
-            'n': 'first_name',
-            'v': item.first_name if item else '',
-            'id': 'thefirst_name',
-            'r': 1,
-            'c': 'col-md-3',
-            'b': 'textBox.html'
-        }, {
-            'l': 'نام خانوادگی',
-            'n': 'last_name',
-            'v': item.last_name if item else '',
-            'id': 'thelast_name',
-            'r': 1,
-            'c': 'col-md-3',
-            'b': 'textBox.html'
-        }, {
-            'l': 'تلفن همراه',
-            'n': 'mobile',
-            'v': item.mobile if item else '',
-            'id': 'mobile',
-            'r': 1,
-            'c': 'col-md-3',
-            'b': 'number.html'
-        }, {
-            'l': 'رمز عبور جدید',
-            'n': 'password',
-            'v': '',
-            'id': 'thePassEl2',
-            'r': None,
-            'c': 'col-md-3',
-            'b': 'textBox.html'
-        },
-
-              {'b': 'hr.html'},
-        {
-            'l': 'فعال',
-            'n': 'active',
-            'v': is_active,
-            'id': 'theActiveEl',
-            'r': None,
-            'c': 'col-md-2',
-            'b': 'switch.html'
-        },
-    ]
-    return data
-
-
-def backend__adminForm(item):
-    is_active = 0
-    if item:
-        if item.is_active:
-            is_active = 1
-
-    select2 = []
-    for role in Role.objects.all():
-        select2.append({'label': role.title, 'id': role.id})
-
-    data = [
-        {
-            'l': 'نام',
-            'n': 'first_name',
-            'v': item.first_name if item else '',
-            'id': 'first_name',
-            'r': 1,
-            'c': 'col-md-3',
-            'b': 'textBox.html'
-        },
-        {
-            'l': 'نام خانوادگی',
-            'n': 'last_name',
-            'v': item.last_name if item else '',
-            'id': 'last_name',
-            'r': 1,
-            'c': 'col-md-3',
-            'b': 'textBox.html'
-        }, {
-            'l': 'تلفن همراه',
-            'n': 'mobile',
-            'v': item.mobile if item else '',
-            'id': 'mobile',
-            'r': 1,
-            'c': 'col-md-3',
-            'b': 'number.html'
-        },
-        {
-            'l': 'تصویر شخصی',
-            'n': 'photo',
-            'v': item.photo if item else '',
-            'id': 'photo',
-            'r': None,
-            'c': 'col-md-3',
-            'b': 'photo.html'
-        },
-       
-        {'b': 'hr.html'},
-
-        {
-            'l': 'سطح دسترسی',
-            'n': 'roles',
-            'v': item.role_ids if item else [],
-            'id': 'theRolesElement',
-            'r': 1,
-            'c': 'col-md-3',
-            'data': select2,
-            'b': 'select2Multi.html'
-        },
-        {
-            'l': 'فعال',
-            'n': 'active',
-            'v': is_active,
-            'id': 'active',
-            'r': None,
-            'c': 'col-md-3',
-            'b': 'switch.html'
-        },
-
-        {'b': 'hr.html'},
-
-    ]
-    return data
-
-
-def backend__profileForm(item):
-    data = [
-        {'l': 'نام', 'n': 'first_name', 'v': item.first_name if item else '', 'id': 1, 'r': 1, 'c': 'col-md-4',
-         'b': 'textBox.html'},
-        {'l': 'نام خانوادگی', 'n': 'last_name', 'v': item.last_name if item else '', 'id': 1, 'r': 1, 'c': 'col-md-4',
-         'b': 'textBox.html'},
-        {'l': 'تلفن همراه', 'n': 'mobile', 'v': item.mobile if item else '', 'id': 1, 'r': 1, 'c': 'col-md-4',
-         'b': 'number.html'},
-        {'l': 'آدرس', 'n': 'address', 'v': item.address if item else '', 'id': 1, 'r': None, 'c': 'col-md-4',
-         'b': 'textBox.html'},
-        {'l': 'تصویر شخصی', 'n': 'photo', 'v': item.photo if item else '', 'id': 1, 'r': None, 'c': 'col-md-4',
-         'b': 'photo.html'},
-    ]
-    return data
-
-
-def backend__changePass():
-    return [
-        {'l': 'رمز عبور فعلی', 'n': 'oldPassword', 'v': '', 'id': 'thePassEl1', 'r': 1, 'c': 'col-6 offset-r-3', 'b': 'password.html'},
-        {'l': 'رمز عبور جدید', 'n': 'newPassword', 'v': '', 'id': 'thePassEl2', 'r': 1, 'c': 'col-6 offset-r-3', 'b': 'password.html'},
-        {'l': 'تکرار رمز عبور', 'n': 'rePassword', 'v': '', 'id': 'thePassEl3', 'r': 1, 'c': 'col-6 offset-r-3', 'b': 'password.html'},
-    ]
-
-
-
-
-
-
-
-
-#####################################################
-#####################################################
-#####################################################
-#####################################################
-#####################################################
-#####################################################
-# applications/user/forms.py
 # applications/user/forms.py
 
+from applications.core.forms import (
+    make_input_item,
+    make_select2_item,
+    make_switch_item,
+    make_image_item,
+    make_date_item,
+    make_province_city_item,
+    make_divider_item,
+    pick_value,
+    pick_value_any,
+    pick_bool,
+    pick_multi,
+       pick_multi_or_model,
+)
 from applications.role.models import Role
-from applications.setting.models import Province, City
 
 from .models import User
 
@@ -180,330 +22,254 @@ from .models import User
 GENDER_CHOICES = [("male", "مرد"), ("female", "زن")]
 
 
-def user__form(user=None, raw_data=None):
-    """items برای قالب عمومی form.html — کاربر + پروفایل"""
-
-    profile = getattr(user, "relation_profile", None) if user else None
-
-    def val(obj, field, default=""):
-        if raw_data is not None:
-            return raw_data.get(field, default)
-        if obj is not None:
-            return getattr(obj, field, default)
-        return default
-
-    def bool_val(field, default=False):
-        if raw_data is not None:
-            return str(raw_data.get(field, "")).lower() in ("on", "true", "1")
-        if user is not None:
-            return getattr(user, field, default)
-        return default
-
-    def role_ids_value():
-        if raw_data is not None:
-            ids = raw_data.getlist("role_ids[]") or raw_data.getlist("role_ids") or []
-            return [int(i) for i in ids if str(i).isdigit()]
-        if user is not None:
-            return list(user.role_ids or [])
-        return []
-
-    def province_value():
-        if raw_data is not None:
-            v = raw_data.get("province") or raw_data.get("province_id")
-            return int(v) if v and str(v).isdigit() else ""
-        if profile and profile.province_id:
-            return profile.province_id
-        return ""
-
-    def city_value():
-        if raw_data is not None:
-            v = raw_data.get("city") or raw_data.get("city_id")
-            return int(v) if v and str(v).isdigit() else ""
-        if profile and profile.city_id:
-            return profile.city_id
-        return ""
-
-    def birth_date_miladi():
-        """تاریخ میلادی YYYY-MM-DD — برای name در hidden"""
-        if raw_data is not None:
-            return raw_data.get("birth_date", "")
-        if profile and profile.birth_date:
-            return profile.birth_date.strftime("%Y-%m-%d")
-        return ""
-
-    def birth_date_jalali():
-        """تاریخ شمسی YYYY/MM/DD — برای نمایش"""
-        iso = birth_date_miladi()
-        if not iso:
-            return ""
-        try:
-            import datetime
-            from persiantools.jdatetime import JalaliDate
-            d = datetime.datetime.strptime(iso, "%Y-%m-%d").date()
-            return JalaliDate(d).strftime("%Y/%m/%d")
-        except Exception:
-            return ""
-
-    def avatar_url():
-        if user and user.avatar:
-            try:
-                return user.avatar.url
-            except ValueError:
-                return ""
-        return ""
-
-    # ── داده‌های select2 ──
-    province_data = [
-        {"id": p.id, "label": p.name}
-        for p in Province.objects.all().only("id", "name").order_by("name")
+# ═══════════════════════════════════════════════════════════
+# SIMPLE ADMIN FORMS
+# ═══════════════════════════════════════════════════════════
+def backend__userForm(item):
+    return [
+        make_input_item(
+            label="نام", name="first_name", input_id="thefirst_name",
+            value=pick_value(None, item, "first_name"),
+            required=True, col_class="col-md-3",
+        ),
+        make_input_item(
+            label="نام خانوادگی", name="last_name", input_id="thelast_name",
+            value=pick_value(None, item, "last_name"),
+            required=True, col_class="col-md-3",
+        ),
+        make_input_item(
+            label="تلفن همراه", name="mobile", input_id="mobile",
+            kind="number",
+            value=pick_value(None, item, "mobile"),
+            required=True, col_class="col-md-3",
+        ),
+        make_input_item(
+            label="رمز عبور جدید", name="password", input_id="thePassEl2",
+            kind="password", value="", col_class="col-md-3",
+        ),
+        make_divider_item(),
+        make_switch_item(
+            label="فعال", name="active", input_id="theActiveEl",
+            value=pick_bool(None, item, "is_active"),
+            col_class="col-md-2",
+        ),
     ]
-    city_data = [
-        {"id": c.id, "label": c.name, "province": c.province_id}
-        for c in City.objects.all().only("id", "name", "province_id").order_by("name")
-    ]
-    role_data = [
-        {"id": r.id, "label": r.title}
-        for r in Role.objects.all().only("id", "title").order_by("title")
-    ]
-    gender_data = [{"id": v, "label": l} for v, l in GENDER_CHOICES]
-    nature_data = [{"id": v, "label": l} for v, l in User.UserNature.choices]
 
-    # ── اسکریپت وابستگی استان → شهر ──
-    dependency_script = """
-<script>
-(function () {
-    function initProvinceCity() {
-        var provinceEl = document.querySelector('select[name="province"]');
-        var cityEl = document.querySelector('select[name="city"]');
-        if (!provinceEl || !cityEl) return;
 
-        var allCityOptions = Array.from(cityEl.querySelectorAll('option[data-province]'));
-        var currentCity = cityEl.value;
-        var placeholderCity = cityEl.querySelector('option[value=""]');
-
-        function filterCities(reset) {
-            var pid = provinceEl.value;
-            cityEl.innerHTML = '';
-            if (placeholderCity) cityEl.appendChild(placeholderCity.cloneNode(true));
-
-            allCityOptions.forEach(function (opt) {
-                if (!pid || opt.dataset.province === pid) {
-                    var clone = opt.cloneNode(true);
-                    if (!reset && clone.value === currentCity) clone.selected = true;
-                    cityEl.appendChild(clone);
-                }
-            });
-
-            // اگر select2 فعال است، باید refresh شود
-            if (window.jQuery && jQuery(cityEl).data('select2')) {
-                jQuery(cityEl).trigger('change.select2');
-            }
-        }
-
-        provinceEl.addEventListener('change', function () {
-            currentCity = '';
-            filterCities(true);
-        });
-
-        if (provinceEl.value) filterCities(false);
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initProvinceCity);
-    } else {
-        initProvinceCity();
-    }
-    setTimeout(initProvinceCity, 300);
-})();
-</script>
-"""
+def backend__adminForm(item):
+    role_choices = [{"id": r.pk, "label": r.title} for r in Role.objects.all()]
 
     return [
-        # ═══════════ کاربر پایه ═══════════
-        {
-            "l": "شماره موبایل *",
-            "n": "mobile",
-            "v": val(user, "mobile"),
-            "id": "the_mobile",
-            "r": True,
-            "c": "col-md-4",
-            "b": "textBox.html",
-        },
-        {
-            "l": "نام *",
-            "n": "first_name",
-            "v": val(user, "first_name"),
-            "id": "the_first_name",
-            "r": True,
-            "c": "col-md-4",
-            "b": "textBox.html",
-        },
-        {
-            "l": "نام خانوادگی *",
-            "n": "last_name",
-            "v": val(user, "last_name"),
-            "id": "the_last_name",
-            "r": True,
-            "c": "col-md-4",
-            "b": "textBox.html",
-        },
-        {
-            "l": "ایمیل",
-            "n": "email",
-            "v": val(user, "email"),
-            "id": "the_email",
-            "r": None,
-            "c": "col-md-6",
-            "b": "textBox.html",
-        },
-        {
-            "l": "رمز عبور" + ("" if user else " (خالی = تولید خودکار)"),
-            "n": "password",
-            "v": "",
-            "id": "the_password",
-            "r": None,
-            "c": "col-md-6",
-            "b": "password.html",
-        },
-        {
-            "l": "نوع کاربری *",
-            "n": "nature",
-            "v": val(user, "nature", User.UserNature.USER),
-            "id": "the_nature",
-            "r": True,
-            "c": "col-md-4",
-            "data": nature_data,
-            "b": "select2Single.html",
-        },
-        {
-            "l": "سطح دسترسی",
-            "n": "role_ids",
-            "v": role_ids_value(),
-            "id": "the_role_ids",
-            "r": None,
-            "c": "col-md-4",
-            "data": role_data,
-            "b": "select2Multi.html",
-        },
-        {
-            "l": "موبایل تایید شده",
-            "n": "is_mobile_verified",
-            "v": 1 if bool_val("is_mobile_verified") else 0,
-            "id": "is_mobile_verified",
-            "r": None,
-            "c": "col-md-2",
-            "b": "switch.html",
-        },
-        {
-            "l": "فعال",
-            "n": "is_active",
-            "v": 1 if bool_val("is_active", True) else 0,
-            "id": "is_active",
-            "r": None,
-            "c": "col-md-2",
-            "b": "switch.html",
-        },
-        {
-            "l": "آواتار",
-            "n": "avatar",
-            "v": avatar_url(),
-            "id": "the_avatar",
-            "r": None,
-            "c": "col-md-4",
-            "b": "photo.html",
-        },
+        make_input_item(
+            label="نام", name="first_name", input_id="first_name",
+            value=pick_value(None, item, "first_name"),
+            required=True, col_class="col-md-3",
+        ),
+        make_input_item(
+            label="نام خانوادگی", name="last_name", input_id="last_name",
+            value=pick_value(None, item, "last_name"),
+            required=True, col_class="col-md-3",
+        ),
+        make_input_item(
+            label="تلفن همراه", name="mobile", input_id="mobile",
+            kind="number",
+            value=pick_value(None, item, "mobile"),
+            required=True, col_class="col-md-3",
+        ),
+        make_image_item(
+            label="تصویر شخصی", name="photo", input_id="photo",
+            existing=item.photo if item else None,
+            col_class="col-md-3",
+        ),
+        make_divider_item(),
+        make_select2_item(
+            label="سطح دسترسی", name="roles", input_id="theRolesElement",
+            choices=role_choices,
+            value=item.role_ids if item else [],
+            multiple=True, required=True, col_class="col-md-3",
+        ),
+        make_switch_item(
+            label="فعال", name="active", input_id="active",
+            value=pick_bool(None, item, "is_active"),
+            col_class="col-md-3",
+        ),
+        make_divider_item(),
+    ]
 
-        # ═══════════ پروفایل ═══════════
-        {
-            "l": "کد ملی",
-            "n": "national_code",
-            "v": val(profile, "national_code") if profile else val(None, "national_code"),
-            "id": "the_national_code",
-            "r": None,
-            "c": "col-md-4",
-            "b": "textBox.html",
-        },
-        {
-            # ✅ استفاده از کامپوننت آماده‌ی date.html
-            "l": "تاریخ تولد",
-            "n": "birth_date",
-            "v": birth_date_jalali(),        # نمایش شمسی
-            "v_miladi": birth_date_miladi(), # hidden میلادی
-            "id": "the_birth_date",
-            "r": None,
-            "c": "col-md-4",
-            "b": "date.html",
-        },
-        {
-            "l": "جنسیت",
-            "n": "gender",
-            "v": val(profile, "gender") if profile else val(None, "gender"),
-            "id": "the_gender",
-            "r": None,
-            "c": "col-md-4",
-            "data": gender_data,
-            "b": "select2Single.html",
-        },
-        {
-            "l": "استان",
-            "n": "province",
-            "v": province_value(),
-            "id": "the_province",
-            "r": None,
-            "c": "col-md-6",
-            "data": province_data,
-            "b": "select2Single.html",
-        },
-        {
-            "l": "شهر",
-            "n": "city",
-            "v": city_value(),
-            "id": "the_city",
-            "r": None,
-            "c": "col-md-6",
-            "data": city_data,
-            "b": "select2Single.html",
-        },
-        {
-            "l": "آدرس",
-            "n": "address",
-            "v": val(profile, "address") if profile else val(None, "address"),
-            "id": "the_address",
-            "r": None,
-            "c": "col-md-12",
-            "b": "textarea.html",
-        },
-        {
-            "l": "کد پستی",
-            "n": "post_code",
-            "v": val(profile, "post_code") if profile else val(None, "post_code"),
-            "id": "the_post_code",
-            "r": None,
-            "c": "col-md-6",
-            "b": "textBox.html",
-        },
-        {
-            "l": "عنوان شغلی",
-            "n": "job_title",
-            "v": val(profile, "job_title") if profile else val(None, "job_title"),
-            "id": "the_job_title",
-            "r": None,
-            "c": "col-md-6",
-            "b": "textBox.html",
-        },
-        {
-            "l": "نام شرکت",
-            "n": "company_name",
-            "v": val(profile, "company_name") if profile else val(None, "company_name"),
-            "id": "the_company_name",
-            "r": None,
-            "c": "col-md-12",
-            "b": "textBox.html",
-        },
 
-        # ═══════════ اسکریپت وابستگی استان → شهر ═══════════
-        {
-            "b": "script.html",
-            "script": dependency_script,
-        },
+def backend__profileForm(item):
+    # ✅ رفع باگ قبلی: همه‌ی فیلدها id یکسان «1» داشتند
+    return [
+        make_input_item(
+            label="نام", name="first_name", input_id="pf_first_name",
+            value=pick_value(None, item, "first_name"),
+            required=True, col_class="col-md-4",
+        ),
+        make_input_item(
+            label="نام خانوادگی", name="last_name", input_id="pf_last_name",
+            value=pick_value(None, item, "last_name"),
+            required=True, col_class="col-md-4",
+        ),
+        make_input_item(
+            label="تلفن همراه", name="mobile", input_id="pf_mobile",
+            kind="number",
+            value=pick_value(None, item, "mobile"),
+            required=True, col_class="col-md-4",
+        ),
+        make_input_item(
+            label="آدرس", name="address", input_id="pf_address",
+            value=pick_value(None, item, "address"),
+            col_class="col-md-4",
+        ),
+        make_image_item(
+            label="تصویر شخصی", name="photo", input_id="pf_photo",
+            existing=item.photo if item else None,
+            col_class="col-md-4",
+        ),
+    ]
+
+
+def backend__changePass():
+    return [
+        make_input_item(
+            label="رمز عبور فعلی", name="oldPassword", input_id="thePassEl1",
+            kind="password", required=True,
+            col_class="col-6 offset-r-3",
+        ),
+        make_input_item(
+            label="رمز عبور جدید", name="newPassword", input_id="thePassEl2",
+            kind="password", required=True,
+            col_class="col-6 offset-r-3",
+        ),
+        make_input_item(
+            label="تکرار رمز عبور", name="rePassword", input_id="thePassEl3",
+            kind="password", required=True,
+            col_class="col-6 offset-r-3",
+        ),
+    ]
+
+
+# ═══════════════════════════════════════════════════════════
+# COMPREHENSIVE USER FORM
+# ═══════════════════════════════════════════════════════════
+def user__form(user=None, raw_data=None):
+    """items برای قالب عمومی form.html — کاربر + پروفایل"""
+    profile = getattr(user, "relation_profile", None) if user else None
+
+    role_choices = [{"id": r.pk, "label": r.title} for r in Role.objects.all()]
+    nature_choices = [{"id": v, "label": l} for v, l in User.UserNature.choices]
+    gender_choices = [{"id": v, "label": l} for v, l in GENDER_CHOICES]
+    roles_value = pick_multi_or_model(raw_data, "role_ids", user, "role_ids")
+
+    return [
+        # ─── کاربر پایه ─────────────────────────────────
+        make_input_item(
+            label="شماره موبایل", name="mobile", input_id="the_mobile",
+            value=pick_value(raw_data, user, "mobile"),
+            required=True, col_class="col-md-4",
+        ),
+        make_input_item(
+            label="نام", name="first_name", input_id="the_first_name",
+            value=pick_value(raw_data, user, "first_name"),
+            required=True, col_class="col-md-4",
+        ),
+        make_input_item(
+            label="نام خانوادگی", name="last_name", input_id="the_last_name",
+            value=pick_value(raw_data, user, "last_name"),
+            required=True, col_class="col-md-4",
+        ),
+        make_input_item(
+            label="ایمیل", name="email", input_id="the_email",
+            kind="email",
+            value=pick_value(raw_data, user, "email"),
+            col_class="col-md-6",
+        ),
+        make_input_item(
+            label="رمز عبور" + ("" if user else " (خالی = تولید خودکار)"),
+            name="password", input_id="the_password",
+            kind="password", value="", col_class="col-md-6",
+        ),
+        make_select2_item(
+            label="نوع کاربری", name="nature", input_id="the_nature",
+            choices=nature_choices,
+            value=pick_value(raw_data, user, "nature", User.UserNature.USER),
+            required=True, col_class="col-md-4",
+        ),
+        make_select2_item(
+            label="سطح دسترسی", name="role_ids", input_id="the_role_ids",
+            choices=role_choices, value=roles_value,
+            multiple=True, col_class="col-md-4",
+        ),
+        make_switch_item(
+            label="موبایل تایید شده", name="is_mobile_verified",
+            input_id="is_mobile_verified",
+            value=pick_bool(raw_data, user, "is_mobile_verified"),
+            col_class="col-md-2",
+        ),
+        make_switch_item(
+            label="فعال", name="is_active", input_id="is_active",
+            value=pick_bool(raw_data, user, "is_active", default=True),
+            col_class="col-md-2",
+        ),
+        make_image_item(
+            label="آواتار", name="avatar", input_id="the_avatar",
+            existing=user.avatar if user else None,
+            col_class="col-md-4",
+        ),
+
+        # ─── پروفایل ─────────────────────────────────────
+        make_input_item(
+            label="کد ملی", name="national_code", input_id="the_national_code",
+            value=pick_value(raw_data, profile, "national_code"),
+            col_class="col-md-4",
+        ),
+        make_date_item(
+            label="تاریخ تولد", name="birth_date", input_id="the_birth_date",
+            value=pick_value(raw_data, profile, "birth_date"),
+            col_class="col-md-4",
+        ),
+        make_select2_item(
+            label="جنسیت", name="gender", input_id="the_gender",
+            choices=gender_choices,
+            value=pick_value(raw_data, profile, "gender"),
+            empty_label="— انتخاب کنید —",
+            col_class="col-md-4",
+        ),
+
+        # ✅ استان/شهر — کامپوننت خودش AJAX و preload را دارد
+        # raw_data از input با name="province" می‌آید، مدل با province_id
+        make_province_city_item(
+            label="",
+            province_name="province", city_name="city",
+            province_id="the_province", city_id="the_city",
+            province_value=pick_value_any(
+                raw_data, profile, "province_id", "province"
+            ),
+            city_value=pick_value_any(
+                raw_data, profile, "city_id", "city"
+            ),
+            col_class="col-md-12",
+        ),
+
+        make_input_item(
+            label="آدرس", name="address", input_id="the_address",
+            kind="textarea",
+            value=pick_value(raw_data, profile, "address"),
+            rows=3, col_class="col-md-12",
+        ),
+        make_input_item(
+            label="کد پستی", name="post_code", input_id="the_post_code",
+            value=pick_value(raw_data, profile, "post_code"),
+            col_class="col-md-6",
+        ),
+        make_input_item(
+            label="عنوان شغلی", name="job_title", input_id="the_job_title",
+            value=pick_value(raw_data, profile, "job_title"),
+            col_class="col-md-6",
+        ),
+        make_input_item(
+            label="نام شرکت", name="company_name", input_id="the_company_name",
+            value=pick_value(raw_data, profile, "company_name"),
+            col_class="col-md-12",
+        ),
     ]

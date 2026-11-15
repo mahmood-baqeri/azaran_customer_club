@@ -1,12 +1,13 @@
 # applications/gift/models.py
 
 from django.db import models
+from applications.core.fileManager import ImageProcessingMixin
 from applications.core.baseModel import BaseModel
 from applications.user.models import User
 from django.utils.translation import gettext_lazy as _
 
 
-class Gift(BaseModel):
+class Gift(ImageProcessingMixin, BaseModel):
      
      class ForUser(models.TextChoices):
         SELLER = "seller", "هدایا فروشندگان"

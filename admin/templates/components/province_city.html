@@ -1,0 +1,121 @@
+{% comment %}
+item انتظاری:
+  l             عنوان (اختیاری)
+  c             کلاس ستون
+  r             1/0
+  provinceName / cityName   نام فیلدها
+  provinceID   / cityID     شناسه‌های DOM (یکتا)
+  provinceValue / cityValue مقدار فعلی (int یا None)
+  provinces / cities        لیست [{id, label}]
+{% endcomment %}
+
+<div class="{{ item.c }}">
+    {% if item.l %}
+        <div class="text-end mb-2">
+            <p class="m-0"><b>{{ item.l }}</b></p>
+        </div>
+    {% endif %}
+
+    <div class="row row-sm">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="mg-b-10" for="{{ item.provinceID }}">
+                    {% if item.r %}<span class="text-danger">*</span>{% endif %} انتخاب استان
+                </label>
+                <select class="form-control select2"
+                        name="{{ item.provinceName }}"
+                        id="{{ item.provinceID }}"
+                        data-city-select="#{{ item.cityID }}"
+                        {% if item.r %}required{% endif %}>
+                    <option value="">— انتخاب استان —</option>
+                    {% for p in item.provinces %}
+                        <option value="{{ p.id }}"
+                                {% if p.id == item.provinceValue %}selected{% endif %}>
+                            {{ p.label|default:p.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="mg-b-10" for="{{ item.cityID }}">
+                    {% if item.r %}<span class="text-danger">*</span>{% endif %} انتخاب شهر
+                </label>
+                <select class="form-control select2"
+                        name="{{ item.cityName }}"
+                        id="{{ item.cityID }}"
+                        {% if item.r %}required{% endif %}>
+                    <option value="">— انتخاب شهر —</option>
+                    {% for c in item.cities %}
+                        <option value="{{ c.id }}"
+                                {% if c.id == item.cityValue %}selected{% endif %}>
+                            {{ c.label|default:c.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# JS یک‌بار ثبت می‌شود حتی اگر کامپوننت چند بار در صفحه تکرار شود #}
+<script>
+(function () {
+    if (window.__provinceCityInitialized) return;
+    window.__provinceCityInitialized = true;
+
+    function getCsrf() {
+        const m = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)');
+        return m ? decodeURIComponent(m.pop()) : '';
+    }
+
+    function refreshSelect2($el) {
+        if ($el.hasClass('select2-hidden-accessible')) $el.trigger('change.select2');
+    }
+
+    function setCityOptions($city, cities, selectedId) {
+        let html = '<option value="">— انتخاب شهر —</option>';
+        (cities || []).forEach(function (c) {
+            const sel = String(c.id) === String(selectedId) ? 'selected' : '';
+            html += `<option value="${c.id}" ${sel}>${c.label || c.name || ''}</option>`;
+        });
+        $city.empty().append(html).prop('disabled', false);
+        refreshSelect2($city);
+    }
+
+    function loadCities($province, selectedCityId) {
+        const $city = $($province.data('city-select'));
+        if (!$city.length) return;
+
+        const provinceId = $province.val();
+        if (!provinceId) { setCityOptions($city, [], null); return; }
+
+        $city.prop('disabled', true).empty().append('<option value="">در حال بارگذاری…</option>');
+        refreshSelect2($city);
+
+        $.ajax({
+            url: '/v1/city/by-province/',
+            method: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            headers: { 'X-CSRFToken': getCsrf() },
+            data: JSON.stringify({ id: provinceId }),
+        }).done(function (resp) {
+            setCityOptions($city, resp && resp.data, selectedCityId);
+        }).fail(function () {
+            $city.empty().append('<option value="">خطا در دریافت شهرها</option>').prop('disabled', false);
+            refreshSelect2($city);
+        });
+    }
+
+    // Event delegation — برای هر تعدادی کامپوننت در صفحه کار می‌کند
+    $(document).on('change', 'select[data-city-select]', function () {
+        loadCities($(this), null);
+    });
+
+    // دسترسی دستی (اختیاری)
+    window.ProvinceCity = { loadCities: loadCities, setCityOptions: setCityOptions };
+})();
+</script>

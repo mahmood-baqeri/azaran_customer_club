@@ -1,0 +1,121 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  تراکنش #{{ log.id }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="row g-3">
+          <div class="col-md-7">
+            <div class="card custom-card mb-3">
+              <div class="card-header fw-bold">جزئیات تراکنش</div>
+              <div class="card-body">
+                <dl class="row mb-0">
+                  <dt class="col-4">کاربر</dt>
+                  <dd class="col-8"><a href="{% url 'app_score:user_score_detail' log.user.id %}">{{ log.user.full_name }} ({{ log.user.mobile }})</a></dd>
+                  <dt class="col-4">کد</dt>
+                  <dd class="col-8">{{ log.get_transaction_code_display }} <small class="text-muted">({{ log.transaction_code }})</small></dd>
+                  <dt class="col-4">جهت</dt>
+                  <dd class="col-8">{{ log.get_direction_display }}</dd>
+                  <dt class="col-4">مقدار</dt>
+                  <dd class="col-8"><strong>{{ log.amount }}</strong></dd>
+                  <dt class="col-4">موجودی قبل</dt>
+                  <dd class="col-8">{{ log.balance_before }}</dd>
+                  <dt class="col-4">موجودی بعد</dt>
+                  <dd class="col-8">{{ log.balance_after }}</dd>
+                  <dt class="col-4">منبع</dt>
+                  <dd class="col-8">{{ log.get_source_display }}</dd>
+                  {% if log.created_by %}
+                    <dt class="col-4">ایجادکننده</dt>
+                    <dd class="col-8">{{ log.created_by.full_name }}</dd>
+                  {% endif %}
+                  {% if log.reason %}
+                    <dt class="col-4">دلیل</dt>
+                    <dd class="col-8">{{ log.reason }}</dd>
+                  {% endif %}
+                  {% if log.reference_type %}
+                    <dt class="col-4">مرجع</dt>
+                    <dd class="col-8">{{ log.reference_type }}:{{ log.reference_id }}</dd>
+                  {% endif %}
+                  {% if log.idempotency_key %}
+                    <dt class="col-4">کلید یکتایی</dt>
+                    <dd class="col-8"><small>{{ log.idempotency_key }}</small></dd>
+                  {% endif %}
+                  <dt class="col-4">وضعیت</dt>
+                  <dd class="col-8">
+                    {% if log.is_reversed %}
+                      <span class="badge bg-warning text-dark">برگشت خورده</span>
+                      {% if log.reversed_at %}
+                        <small>({{ log.reversed_at|date:'Y/m/d H:i' }})</small>
+                      {% endif %}
+                    {% elif log.reverses_log_id %}
+                      <span class="badge bg-info text-dark">برگشتِ #{{ log.reverses_log_id }}</span>
+                    {% else %}
+                      <span class="badge bg-success">عادی</span>
+                    {% endif %}
+                  </dd>
+                  {% if log.extra_data %}
+                    <dt class="col-4">داده اضافی</dt>
+                    <dd class="col-8"><pre class="small">{{ log.extra_data }}</pre></dd>
+                  {% endif %}
+                  <dt class="col-4">تاریخ</dt>
+                  <dd class="col-8">{{ log.created_at|date:'Y/m/d H:i:s' }}</dd>
+                </dl>
+              </div>
+            </div>
+
+            {% if reversals %}
+              <div class="card custom-card mb-3">
+                <div class="card-header fw-bold">تراکنش‌های برگشتی این لاگ</div>
+                <div class="card-body">
+                  {% for r in reversals %}
+                    <div class="border-bottom py-2">
+                      <a href="{% url 'app_score:log_detail' r.id %}">#{{ r.id }}</a>
+                      — {{ r.get_transaction_code_display }} ({{ r.amount }})
+                      <small class="text-muted">— {{ r.created_at|date:'Y/m/d' }}</small>
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="col-md-5">
+            <div class="card custom-card">
+              <div class="card-header fw-bold">آخرین تراکنش‌های این کاربر</div>
+              <div class="card-body">
+                {% for r in user_recent %}
+                  <div class="border-bottom py-2 d-flex justify-content-between">
+                    <div>
+                      <a href="{% url 'app_score:log_detail' r.id %}">#{{ r.id }}</a>
+                      {{ r.get_transaction_code_display }}
+                    </div>
+                    <small class="text-muted">
+                      {% if r.direction == 'earned' %}
+                        +
+                      {% else %}
+                        -
+                      {% endif %}{{ r.amount }}
+                    </small>
+                  </div>
+                {% empty %}
+                  <p class="text-muted mb-0">تراکنش دیگری ندارد</p>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

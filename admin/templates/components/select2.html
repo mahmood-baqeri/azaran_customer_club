@@ -1,0 +1,58 @@
+<div class="{{ item.c }}">
+    <div class="form-group">
+        {% if item.r %}<span class="text-danger">*</span>{% endif %}
+        <label class="mg-b-10" for="{{ item.id }}"><b>{{ item.l }}</b></label>
+        <select class="form-control select2"
+                name="{{ item.n }}"
+                id="{{ item.id }}"
+                {% if item.m %}multiple{% endif %}
+                {% if item.r %}required{% endif %}
+                {% if item.d %}disabled{% endif %}
+                {% if item.placeholder %}data-placeholder="{{ item.placeholder }}"{% endif %}>
+            {% if item.emptyLabel %}
+                <option value="">{{ item.emptyLabel }}</option>
+            {% endif %}
+            {% for opt in item.data %}
+                <option value="{{ opt.id }}"
+                    {% if item.m %}
+                        {% if opt.id in item.v %}selected{% endif %}
+                    {% else %}
+                        {% if opt.id == item.v %}selected{% endif %}
+                    {% endif %}
+                >{{ opt.label }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+{# init ایمن — فقط روی selectهایی که هنوز init نشده‌اند #}
+<script>
+(function () {
+    if (window.__select2Bootstrapped) return;
+    window.__select2Bootstrapped = true;
+
+    function initSelect2s() {
+        if (!window.jQuery || !jQuery.fn.select2) return;
+        jQuery('select.select2').each(function () {
+            const $s = jQuery(this);
+            if ($s.data('select2')) return;              // قبلاً init شده
+            const $form = $s.closest('form');
+            $s.select2({
+                placeholder:         $s.data('placeholder') || undefined,
+                allowClear:          !$s.prop('multiple'),
+                width:               '100%',
+                dropdownParent:      $form.length ? $form : jQuery(document.body),
+            });
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSelect2s, { once: true });
+    } else {
+        initSelect2s();
+    }
+
+    // برای محتوای داینامیک (بعد از AJAX)
+    window.Select2Helper = { init: initSelect2s };
+})();
+</script>
