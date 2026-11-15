@@ -12,33 +12,45 @@
       </div>
     </div>
     <div class="main-header-right">
+      {# ─── فول‌اسکرین ─── #}
       <div class="dropdown d-md-flex">
         <a class="nav-link icon full-screen-link" href="#">
           <i class="fe fe-maximize fullscreen-button fullscreen header-icons"></i>
           <i class="fe fe-minimize fullscreen-button exit-fullscreen header-icons"></i>
         </a>
       </div>
+
+      {# ─── نوتیفیکیشن‌های ادمین ─── #}
       <div class="dropdown main-header-notification adminNotifications">
         <a class="nav-link icon" href="#">
           <i class="fe fe-bell header-icons"></i>
-          <span class="badge badge-danger nav-link-badge">{{ adminNotifications.all }}</span>
+          {% if adminNotifications.all %}
+            <span class="badge badge-danger nav-link-badge">{{ adminNotifications.all }}</span>
+          {% endif %}
         </a>
         {% if adminNotifications.all %}
           <div class="dropdown-menu">
             <div class="main-notification-list">
-              {% if adminNotifications.secretariat %}
+              {% for item in adminNotifications.items %}
                 <div class="media">
-                  <a class="media-body" href="{% url 'secretariat:indexCorrelation' %}?status=2">
-                    <h4>مکاتبات</h4>
-                    <span class="badge badge-danger">{{ adminNotifications.secretariat }}</span>
+                  <a class="media-body d-flex justify-content-between align-items-center" href="{{ item.url }}">
+                    <span>
+                      <i class="fe {{ item.icon }} mr-2 text-{{ item.color }}"></i>
+                      <span class="small">{{ item.label }}</span>
+                    </span>
+                    <span class="badge badge-{{ item.color }}">{{ item.count }}</span>
                   </a>
                 </div>
-              {% endif %}
+              {% endfor %}
+            </div>
+            <div class="dropdown-footer text-center py-2 border-top">
+              <a href="{% url 'app_dashboard:dashboard' %}" class="small text-muted"><i class="fe fe-grid mr-1"></i> مشاهده داشبورد</a>
             </div>
           </div>
         {% endif %}
       </div>
 
+      {# ─── پیام‌های چت (در صورت وجود) ─── #}
       {% if adminMsgAlerts.all %}
         <div class="dropdown main-header-notification adminNotifications">
           <a class="nav-link icon" href="#">
@@ -60,6 +72,7 @@
         </div>
       {% endif %}
 
+      {# ─── منوی کاربر ─── #}
       {% if user.is_authenticated %}
         <div class="dropdown main-profile-menu">
           <a class="d-flex" href="#"><span class="main-img-user"><img alt="avatar" src="/media/{{ user.avatar }}" onerror="this.onerror=null;this.src='{% static '/' %}adminAssets/img/users/avatar.png';" /></span></a>
@@ -70,9 +83,7 @@
             </div>
 
             <a class="dropdown-item border-top" href="{% url 'app_user:manager_profile' %}"><i class="fe fe-user"></i> پروفایل</a>
-
             <a class="dropdown-item" href="{% url 'app_user:manager_change_password' %}"><i class="fe fe-lock"></i> تغییر رمزعبور</a>
-
             <a class="dropdown-item" href="{% url 'app_user:admin_logout' %}"><i class="fe fe-power"></i> خروج</a>
           </div>
         </div>
@@ -88,6 +99,7 @@
   <div class="mb-1 navbar navbar-expand-lg nav nav-item navbar-nav-right responsive-navbar navbar-dark">
     <div class="collapse navbar-collapse" id="navbarSupportedContent-4">
       <div class="d-flex order-lg-2 mr-auto">
+        {# ─── فول‌اسکرین (موبایل) ─── #}
         <div class="dropdown">
           <a class="nav-link icon full-screen-link">
             <i class="fe fe-maximize fullscreen-button fullscreen header-icons"></i>
@@ -95,27 +107,37 @@
           </a>
         </div>
 
+        {# ─── نوتیفیکیشن‌های ادمین (موبایل) ─── #}
         <div class="dropdown main-header-notification adminNotifications">
           <a class="nav-link icon" href="#">
             <i class="fe fe-bell header-icons"></i>
-            <span class="badge badge-danger nav-link-badge">{{ adminNotifications.all }}</span>
+            {% if adminNotifications.all %}
+              <span class="badge badge-danger nav-link-badge">{{ adminNotifications.all }}</span>
+            {% endif %}
           </a>
           {% if adminNotifications.all %}
             <div class="dropdown-menu">
               <div class="main-notification-list">
-                {% comment %} {% if adminNotifications.suggestion %}
+                {% for item in adminNotifications.items %}
                   <div class="media">
-                    <a class="media-body" href="{% url 'suggestion:index' %}?status=3">
-                      <h4>پیشنهادات تکمیل نشده</h4>
-                      <span class="badge badge-danger">{{ adminNotifications.suggestion }}</span>
+                    <a class="media-body d-flex justify-content-between align-items-center" href="{{ item.url }}">
+                      <span>
+                        <i class="fe {{ item.icon }} mr-2 text-{{ item.color }}"></i>
+                        <span class="small">{{ item.label }}</span>
+                      </span>
+                      <span class="badge badge-{{ item.color }}">{{ item.count }}</span>
                     </a>
                   </div>
-                {% endif %} {% endcomment %}
+                {% endfor %}
+              </div>
+              <div class="dropdown-footer text-center py-2 border-top">
+                <a href="{% url 'app_dashboard:dashboard' %}" class="small text-muted"><i class="fe fe-grid mr-1"></i> داشبورد</a>
               </div>
             </div>
           {% endif %}
         </div>
 
+        {# ─── منوی کاربر (موبایل) ─── #}
         {% if user.is_authenticated %}
           <div class="dropdown main-profile-menu">
             <a class="d-flex" href="#"><span class="main-img-user"><img alt="avatar" src="/media/{{ user.avatar }}" onerror="this.onerror=null;this.src='{% static '/' %}adminAssets/img/users/avatar.png';" /></span></a>
@@ -124,11 +146,8 @@
                 <h6 class="main-notification-title">{{ user.first_name }} {{ user.last_name }}</h6>
                 <p class="main-notification-text">{{ user.get_job_display }}</p>
               </div>
-
               <a class="dropdown-item border-top" href="{% url 'app_user:manager_profile' %}"><i class="fe fe-user"></i> پروفایل</a>
-
               <a class="dropdown-item" href="{% url 'app_user:manager_change_password' %}"><i class="fe fe-lock"></i> تغییر رمزعبور</a>
-
               <a class="dropdown-item" href="{% url 'app_user:admin_logout' %}"><i class="fe fe-power"></i> خروج</a>
             </div>
           </div>
