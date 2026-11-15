@@ -1,0 +1,34 @@
+{% for r in data.page %}
+  <tr>
+    <td>{{ r.id }}</td>
+    <td>
+      {{ r.user.full_name|default:'—' }}<br /><small class="text-muted" style="direction:ltr">{{ r.user.mobile }}</small>
+    </td>
+    <td>
+      <span class="badge badge-secondary">{{ r.get_transaction_code_display }}</span>
+    </td>
+    <td>
+      {% if r.direction == 'earned' %}
+        <span class="badge badge-success">دریافت</span>
+      {% else %}
+        <span class="badge badge-danger">مصرف</span>
+      {% endif %}
+    </td>
+    <td>
+      <strong>{{ r.amount }}</strong>
+    </td>
+    <td>
+      <small>{{ r.balance_before }} → {{ r.balance_after }}</small>
+    </td>
+    <td>
+      <small>{{ r.reason|default:'—'|truncatechars:30 }}</small>
+    </td>
+    <td>
+      <small>{{ r.created_at|date:'Y/m/d H:i' }}</small>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="8" class="text-center text-muted py-4">تراکنشی یافت نشد</td>
+  </tr>
+{% endfor %}

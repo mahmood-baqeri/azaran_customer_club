@@ -43,7 +43,7 @@ def loginPass(request):
                         messages.add_message(request, messages.WARNING, json.dumps({'text': 'رمز عبور شما منقضی شده است. لطفاً رمز خود را تغییر دهید.'}))
                         return redirect('app_user:admin_login_with_mobile')
 
-                    return redirect(reverse('dashboard:dashboard'))
+                    return redirect(reverse('app_dashboard:dashboard'))
                 else:
                     messages.add_message(request, messages.ERROR, json.dumps({'text': 'شما دسترسی لازم را ندارید'}))
             else:
@@ -110,7 +110,7 @@ def verifyAdmin(request):
                     user.password_changed_at = timezone.now()
                     user.save(update_fields=['password_changed_at'])
 
-                    return redirect('dashboard:dashboard')
+                    return redirect('app_dashboard:dashboard')
                 else:
                     messages.add_message(request, messages.ERROR, json.dumps({'text': 'شما دسترسی لازم را ندارید'}))
                     return redirect('app_user:admin_login_with_mobile')

@@ -1,0 +1,148 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}{{ data.pageTitle }}{% endblock %}
+
+{% block content %}
+<div class="main-content side-content pt-0">
+  <div class="container-fluid">
+    <div class="inner-body">
+      {% include 'layout/pageHeader.html' %}
+
+      <div class="row g-3">
+
+        {# ═══ سایدبار گزارش‌ها ═══ #}
+        <div class="col-md-3">
+          <div class="card custom-card shadow-sm">
+            <div class="card-header fw-bold">
+              <i class="fe fe-list mr-2 text-primary"></i> انواع گزارش
+            </div>
+            <div class="card-body p-2">
+              <div class="list-group list-group-flush">
+                {% for r in data.reports_list %}
+                  <a href="{% url 'app_dashboard:report_view' r.key %}"
+                     class="list-group-item list-group-item-action {% if r.key == data.reportType %}active{% endif %} d-flex align-items-center">
+                    <i class="fe {{ r.icon }} mr-2"></i>
+                    {{ r.title }}
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# ═══ جدول گزارش ═══ #}
+        <div class="col-md-9">
+
+          {# فیلترها #}
+          <div class="card custom-card mb-3 shadow-sm">
+            <div class="card-body">
+              <form method="get" action="">
+                <div class="row gx-2 gy-2 align-items-end">
+                  {% if 'q' in data.filters %}
+                    <div class="col-md-4">
+                      <label class="form-label small fw-bold">جستجو</label>
+                      <input type="text" name="q" class="form-control"
+                             value="{{ data.request_get.q|default:'' }}"
+                             placeholder="عبارت مورد نظر…">
+                    </div>
+                  {% endif %}
+
+                  {% if 'status' in data.filters %}
+                    <div class="col-md-3">
+                      <label class="form-label small fw-bold">وضعیت</label>
+                      <input type="text" name="status" class="form-control"
+                             value="{{ data.request_get.status|default:'' }}"
+                             placeholder="مثلاً: pending">
+                    </div>
+                  {% endif %}
+
+                  {% if 'direction' in data.filters %}
+                    <div class="col-md-3">
+                      <label class="form-label small fw-bold">جهت</label>
+                      <select name="direction" class="form-control">
+                        <option value="">— همه —</option>
+                        <option value="earned" {% if data.request_get.direction == 'earned' %}selected{% endif %}>دریافت</option>
+                        <option value="spent"  {% if data.request_get.direction == 'spent' %}selected{% endif %}>مصرف</option>
+                      </select>
+                    </div>
+                  {% endif %}
+
+                  <div class="col-md-3">
+                    <label class="form-label small fw-bold">{{ data.dateField }} از</label>
+                    <input type="text" name="date_from" class="form-control pdate"
+                           value="{{ data.request_get.date_from|default:'' }}"
+                           placeholder="۱۴۰۴/۰۱/۰۱">
+                  </div>
+                  <div class="col-md-3">
+                    <label class="form-label small fw-bold">تا</label>
+                    <input type="text" name="date_to" class="form-control pdate"
+                           value="{{ data.request_get.date_to|default:'' }}"
+                           placeholder="۱۴۰۴/۱۲/۲۹">
+                  </div>
+
+                  <div class="col-md-2">
+                    <button type="submit" class="btn btn-info btn-block">
+                      <i class="fe fe-search mr-1"></i> فیلتر
+                    </button>
+                  </div>
+                  <div class="col-md-2">
+                    <a href="{% url 'app_dashboard:report_export' data.reportType %}?{{ request.GET.urlencode }}"
+                       class="btn btn-success btn-block" target="_blank">
+                      <i class="fe fe-file-excel-o mr-1"></i> اکسل
+                    </a>
+                  </div>
+                  <div class="col-md-2">
+                    <a href="{{ request.path }}" class="btn btn-outline-secondary btn-block">
+                      <i class="fe fe-x mr-1"></i> پاک‌سازی
+                    </a>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          {# جدول #}
+          <div class="card custom-card shadow-sm">
+            <div class="card-header fw-bold d-flex justify-content-between">
+              <span><i class="fe {{ data.icon }} mr-2 text-primary"></i> {{ data.reportTitle }}</span>
+              <span class="text-muted small">{{ data.total }} رکورد</span>
+            </div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table-hover align-middle table text-nowrap table-striped mb-0">
+                  <thead>
+                    <tr>
+                      {% for key, label in data.columns %}
+                        <th>{{ label }}</th>
+                      {% endfor %}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% include data.template %}
+                  </tbody>
+                </table>
+              </div>
+              {% if data.searchCount %}
+                <div class="p-3">
+                  {% include 'components/pagination.html' with all=data.page %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  if (window.DatePicker && window.DatePicker.init) {
+    window.DatePicker.init();
+  }
+</script>
+{% endblock %}

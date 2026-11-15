@@ -1,0 +1,33 @@
+{% for u in data.page %}
+  <tr>
+    <td>{{ u.id }}</td>
+    <td>{{ u.full_name|default:'—' }}</td>
+    <td>
+      <span style="direction:ltr">{{ u.mobile }}</span>
+    </td>
+    <td>{{ u.get_nature_display }}</td>
+    <td>{{ u.relation_score.current_balance|default:0 }}</td>
+    <td class="text-success">{{ u.relation_score.total_earned|default:0 }}</td>
+    <td>
+      {% if u.is_active %}
+        <span class="badge badge-success">فعال</span>
+      {% else %}
+        <span class="badge badge-secondary">غیرفعال</span>
+      {% endif %}
+    </td>
+    <td>
+      {% if u.is_mobile_verified %}
+        <span class="badge badge-success">✓</span>
+      {% else %}
+        <span class="badge badge-warning">!</span>
+      {% endif %}
+    </td>
+    <td>
+      <small>{{ u.date_joined|date:'Y/m/d' }}</small>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="9" class="text-center text-muted py-4">داده‌ای یافت نشد</td>
+  </tr>
+{% endfor %}

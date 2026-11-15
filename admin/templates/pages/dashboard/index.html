@@ -1,0 +1,484 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  داشبورد
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        {# ═══════════ KPI - کاربران ═══════════ #}
+        <h6 class="text-muted small fw-bold mb-2"><i class="fe fe-users mr-1"></i> کاربران</h6>
+        <div class="row g-3 mb-3">
+          <div class="col-6 col-md-3">
+            <div class="card custom-card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <div class="text-muted small">کل کاربران</div>
+                    <h3 class="mb-0 fw-bold">{{ data.kpis.users.total|floatformat:'0' }}</h3>
+                    <small class="text-success"><i class="fe fe-arrow-up mr-1"></i>{{ data.kpis.users.new_7d }} در ۷ روز</small>
+                  </div>
+                  <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" style="width:48px;height:48px;background-color:#cce5ff;">
+                    <i class="fe fe-users" style="font-size:1.4rem;"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card custom-card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <div class="text-muted small">فعال</div>
+                    <h3 class="mb-0 fw-bold text-success">{{ data.kpis.users.active|floatformat:'0' }}</h3>
+                    <small class="text-muted">{{ data.kpis.users.verified }} موبایل تایید</small>
+                  </div>
+                  <div class="rounded-circle d-flex align-items-center justify-content-center text-success" style="width:48px;height:48px;background-color:#d4edda;">
+                    <i class="fe fe-user-check" style="font-size:1.4rem;"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card custom-card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <div class="text-muted small">استادکار</div>
+                    <h3 class="mb-0 fw-bold text-primary">{{ data.kpis.users.ostadkar|floatformat:'0' }}</h3>
+                    <small class="text-muted">{{ data.kpis.users.kardan }} کاردان</small>
+                  </div>
+                  <div class="rounded-circle d-flex align-items-center justify-content-center text-primary" style="width:48px;height:48px;background-color:#cce5ff;">
+                    <i class="fe fe-award" style="font-size:1.4rem;"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card custom-card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <div class="text-muted small">مدیران</div>
+                    <h3 class="mb-0 fw-bold text-info">{{ data.kpis.users.managers|floatformat:'0' }}</h3>
+                    <small class="text-muted">کاربران اداری</small>
+                  </div>
+                  <div class="rounded-circle d-flex align-items-center justify-content-center text-info" style="width:48px;height:48px;background-color:#d1ecf1;">
+                    <i class="fe fe-shield" style="font-size:1.4rem;"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# ═══════════ KPI - امتیازات ═══════════ #}
+        <h6 class="text-muted small fw-bold mb-2"><i class="fe fe-star mr-1"></i> امتیازات</h6>
+        <div class="row g-3 mb-3">
+          <div class="col-6 col-md-3">
+            <div class="card custom-card border-0 shadow-sm">
+              <div class="card-body">
+                <div class="text-muted small">موجودی کل</div>
+                <h3 class="mb-0 fw-bold">{{ data.kpis.scores.total_balance|floatformat:'0' }}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card custom-card border-0 shadow-sm">
+              <div class="card-body">
+                <div class="text-muted small">کل کسب‌شده</div>
+                <h3 class="mb-0 fw-bold text-success">{{ data.kpis.scores.total_earned|floatformat:'0' }}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card custom-card border-0 shadow-sm">
+              <div class="card-body">
+                <div class="text-muted small">کل مصرف</div>
+                <h3 class="mb-0 fw-bold text-danger">{{ data.kpis.scores.total_spent|floatformat:'0' }}</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card custom-card border-0 shadow-sm">
+              <div class="card-body">
+                <div class="text-muted small">تراکنش‌های ۷ روز</div>
+                <h3 class="mb-0 fw-bold text-info">{{ data.kpis.scores.logs_7d|floatformat:'0' }}</h3>
+                <small>
+                  <span class="text-success">+{{ data.kpis.scores.earned_7d }}</span>
+                  /
+                  <span class="text-danger">-{{ data.kpis.scores.spent_7d }}</span>
+                </small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# ═══════════ Charts ═══════════ #}
+        <div class="row g-3 mb-3">
+          <div class="col-md-8">
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-bar-chart-2 mr-2 text-primary"></i>
+                ثبت‌نام ماهانه (۱۲ ماه اخیر)
+              </div>
+              <div class="card-body">
+                <div id="chart-users-monthly" style="min-height:280px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-pie-chart mr-2 text-warning"></i>
+                نوع کاربری
+              </div>
+              <div class="card-body">
+                <div id="chart-users-nature" style="min-height:280px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-activity mr-2 text-info"></i>
+                امتیاز روزانه (۳۰ روز اخیر)
+              </div>
+              <div class="card-body">
+                <div id="chart-scores-daily" style="min-height:250px;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-file-text mr-2 text-success"></i>
+                مبلغ فاکتور تأیید‌شده (۶ ماه اخیر)
+              </div>
+              <div class="card-body">
+                <div id="chart-factors-monthly" style="min-height:250px;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# ═══════════ KPI - سفارشات ═══════════ #}
+        <h6 class="text-muted small fw-bold mb-2"><i class="fe fe-shopping-bag mr-1"></i> سفارشات</h6>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between">
+                <span><i class="fe fe-gift mr-2 text-primary"></i> هدایا</span>
+                <a href="{% url 'app_dashboard:report_view' 'gift_orders' %}" class="btn btn-sm btn-link">گزارش →</a>
+              </div>
+              <div class="card-body">
+                <div class="row text-center">
+                  <div class="col-3">
+                    <div class="text-muted small">کل</div>
+                    <h5 class="mb-0">{{ data.kpis.gifts.orders_total }}</h5>
+                  </div>
+                  <div class="col-3">
+                    <div class="text-muted small">در انتظار</div>
+                    <h5 class="mb-0 text-warning">{{ data.kpis.gifts.orders_pending }}</h5>
+                  </div>
+                  <div class="col-3">
+                    <div class="text-muted small">تأیید</div>
+                    <h5 class="mb-0 text-info">{{ data.kpis.gifts.orders_approved }}</h5>
+                  </div>
+                  <div class="col-3">
+                    <div class="text-muted small">تحویل</div>
+                    <h5 class="mb-0 text-success">{{ data.kpis.gifts.orders_delivered }}</h5>
+                  </div>
+                </div>
+                <hr />
+                <div class="small text-muted">
+                  <i class="fe fe-star mr-1"></i>
+                  ارزش کل مصرف‌شده: <strong>{{ data.kpis.gifts.azar_spent|floatformat:'0' }}</strong> آذر
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between">
+                <span><i class="fe fe-package mr-2 text-info"></i> اقلام تبلیغاتی</span>
+                <a href="{% url 'app_dashboard:report_view' 'promotion_orders' %}" class="btn btn-sm btn-link">گزارش →</a>
+              </div>
+              <div class="card-body">
+                <div class="row text-center">
+                  <div class="col-3">
+                    <div class="text-muted small">کل</div>
+                    <h5 class="mb-0">{{ data.kpis.promotions.orders_total }}</h5>
+                  </div>
+                  <div class="col-3">
+                    <div class="text-muted small">در انتظار</div>
+                    <h5 class="mb-0 text-warning">{{ data.kpis.promotions.orders_pending }}</h5>
+                  </div>
+                  <div class="col-3">
+                    <div class="text-muted small">تأیید</div>
+                    <h5 class="mb-0 text-info">{{ data.kpis.promotions.orders_approved }}</h5>
+                  </div>
+                  <div class="col-3">
+                    <div class="text-muted small">تحویل</div>
+                    <h5 class="mb-0 text-success">{{ data.kpis.promotions.orders_delivered }}</h5>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# ═══════════ KPI - سایر ماژول‌ها ═══════════ #}
+        <h6 class="text-muted small fw-bold mb-2"><i class="fe fe-grid mr-1"></i> سایر ماژول‌ها</h6>
+        <div class="row g-3 mb-3 mb-3">
+          {# پروژه‌ها #}
+          <div class="col-md-4 col-lg-3">
+            <a href="{% url 'app_dashboard:report_view' 'projects' %}" class="text-decoration-none">
+              <div class="card custom-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h6 class="text-muted small mb-1">پروژه‌ها</h6>
+                      <h4 class="mb-0 fw-bold text-dark">{{ data.kpis.projects.total }}</h4>
+                      <small class="text-warning">{{ data.kpis.projects.pending }} در انتظار</small>
+                    </div>
+                    <i class="fe fe-briefcase text-primary" style="font-size:1.8rem;opacity:.3;"></i>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          {# فاکتورها #}
+          <div class="col-md-4 col-lg-3 mb-3">
+            <a href="{% url 'app_dashboard:report_view' 'factors' %}" class="text-decoration-none">
+              <div class="card custom-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h6 class="text-muted small mb-1">فاکتورها</h6>
+                      <h4 class="mb-0 fw-bold text-dark">{{ data.kpis.factors.total }}</h4>
+                      <small class="text-warning">{{ data.kpis.factors.pending }} در انتظار</small>
+                    </div>
+                    <i class="fe fe-file-text text-success" style="font-size:1.8rem;opacity:.3;"></i>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          {# پشتیبانی #}
+          <div class="col-md-4 col-lg-3 mb-3">
+            <a href="{% url 'app_dashboard:report_view' 'support' %}" class="text-decoration-none">
+              <div class="card custom-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h6 class="text-muted small mb-1">پشتیبانی</h6>
+                      <h4 class="mb-0 fw-bold text-dark">{{ data.kpis.support.total }}</h4>
+                      <small class="text-danger">
+                        {% if data.kpis.support.urgent_open %}
+                          {{ data.kpis.support.urgent_open }} فوری
+                        {% else %}
+                          {{ data.kpis.support.open }} باز
+                        {% endif %}
+                      </small>
+                    </div>
+                    <i class="fe fe-life-buoy text-info" style="font-size:1.8rem;opacity:.3;"></i>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          {# گالری #}
+          <div class="col-md-4 col-lg-3 mb-3">
+            <div class="card custom-card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="text-muted small mb-1">گالری</h6>
+                    <h4 class="mb-0 fw-bold text-dark">{{ data.kpis.gallery.total }}</h4>
+                    <small class="text-warning">{{ data.kpis.gallery.pending }} در انتظار</small>
+                  </div>
+                  <i class="fe fe-image text-warning" style="font-size:1.8rem;opacity:.3;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {# بازدیدها #}
+          <div class="col-md-4 col-lg-3 mb-5">
+            <a href="{% url 'app_dashboard:report_view' 'visit_requests' %}" class="text-decoration-none">
+              <div class="card custom-card border-0 shadow-sm h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h6 class="text-muted small mb-1">بازدیدها</h6>
+                      <h4 class="mb-0 fw-bold text-dark">{{ data.kpis.visits.requests_total }}</h4>
+                      <small class="text-warning">{{ data.kpis.visits.requests_pending }} در انتظار</small>
+                    </div>
+                    <i class="fe fe-calendar text-danger" style="font-size:1.8rem;opacity:.3;"></i>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          {# نظرسنجی #}
+          <div class="col-md-4 col-lg-3 mb-5">
+            <div class="card custom-card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="text-muted small mb-1">نظرسنجی</h6>
+                    <h4 class="mb-0 fw-bold text-dark">{{ data.kpis.reviews.answers }}</h4>
+                    <small class="text-muted">{{ data.kpis.reviews.questions }} سوال</small>
+                  </div>
+                  <i class="fe fe-star text-info" style="font-size:1.8rem;opacity:.3;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {# FAQ #}
+          <div class="col-md-4 col-lg-3 mb-5">
+            <div class="card custom-card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="text-muted small mb-1">FAQ</h6>
+                    <h4 class="mb-0 fw-bold text-dark">{{ data.kpis.faqs.total }}</h4>
+                    <small class="text-warning">{{ data.kpis.faqs.pending }} در انتظار</small>
+                  </div>
+                  <i class="fe fe-help-circle text-primary" style="font-size:1.8rem;opacity:.3;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {# اعلانات #}
+          <div class="col-md-4 col-lg-3 mb-5">
+            <div class="card custom-card border-0 shadow-sm h-100">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="text-muted small mb-1">اعلانات</h6>
+                    <h4 class="mb-0 fw-bold text-dark">{{ data.kpis.notifications.total }}</h4>
+                    <small class="text-success">{{ data.kpis.notifications.sent }} ارسال شده</small>
+                  </div>
+                  <i class="fe fe-bell text-warning" style="font-size:1.8rem;opacity:.3;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block js %}
+  {{ data.charts|json_script:'charts-data' }}
+  <script src="{% static '/' %}adminAssets/plugins/chart/apexcharts.min.js"></script>
+  <script>
+    ;(function () {
+      var charts = JSON.parse(document.getElementById('charts-data').textContent)
+    
+      // ثبت‌نام ماهانه
+      new ApexCharts(document.querySelector('#chart-users-monthly'), {
+        chart: { type: 'area', height: 280, toolbar: { show: false }, fontFamily: 'inherit' },
+        series: [
+          {
+            name: 'ثبت‌نام',
+            data: charts.users_monthly.map(function (x) {
+              return x.value
+            })
+          }
+        ],
+        xaxis: {
+          categories: charts.users_monthly.map(function (x) {
+            return x.label
+          })
+        },
+        colors: ['#4d7cf3'],
+        fill: { type: 'gradient', gradient: { opacityFrom: 0.6, opacityTo: 0.1 } },
+        dataLabels: { enabled: false }
+      }).render()
+    
+      // نوع کاربری
+      new ApexCharts(document.querySelector('#chart-users-nature'), {
+        chart: { type: 'donut', height: 280, fontFamily: 'inherit' },
+        series: charts.users_nature.map(function (x) {
+          return x.count
+        }),
+        labels: charts.users_nature.map(function (x) {
+          var m = { user: 'کاربر عادی', manager: 'مدیر', seller: 'فروشنده', executive: 'مجری' }
+          return m[x.nature] || x.nature
+        }),
+        colors: ['#4d7cf3', '#f59e0b', '#10b981', '#8b5cf6'],
+        legend: { position: 'bottom' }
+      }).render()
+    
+      // امتیاز روزانه
+      new ApexCharts(document.querySelector('#chart-scores-daily'), {
+        chart: { type: 'bar', height: 250, toolbar: { show: false }, fontFamily: 'inherit' },
+        series: [
+          {
+            name: 'کسب',
+            data: charts.scores_daily.map(function (x) {
+              return x.earned
+            })
+          },
+          {
+            name: 'مصرف',
+            data: charts.scores_daily.map(function (x) {
+              return x.spent
+            })
+          }
+        ],
+        xaxis: {
+          categories: charts.scores_daily.map(function (x) {
+            return x.label
+          })
+        },
+        colors: ['#10b981', '#ef4444'],
+        plotOptions: { bar: { columnWidth: '60%' } },
+        dataLabels: { enabled: false }
+      }).render()
+    
+      // فاکتور ماهانه
+      new ApexCharts(document.querySelector('#chart-factors-monthly'), {
+        chart: { type: 'line', height: 250, toolbar: { show: false }, fontFamily: 'inherit' },
+        series: [
+          {
+            name: 'مبلغ (ریال)',
+            data: charts.factors_monthly.map(function (x) {
+              return x.total
+            })
+          }
+        ],
+        xaxis: {
+          categories: charts.factors_monthly.map(function (x) {
+            return x.label
+          })
+        },
+        colors: ['#10b981'],
+        stroke: { curve: 'smooth', width: 3 },
+        dataLabels: { enabled: false }
+      }).render()
+    })()
+  </script>
+{% endblock %}

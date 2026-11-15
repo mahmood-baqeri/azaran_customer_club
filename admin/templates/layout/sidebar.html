@@ -2,12 +2,12 @@
 {% load customTags %}
 <div class="main-sidebar main-sidebar-sticky side-menu">
   <div class="sidemenu-logo">
-    <a class="main-logo" href="{% url 'dashboard:dashboard' %}"><img src="/media/{{ sitSettings.Logo }}" class="header-brand-img desktop-logo" alt="logo" /></a>
+    <a class="main-logo" href="{% url 'app_dashboard:dashboard' %}"><img src="/media/{{ sitSettings.Logo }}" class="header-brand-img desktop-logo" alt="logo" /></a>
   </div>
   <div class="main-sidebar-body">
     <ul class="nav">
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'dashboard:dashboard' %}">
+        <a class="nav-link" href="{% url 'app_dashboard:dashboard' %}">
           <span class="shape1"></span><span class="shape2"></span><i class="ti-home sidemenu-icon"></i>
           <span class="sidemenu-label">داشبورد</span>
         </a>

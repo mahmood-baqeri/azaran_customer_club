@@ -1,0 +1,30 @@
+{% for v in data.page %}
+  <tr>
+    <td>{{ v.id }}</td>
+    <td>
+      {{ v.user.full_name|default:'—' }}<br /><small class="text-muted" style="direction:ltr">{{ v.user.mobile }}</small>
+    </td>
+    <td>
+      {% if v.visit %}
+        #{{ v.visit.id }} — {{ v.visit.date|date:'Y/m/d' }}
+      {% else %}
+        —
+      {% endif %}
+    </td>
+    <td>
+      {% if v.have_companion %}
+        {{ v.companion_name }} {{ v.companion_family }}
+      {% else %}
+        <span class="text-muted">—</span>
+      {% endif %}
+    </td>
+    <td>{{ v.get_status_display }}</td>
+    <td>
+      <small>{{ v.created_at|date:'Y/m/d H:i' }}</small>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="6" class="text-center text-muted py-4">درخواستی یافت نشد</td>
+  </tr>
+{% endfor %}

@@ -1,0 +1,21 @@
+{% for f in data.page %}
+  <tr>
+    <td>{{ f.id }}</td>
+    <td>
+      <code>{{ f.invoice_number|default:'—' }}</code>
+    </td>
+    <td>
+      {{ f.user.full_name|default:'—' }}<br /><small class="text-muted" style="direction:ltr">{{ f.user.mobile }}</small>
+    </td>
+    <td>{{ f.amount|default:0|floatformat:'0' }}</td>
+    <td>{{ f.shop_name|default:'—'|truncatechars:25 }}</td>
+    <td>{{ f.get_status_display }}</td>
+    <td>
+      <small>{{ f.created_at|date:'Y/m/d H:i' }}</small>
+    </td>
+  </tr>
+{% empty %}
+  <tr>
+    <td colspan="7" class="text-center text-muted py-4">فاکتوری یافت نشد</td>
+  </tr>
+{% endfor %}
