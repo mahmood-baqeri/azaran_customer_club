@@ -1,0 +1,114 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/filter_form.html' %}
+            {% endif %}
+
+            <div class="table-responsive mt-3">
+              <table class="table-hover align-middle mt-3 table text-nowrap text-md-nowrap table-striped mg-b-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>فایل</th>
+                    <th>شماره فاکتور</th>
+                    <th>کاربر</th>
+                    <th>مبلغ (ریال)</th>
+                    <th>تاریخ صدور</th>
+                    <th>فروشگاه</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ ثبت</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for f in data.all %}
+                    <tr>
+                      <td>{{ f.id }}</td>
+                      <td>
+                        {% if f.photo %}
+                          <a href="{{ f.photo.url }}" target="_blank" class="btn btn-sm btn-outline-info" title="مشاهده فایل"><i class="fe fe-eye"></i></a>
+                        {% else %}
+                          <span class="text-muted">—</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if f.invoice_number %}
+                          <code>{{ f.invoice_number }}</code>
+                        {% else %}
+                          <span class="text-muted">—</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <a href="{% url 'app_user:user_detail' f.user.id %}" class="text-decoration-none">{{ f.user.full_name }}</a>
+                        <br />
+                        <small class="text-muted" style="direction:ltr">{{ f.user.mobile }}</small>
+                      </td>
+                      <td>
+                        {% if f.amount %}
+                          <strong>{{ f.amount|floatformat:'0' }}</strong>
+                        {% else %}
+                          <span class="text-muted">—</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ f.invoice_issue_at|date:'Y/m/d'|default:'—' }}</small>
+                      </td>
+                      <td>
+                        <small>{{ f.shop_name|default:'—'|truncatechars:25 }}</small>
+                      </td>
+                      <td>
+                        {% if f.status == 'pending' %}
+                          <span class="badge badge-warning"><i class="fe fe-clock mr-1"></i>در انتظار</span>
+                        {% elif f.status == 'approved' %}
+                          <span class="badge badge-success"><i class="fe fe-check mr-1"></i>تأیید شده</span>
+                        {% else %}
+                          <span class="badge badge-danger"><i class="fe fe-x mr-1"></i>رد شده</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ f.created_at|date:'Y/m/d' }}</small>
+                      </td>
+                      <td class="text-right">
+                        <a href="{% url 'app_factor:factor_detail' f.id %}" class="btn btn-sm btn-outline-primary"><i class="fe fe-eye mr-1"></i> جزئیات</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="10" class="text-center text-muted py-4">
+                        <i class="fe fe-inbox d-block mb-2" style="font-size:2rem;"></i>
+                        فاکتوری یافت نشد
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block js %}
+
+{% endblock %}

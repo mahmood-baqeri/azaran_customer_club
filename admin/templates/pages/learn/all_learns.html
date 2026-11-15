@@ -1,0 +1,109 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/filter_form.html' %}
+            {% endif %}
+
+            <div class="table-responsive mt-3">
+              <table class="table-hover align-middle mt-3 table text-nowrap text-md-nowrap table-striped mg-b-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>تصویر</th>
+                    <th>عنوان</th>
+                    <th>زیرمتن</th>
+                    <th>عرض</th>
+                    <th>زمان مطالعه</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ ایجاد</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in data.all %}
+                    <tr>
+                      <td>{{ item.id }}</td>
+                      <td>
+                        {% if item.photo %}
+                          <img src="{{ item.photo.url }}" width="48" height="48" class="rounded object-fit-cover border" alt="{{ item.title }}" style="object-fit:cover;" />
+                        {% else %}
+                          <span class="text-muted">—</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <strong>{{ item.title }}</strong>
+                        {% if item.caption %}
+                          <br /><small class="text-muted">{{ item.caption|truncatechars:35 }}</small>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ item.sub_text|default:'—'|truncatechars:40 }}</small>
+                      </td>
+                      <td>
+                        {% if item.size == 'half' %}
+                          <span class="badge badge-light text-dark border"><i class="fe fe-columns mr-1"></i>نیم صفحه</span>
+                        {% else %}
+                          <span class="badge badge-primary"><i class="fe fe-maximize mr-1"></i>تمام صفحه</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if item.time %}
+                          <span class="badge badge-info"><i class="fe fe-clock mr-1"></i>{{ item.time }} دقیقه</span>
+                        {% else %}
+                          <span class="text-muted">—</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if item.is_active %}
+                          <span class="badge badge-success"><i class="fe fe-check mr-1"></i>فعال</span>
+                        {% else %}
+                          <span class="badge badge-secondary"><i class="fe fe-slash mr-1"></i>غیرفعال</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ item.created_at|date:'Y/m/d' }}</small>
+                      </td>
+                      <td class="text-right">
+                        <a href="{% url 'app_learn:learn_detail' item.id %}" class="btn btn-sm btn-outline-primary"><i class="fe fe-eye mr-1"></i> جزئیات</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="9" class="text-center text-muted py-4">
+                        <i class="fe fe-inbox d-block mb-2" style="font-size:2rem;"></i>
+                        آموزشی یافت نشد
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block js %}
+
+{% endblock %}

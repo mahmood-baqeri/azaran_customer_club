@@ -1,0 +1,100 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/filter_form.html' %}
+            {% endif %}
+
+            <div class="table-responsive mt-3">
+              <table class="table-hover align-middle table text-nowrap table-striped mg-b-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>سوال</th>
+                    <th>پاسخ‌ها</th>
+                    <th>میانگین</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for q in data.all %}
+                    <tr>
+                      <td>{{ q.id }}</td>
+                      <td>
+                        <strong>{{ q.question|truncatechars:80 }}</strong>
+                      </td>
+                      <td>
+                        <span class="badge badge-info"><i class="fe fe-users mr-1"></i>{{ q.stats.total }}</span>
+                      </td>
+                      <td>
+                        {% if q.stats.total > 0 %}
+                          <div class="d-flex align-items-center">
+                            <span class="badge badge-warning mr-1">{{ q.stats.average }} / 5</span>
+                            <small class="text-muted">
+                              {% if q.stats.average >= 4 %}
+                                <i class="fe fe-smile text-success"></i>
+                              {% elif q.stats.average >= 3 %}
+                                <i class="fe fe-meh text-warning"></i>
+                              {% else %}
+                                <i class="fe fe-frown text-danger"></i>
+                              {% endif %}
+                            </small>
+                          </div>
+                        {% else %}
+                          <span class="text-muted small">بدون پاسخ</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if q.is_active %}
+                          <span class="badge badge-success"><i class="fe fe-check mr-1"></i>فعال</span>
+                        {% else %}
+                          <span class="badge badge-secondary"><i class="fe fe-slash mr-1"></i>غیرفعال</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ q.created_at|date:'Y/m/d' }}</small>
+                      </td>
+                      <td class="text-right">
+                        <a href="{% url 'app_review:question_detail' q.id %}" class="btn btn-sm btn-outline-primary"><i class="fe fe-bar-chart-2 mr-1"></i> جزئیات</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="7" class="text-center text-muted py-4">
+                        <i class="fe fe-inbox d-block mb-2" style="font-size:2rem;"></i>
+                        سوالی یافت نشد
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block js %}
+{% endblock %}

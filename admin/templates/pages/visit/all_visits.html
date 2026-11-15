@@ -1,0 +1,108 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/filter_form.html' %}
+            {% endif %}
+
+            <div class="table-responsive mt-3">
+              <table class="table-hover align-middle table text-nowrap table-striped mg-b-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>تاریخ بازدید</th>
+                    <th>ظرفیت</th>
+                    <th>تأیید‌شده</th>
+                    <th>در انتظار</th>
+                    <th>باقی‌مانده</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ ایجاد</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for v in data.all %}
+                    <tr>
+                      <td>{{ v.id }}</td>
+                      <td>
+                        {% if v.date %}
+                          <i class="fe fe-calendar text-info mr-1"></i>{{ v.date|date:'Y/m/d H:i' }}
+                        {% else %}
+                          <span class="text-muted">—</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if v.capacity %}
+                          <span class="badge badge-light text-dark border">{{ v.capacity }}</span>
+                        {% else %}
+                          <span class="text-muted">نامحدود</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <span class="badge badge-success">{{ v.approved_count }}</span>
+                      </td>
+                      <td>
+                        <span class="badge badge-warning">{{ v.pending_count }}</span>
+                      </td>
+                      <td>
+                        {% if v.remaining is None %}
+                          <span class="text-muted">—</span>
+                        {% elif v.remaining == 0 %}
+                          <span class="badge badge-danger">تکمیل</span>
+                        {% else %}
+                          <span class="badge badge-info">{{ v.remaining }}</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if v.is_active %}
+                          <span class="badge badge-success"><i class="fe fe-check mr-1"></i>فعال</span>
+                        {% else %}
+                          <span class="badge badge-secondary"><i class="fe fe-slash mr-1"></i>غیرفعال</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ v.created_at|date:'Y/m/d' }}</small>
+                      </td>
+                      <td class="text-right">
+                        <a href="{% url 'app_visit:visit_detail' v.id %}" class="btn btn-sm btn-outline-primary"><i class="fe fe-eye mr-1"></i> جزئیات</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="9" class="text-center text-muted py-4">
+                        <i class="fe fe-inbox d-block mb-2" style="font-size:2rem;"></i>
+                        بازدیدی یافت نشد
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block js %}
+
+{% endblock %}

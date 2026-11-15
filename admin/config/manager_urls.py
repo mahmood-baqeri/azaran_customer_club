@@ -19,6 +19,12 @@ urlpatterns = [
     path('score/', include('applications.score.urls')),
     path('notification/', include('applications.notification.url')),
     path('project/', include('applications.project.url')),
+    path('factor/', include('applications.factor.url')),
+    path('learn/', include('applications.learn.url')),
+    path('support/', include('applications.support.url')),
+    path('visit/', include('applications.visit.url')),
+    path('gallery/', include('applications.gallery.url')),
+    path('review/', include('applications.review.url')),
 
 
     # User areas

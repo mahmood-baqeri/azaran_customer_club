@@ -1,0 +1,331 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  پست گالری #{{ gallery.id }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="row g-3">
+          <!-- ═══════════════════════════════════════════ -->
+          <!-- ستون چپ: تصویر + اطلاعات + لایک‌ها -->
+          <!-- ═══════════════════════════════════════════ -->
+          <div class="col-md-8">
+            <!-- تصویر -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span><i class="fe fe-image mr-2 text-primary"></i> تصویر پست</span>
+                <small class="text-muted">#{{ gallery.id }}</small>
+              </div>
+              <div class="card-body p-0">
+                {% if gallery.photo %}
+                  <a href="{{ gallery.photo.url }}" target="_blank"><img src="{{ gallery.photo.url }}" alt="{{ gallery.caption|default:'Gallery' }}" class="img-fluid w-100" style="max-height:600px;object-fit:contain;background:#f8f9fa;" /></a>
+                {% else %}
+                  <div class="d-flex align-items-center justify-content-center bg-light" style="height:300px;">
+                    <span class="text-muted">بدون تصویر</span>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- اطلاعات -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-info mr-2 text-info"></i> اطلاعات پست
+              </div>
+              <div class="card-body">
+                <dl class="row mb-0">
+                  <dt class="col-4 text-muted">کاربر</dt>
+                  <dd class="col-8">
+                    <a href="{% url 'app_user:user_detail' gallery.user.id %}" class="text-decoration-none">{{ gallery.user.full_name }}</a>
+                    <small class="text-muted" style="direction:ltr">({{ gallery.user.mobile }})</small>
+                  </dd>
+
+                  <dt class="col-4 text-muted">کپشن</dt>
+                  <dd class="col-8">{{ gallery.caption|default:'—' }}</dd>
+
+                  <dt class="col-4 text-muted">لوکیشن</dt>
+                  <dd class="col-8">
+                    {% if gallery.location %}
+                      <i class="fe fe-map-pin text-danger mr-1"></i>{{ gallery.location }}
+                    {% else %}
+                      —
+                    {% endif %}
+                  </dd>
+
+                  <dt class="col-4 text-muted">وضعیت</dt>
+                  <dd class="col-8">
+                    {% if gallery.status == 'pending' %}
+                      <span class="badge badge-warning"><i class="fe fe-clock mr-1"></i>در انتظار</span>
+                    {% elif gallery.status == 'approved' %}
+                      <span class="badge badge-success"><i class="fe fe-check mr-1"></i>تأیید شده</span>
+                    {% else %}
+                      <span class="badge badge-danger"><i class="fe fe-x mr-1"></i>رد شده</span>
+                    {% endif %}
+                  </dd>
+
+                  <dt class="col-4 text-muted">تاریخ ایجاد</dt>
+                  <dd class="col-8">{{ gallery.created_at|date:'Y/m/d H:i' }}</dd>
+                </dl>
+              </div>
+            </div>
+
+            <!-- لایک‌ها -->
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span>
+                  <i class="fe fe-heart mr-2 text-danger"></i>
+                  لایک‌ها ({{ likes|length }})
+                </span>
+              </div>
+              <div class="card-body">
+                {% if likes %}
+                  <div class="row">
+                    {% for like in likes %}
+                      <div class="col-md-6 mb-2">
+                        <div class="d-flex align-items-center border rounded p-2">
+                          <div class="flex-shrink-0 mr-2">
+                            {% if like.user.avatar %}
+                              <img src="{{ like.user.avatar.url }}" width="32" height="32" class="rounded-circle object-fit-cover" alt="" />
+                            {% else %}
+                              <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width:32px;height:32px;">
+                                <i class="fe fe-user" style="font-size:14px;"></i>
+                              </div>
+                            {% endif %}
+                          </div>
+                          <div class="flex-grow-1">
+                            <div class="small">
+                              <a href="{% url 'app_user:user_detail' like.user.id %}" class="text-decoration-none">{{ like.user.full_name }}</a>
+                            </div>
+                            <small class="text-muted" style="direction:ltr">{{ like.user.mobile }}</small>
+                          </div>
+                          <div class="text-right">
+                            <small class="text-muted">{{ like.created_at|date:'Y/m/d H:i' }}</small>
+                          </div>
+                        </div>
+                      </div>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <div class="text-center text-muted py-4">
+                    <i class="fe fe-heart d-block mb-2" style="font-size:2rem;opacity:.3;"></i>
+                    هنوز لایکی ثبت نشده است
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════════ -->
+          <!-- ستون راست: وضعیت + اکشن‌ها -->
+          <!-- ═══════════════════════════════════════════ -->
+          <div class="col-md-4">
+            <!-- کارت وضعیت -->
+            <div class="card custom-card mb-3 border-0 shadow-sm">
+              <div class="card-body text-center py-4
+                        {% if gallery.status == 'pending' %}
+                  text-warning
+
+                {% elif gallery.status == 'approved' %}
+                  text-success
+
+                {% else %}
+                  text-danger
+                {% endif %}"
+                style="background-color:
+                        {% if gallery.status == 'pending' %}
+                  #fff3cd
+
+                {% elif gallery.status == 'approved' %}
+                  #d4edda
+
+                {% else %}
+                  #f8d7da
+                {% endif %};">
+                <div class="mb-2" style="font-size:2.2rem;">
+                  {% if gallery.status == 'pending' %}
+                    <i class="fe fe-clock"></i>
+                  {% elif gallery.status == 'approved' %}
+                    <i class="fe fe-check-circle"></i>
+                  {% else %}
+                    <i class="fe fe-x-circle"></i>
+                  {% endif %}
+                </div>
+                <h6 class="mb-1 fw-bold">{{ gallery.get_status_display }}</h6>
+                <p class="text-muted small mb-0">
+                  {% if gallery.status == 'pending' %}
+                    پست در انتظار بررسی و تأیید است
+                  {% elif gallery.status == 'approved' %}
+                    پست در گالری عمومی نمایش داده می‌شود
+                  {% else %}
+                    پست برای کاربران نمایش داده نمی‌شود
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+
+            <!-- آمار -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-bar-chart-2 mr-2 text-primary"></i> آمار
+              </div>
+              <div class="card-body">
+                <dl class="row mb-0">
+                  <dt class="col-6 text-muted">تعداد لایک</dt>
+                  <dd class="col-6 text-right"><strong class="text-danger">{{ likes|length }}</strong></dd>
+
+                  <dt class="col-6 text-muted">سن پست</dt>
+                  <dd class="col-6 text-right"><small class="text-muted">{{ gallery.created_at|timesince }} پیش</small></dd>
+                </dl>
+              </div>
+            </div>
+
+            <!-- اکشن‌ها -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-zap mr-2 text-primary"></i> اکشن‌ها
+              </div>
+              <div class="card-body d-flex flex-column">
+                <a href="{% url 'app_gallery:gallery_update' gallery.id %}" class="btn btn-primary btn-block mb-2"><i class="fe fe-edit-2 mr-2"></i> ویرایش پست</a>
+
+                {% if can_approve %}
+                  <button type="button" class="btn btn-success btn-block mb-2" data-toggle="modal" data-target="#approveModal"><i class="fe fe-check-circle mr-2"></i> تأیید پست</button>
+                {% endif %}
+
+                {% if can_reject %}
+                  <button type="button" class="btn btn-outline-warning btn-block" data-toggle="modal" data-target="#rejectModal"><i class="fe fe-x-circle mr-2"></i> رد پست</button>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- ناحیه خطر -->
+            {% if can_delete %}
+              <div class="card custom-card shadow-sm" style="border-color:#f5c6cb;">
+                <div class="card-header fw-bold d-flex align-items-center text-danger" style="background-color:#f8d7da;border-color:#f5c6cb;">
+                  <i class="fe fe-alert-triangle mr-2"></i> ناحیه خطر
+                </div>
+                <div class="card-body">
+                  <p class="small text-muted mb-2">حذف پست غیرقابل بازگشت است و تصویر و لایک‌های آن نیز حذف می‌شوند.</p>
+                  <button type="button" class="btn btn-sm btn-outline-danger btn-block" data-toggle="modal" data-target="#deleteModal"><i class="fe fe-trash-2 mr-1"></i> حذف پست</button>
+                </div>
+              </div>
+            {% endif %}
+
+            <a href="{% url 'app_gallery:gallery_index' %}" class="btn btn-link btn-sm text-secondary btn-block mt-2"><i class="fe fe-arrow-right mr-1"></i> بازگشت به لیست گالری</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ═══ مودال تأیید ═══ #}
+  {% if can_approve %}
+    <div class="modal fade" id="approveModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold"><i class="fe fe-check-circle text-success mr-2"></i> تأیید پست</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-info small mb-3">
+              <i class="fe fe-info mr-1"></i>
+              با تأیید این پست، تصویر در گالری عمومی برای همه کاربران نمایش داده می‌شود.
+            </div>
+            <dl class="row mb-0 small">
+              <dt class="col-5 text-muted">کاربر</dt>
+              <dd class="col-7">{{ gallery.user.full_name }} ({{ gallery.user.mobile }})</dd>
+              <dt class="col-5 text-muted">کپشن</dt>
+              <dd class="col-7">{{ gallery.caption|default:'—' }}</dd>
+              <dt class="col-5 text-muted">لایک فعلی</dt>
+              <dd class="col-7">{{ likes|length }} لایک</dd>
+            </dl>
+          </div>
+          <div class="modal-footer border-0">
+            <form method="post" action="{% url 'app_gallery:gallery_approve' gallery.id %}" class="w-100">
+              {% csrf_token %}
+              <div class="d-flex">
+                <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+                <button type="submit" class="btn btn-success flex-fill ml-1"><i class="fe fe-check mr-1"></i> بله، تأیید کن</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# ═══ مودال رد ═══ #}
+  {% if can_reject %}
+    <div class="modal fade" id="rejectModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold"><i class="fe fe-x-circle text-danger mr-2"></i> رد پست</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <div class="alert alert-warning small mb-0">
+              <i class="fe fe-alert-triangle mr-1"></i>
+              با رد این پست، تصویر برای کاربران نمایش داده نمی‌شود. لایک‌ها حفظ می‌شوند.
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <form method="post" action="{% url 'app_gallery:gallery_reject' gallery.id %}" class="w-100">
+              {% csrf_token %}
+              <div class="d-flex">
+                <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+                <button type="submit" class="btn btn-warning flex-fill ml-1"><i class="fe fe-x mr-1"></i> بله، رد کن</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# ═══ مودال حذف ═══ #}
+  {% if can_delete %}
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-color:#f5c6cb;">
+          <div class="modal-header border-0" style="background-color:#f8d7da;">
+            <h5 class="modal-title fw-bold text-danger"><i class="fe fe-alert-triangle mr-2"></i> حذف پست</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-2">
+              آیا از حذف کامل پست
+              <strong>#{{ gallery.id }}</strong>
+              مطمئن هستید؟
+            </p>
+            <ul class="small text-muted mb-0">
+              <li>تصویر از دیسک حذف می‌شود</li>
+              <li>تمام لایک‌ها ({{ likes|length }} مورد) پاک می‌شوند</li>
+              <li>
+                این عملیات <strong class="text-danger">قابل بازگشت نیست</strong>
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer border-0">
+            <form method="post" action="{% url 'app_gallery:gallery_delete' gallery.id %}" class="w-100">
+              {% csrf_token %}
+              <div class="d-flex">
+                <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+                <button type="submit" class="btn btn-danger flex-fill ml-1"><i class="fe fe-trash-2 mr-1"></i> بله، حذف کن</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+{% block js %}
+{% endblock %}

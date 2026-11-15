@@ -1,4 +1,4 @@
-# applications/review/models.py
+# applications/learn/models.py
 
 from django.db import models
 from django.core.validators import FileExtensionValidator

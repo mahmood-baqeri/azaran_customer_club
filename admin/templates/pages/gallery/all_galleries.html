@@ -1,0 +1,110 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/filter_form.html' %}
+            {% endif %}
+
+            <div class="table-responsive mt-3">
+              <table class="table-hover align-middle table text-nowrap table-striped mg-b-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>تصویر</th>
+                    <th>کاربر</th>
+                    <th>کپشن / لوکیشن</th>
+                    <th>لایک</th>
+                    <th>وضعیت</th>
+                    <th>تاریخ ایجاد</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for g in data.all %}
+                    <tr>
+                      <td>{{ g.id }}</td>
+                      <td>
+                        {% if g.photo %}
+                          <a href="{{ g.photo.url }}" target="_blank"><img src="{{ g.photo.url }}" alt="{{ g.caption|default:g.id }}" class="rounded border" style="width:56px;height:56px;object-fit:cover;" /></a>
+                        {% else %}
+                          <span class="text-muted">—</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <a href="{% url 'app_user:user_detail' g.user.id %}" class="text-decoration-none">{{ g.user.full_name }}</a>
+                        <br />
+                        <small class="text-muted" style="direction:ltr">{{ g.user.mobile }}</small>
+                      </td>
+                      <td>
+                        {% if g.caption %}
+                          <strong>{{ g.caption|truncatechars:40 }}</strong>
+                        {% else %}
+                          <span class="text-muted small">بدون کپشن</span>
+                        {% endif %}
+                        {% if g.location %}
+                          <br />
+                          <small class="text-muted"><i class="fe fe-map-pin mr-1"></i>{{ g.location|truncatechars:30 }}</small>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if g.like_count %}
+                          <span class="badge badge-danger"><i class="fe fe-heart mr-1"></i>{{ g.like_count }}</span>
+                        {% else %}
+                          <span class="text-muted small">0</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if g.status == 'pending' %}
+                          <span class="badge badge-warning"><i class="fe fe-clock mr-1"></i>در انتظار</span>
+                        {% elif g.status == 'approved' %}
+                          <span class="badge badge-success"><i class="fe fe-check mr-1"></i>تأیید شده</span>
+                        {% else %}
+                          <span class="badge badge-danger"><i class="fe fe-x mr-1"></i>رد شده</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small>{{ g.created_at|date:'Y/m/d H:i' }}</small>
+                      </td>
+                      <td class="text-right">
+                        <a href="{% url 'app_gallery:gallery_detail' g.id %}" class="btn btn-sm btn-outline-primary"><i class="fe fe-eye mr-1"></i> جزئیات</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="8" class="text-center text-muted py-4">
+                        <i class="fe fe-inbox d-block mb-2" style="font-size:2rem;"></i>
+                        پستی یافت نشد
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block js %}
+
+{% endblock %}

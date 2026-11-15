@@ -1,0 +1,116 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  {{ data.pageTitle }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="card custom-card">
+          <div class="card-body">
+            {% if data.searchUrl %}
+              {% include 'components/filter_form.html' %}
+            {% endif %}
+
+            <div class="table-responsive mt-3">
+              <table class="table-hover align-middle mt-3 table text-nowrap text-md-nowrap table-striped mg-b-0">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>موضوع</th>
+                    <th>کاربر</th>
+                    <th>دسته</th>
+                    <th>اولویت</th>
+                    <th>وضعیت</th>
+                    <th>پیام‌ها</th>
+                    <th>آخرین پیام</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for t in data.all %}
+                    <tr>
+                      <td>
+                        {{ t.id }}
+                        {% if t.messages.count and not t.status == 'closed' %}
+                          {# نشانگر نخوانده #}
+                          {% with unread=t.messages.all %}
+                            {# overkill — از field استفاده نمی‌کنیم چون N+1 #}
+                          {% endwith %}
+                        {% endif %}
+                      </td>
+                      <td>
+                        <strong>{{ t.subject|truncatechars:40 }}</strong>
+                      </td>
+                      <td>
+                        <a href="{% url 'app_user:user_detail' t.user.id %}" class="text-decoration-none">{{ t.user.full_name }}</a>
+                        <br />
+                        <small class="text-muted" style="direction:ltr">{{ t.user.mobile }}</small>
+                      </td>
+                      <td>
+                        <small>{{ t.get_category_display }}</small>
+                      </td>
+                      <td>
+                        {% if t.priority == 'urgent' %}
+                          <span class="badge badge-danger"><i class="fe fe-alert-octagon mr-1"></i>فوری</span>
+                        {% elif t.priority == 'high' %}
+                          <span class="badge badge-warning"><i class="fe fe-arrow-up mr-1"></i>زیاد</span>
+                        {% elif t.priority == 'normal' %}
+                          <span class="badge badge-info"><i class="fe fe-minus mr-1"></i>عادی</span>
+                        {% else %}
+                          <span class="badge badge-secondary"><i class="fe fe-arrow-down mr-1"></i>کم</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if t.status == 'open' %}
+                          <span class="badge badge-warning"><i class="fe fe-inbox mr-1"></i>باز</span>
+                        {% elif t.status == 'in_progress' %}
+                          <span class="badge badge-primary"><i class="fe fe-refresh-cw mr-1"></i>در حال بررسی</span>
+                        {% elif t.status == 'resolved' %}
+                          <span class="badge badge-success"><i class="fe fe-check mr-1"></i>حل شده</span>
+                        {% else %}
+                          <span class="badge badge-secondary"><i class="fe fe-lock mr-1"></i>بسته</span>
+                        {% endif %}
+                      </td>
+                      <td>
+                        <small class="text-muted">{{ t.msg_count }} پیام</small>
+                      </td>
+                      <td>
+                        <small>{{ t.last_message_at|date:'Y/m/d H:i' }}</small>
+                      </td>
+                      <td class="text-right">
+                        <a href="{% url 'app_support:support_detail' t.id %}" class="btn btn-sm btn-outline-primary"><i class="fe fe-message-square mr-1"></i> چت</a>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="9" class="text-center text-muted py-4">
+                        <i class="fe fe-inbox d-block mb-2" style="font-size:2rem;"></i>
+                        تیکتی یافت نشد
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+
+              {% if data.searchCount %}
+                <div class="paginateSection">
+                  {% include 'components/pagination.html' with all=data.all %}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block js %}
+
+{% endblock %}

@@ -1,0 +1,301 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  آموزش «{{ learn.title }}»
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="row g-3">
+          <!-- ═══════════════════════════════════════════ -->
+          <!-- ستون چپ: تصویر + محتوا -->
+          <!-- ═══════════════════════════════════════════ -->
+          <div class="col-md-8">
+            <!-- کارت تصویر -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-body p-0" style="overflow:hidden;border-radius:.5rem;">
+                {% if learn.photo %}
+                  <img src="{{ learn.photo.url }}" alt="{{ learn.title }}" class="img-fluid w-100" style="max-height:400px;object-fit:cover;" />
+                {% else %}
+                  <div class="d-flex align-items-center justify-content-center bg-light" style="height:200px;">
+                    <span class="text-muted">بدون تصویر</span>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- کارت محتوا -->
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span><i class="fe fe-book-open mr-2 text-primary"></i> محتوای آموزش</span>
+                <small class="text-muted">#{{ learn.id }}</small>
+              </div>
+              <div class="card-body">
+                <h4 class="mb-2">{{ learn.title }}</h4>
+
+                {% if learn.sub_text %}
+                  <p class="text-muted mb-3">{{ learn.sub_text }}</p>
+                {% endif %}
+
+                <div class="d-flex flex-wrap mb-3">
+                  {% if learn.size == 'half' %}
+                    <span class="badge badge-light text-dark border mr-2 mb-1"><i class="fe fe-columns mr-1"></i>نیم صفحه</span>
+                  {% else %}
+                    <span class="badge badge-primary mr-2 mb-1"><i class="fe fe-maximize mr-1"></i>تمام صفحه</span>
+                  {% endif %}
+
+                  {% if learn.time %}
+                    <span class="badge badge-info mr-2 mb-1"><i class="fe fe-clock mr-1"></i>{{ learn.time }} دقیقه</span>
+                  {% endif %}
+
+                  {% if learn.is_active %}
+                    <span class="badge badge-success mb-1"><i class="fe fe-check mr-1"></i>فعال</span>
+                  {% else %}
+                    <span class="badge badge-secondary mb-1"><i class="fe fe-slash mr-1"></i>غیرفعال</span>
+                  {% endif %}
+                </div>
+
+                <hr />
+
+                <div class="learn-content" style="line-height:1.9;white-space:pre-line;">{{ learn.full_text }}</div>
+
+                {% if learn.caption %}
+                  <hr />
+                  <p class="small text-muted mb-0">
+                    <i class="fe fe-info mr-1"></i>
+                    <strong>کپشن:</strong> {{ learn.caption }}
+                  </p>
+                {% endif %}
+
+                <hr />
+
+                <dl class="row mb-0 small">
+                  <dt class="col-sm-3 text-muted">تاریخ ایجاد</dt>
+                  <dd class="col-sm-9">{{ learn.created_at|date:'Y/m/d H:i' }}</dd>
+
+                  <dt class="col-sm-3 text-muted">آخرین ویرایش</dt>
+                  <dd class="col-sm-9">{{ learn.updated_at|date:'Y/m/d H:i'|default:'—' }}</dd>
+                </dl>
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════════ -->
+          <!-- ستون راست: وضعیت + اکشن‌ها -->
+          <!-- ═══════════════════════════════════════════ -->
+          <div class="col-md-4">
+            <!-- کارت وضعیت -->
+            <div class="card custom-card mb-3 border-0 shadow-sm">
+              <div class="card-body text-center py-4
+                        {% if learn.is_active %}
+                  
+                  text-success
+
+                {% else %}
+                  
+                  text-secondary
+
+                {% endif %}"
+                style="background-color:{% if learn.is_active %}
+                  
+                  #d4edda
+
+                {% else %}
+                  
+                  #e2e3e5
+
+                {% endif %};">
+                <div class="mb-2" style="font-size:2.2rem;">
+                  {% if learn.is_active %}
+                    <i class="fe fe-eye"></i>
+                  {% else %}
+                    <i class="fe fe-eye-off"></i>
+                  {% endif %}
+                </div>
+                <h6 class="mb-1 fw-bold">
+                  {% if learn.is_active %}
+                    فعال
+                  {% else %}
+                    غیرفعال
+                  {% endif %}
+                </h6>
+                <p class="text-muted small mb-0">
+                  {% if learn.is_active %}
+                    در اپلیکیشن نمایش داده می‌شود
+                  {% else %}
+                    برای کاربران نمایش داده نمی‌شود
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+
+            <!-- کارت اکشن‌ها -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-zap mr-2 text-primary"></i> اکشن‌ها
+              </div>
+              <div class="card-body d-flex flex-column">
+                <a href="{% url 'app_learn:learn_update' learn.id %}" class="btn btn-primary btn-block mb-2"><i class="fe fe-edit-2 mr-2"></i> ویرایش آموزش</a>
+
+                <button type="button"
+                  class="btn {% if learn.is_active %}
+                    
+                    btn-outline-warning
+
+                  {% else %}
+                    
+                    btn-outline-success
+
+                  {% endif %} btn-block"
+                  data-toggle="modal"
+                  data-target="#toggleActiveModal">
+                  <i class="fe {% if learn.is_active %}
+                      
+                      fe-slash
+
+                    {% else %}
+                      
+                      fe-check-circle
+
+                    {% endif %} mr-2">
+
+                  </i>
+                  {% if learn.is_active %}
+                    غیرفعال کردن
+                  {% else %}
+                    فعال کردن
+                  {% endif %}
+                </button>
+              </div>
+            </div>
+
+            <!-- ناحیه خطر -->
+            <div class="card custom-card shadow-sm" style="border-color:#f5c6cb;">
+              <div class="card-header fw-bold d-flex align-items-center text-danger" style="background-color:#f8d7da;border-color:#f5c6cb;">
+                <i class="fe fe-alert-triangle mr-2"></i> ناحیه خطر
+              </div>
+              <div class="card-body">
+                <p class="small text-muted mb-2">حذف آموزش غیرقابل بازگشت است و تصویر آن نیز از دیسک پاک می‌شود.</p>
+                <button type="button" class="btn btn-sm btn-outline-danger btn-block" data-toggle="modal" data-target="#deleteModal"><i class="fe fe-trash-2 mr-1"></i> حذف آموزش</button>
+              </div>
+            </div>
+
+            <a href="{% url 'app_learn:learn_index' %}" class="btn btn-link btn-sm text-secondary btn-block mt-2"><i class="fe fe-arrow-right mr-1"></i> بازگشت به لیست آموزش‌ها</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ═══ مودال فعال/غیرفعال ═══ #}
+  <div class="modal fade" id="toggleActiveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold">
+            <i class="fe {% if learn.is_active %}
+                
+                fe-slash text-warning
+
+              {% else %}
+                
+                fe-check-circle text-success
+
+              {% endif %} mr-2">
+
+            </i>
+            {% if learn.is_active %}
+              غیرفعال‌سازی
+            {% else %}
+              فعال‌سازی
+            {% endif %}آموزش
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">
+            آیا از{% if learn.is_active %}
+              غیرفعال کردن
+            {% else %}
+              فعال کردن
+            {% endif %}آموزش <strong>«{{ learn.title }}»</strong> مطمئن هستید؟
+          </p>
+        </div>
+        <div class="modal-footer border-0">
+          <form method="post" action="{% url 'app_learn:learn_toggle_active' learn.id %}" class="w-100">
+            {% csrf_token %}
+            <div class="d-flex">
+              <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+              <button type="submit"
+                class="btn {% if learn.is_active %}
+                  
+                  btn-warning
+
+                {% else %}
+                  
+                  btn-success
+
+                {% endif %} flex-fill ml-1">
+                <i class="fe {% if learn.is_active %}
+                    
+                    fe-slash
+
+                  {% else %}
+                    
+                    fe-check
+
+                  {% endif %} mr-1">
+
+                </i>
+                بله، ادامه بده
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ═══ مودال حذف ═══ #}
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="border-color:#f5c6cb;">
+        <div class="modal-header border-0" style="background-color:#f8d7da;">
+          <h5 class="modal-title fw-bold text-danger"><i class="fe fe-alert-triangle mr-2"></i> حذف آموزش</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-2">
+            آیا از حذف کامل آموزش
+            <strong>«{{ learn.title }}»</strong>
+            مطمئن هستید؟
+          </p>
+          <ul class="small text-muted mb-0">
+            <li>
+              این عملیات <strong class="text-danger">قابل بازگشت نیست</strong>
+            </li>
+            <li>تصویر آموزش نیز از دیسک حذف می‌شود</li>
+          </ul>
+        </div>
+        <div class="modal-footer border-0">
+          <form method="post" action="{% url 'app_learn:learn_delete' learn.id %}" class="w-100">
+            {% csrf_token %}
+            <div class="d-flex">
+              <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+              <button type="submit" class="btn btn-danger flex-fill ml-1"><i class="fe fe-trash-2 mr-1"></i> بله، حذف کن</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block js %}
+
+{% endblock %}

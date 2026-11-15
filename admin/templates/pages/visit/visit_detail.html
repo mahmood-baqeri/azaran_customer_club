@@ -1,0 +1,361 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  بازدید #{{ visit.id }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="row g-3">
+          <!-- ستون چپ: اطلاعات + درخواست‌ها -->
+          <div class="col-md-8">
+            <!-- اطلاعات بازدید -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span><i class="fe fe-calendar mr-2 text-primary"></i> اطلاعات بازدید</span>
+                <small class="text-muted">#{{ visit.id }}</small>
+              </div>
+              <div class="card-body">
+                <dl class="row mb-0">
+                  <dt class="col-4 text-muted">تاریخ بازدید</dt>
+                  <dd class="col-8">
+                    {% if visit.date %}
+                      <i class="fe fe-calendar text-info mr-1"></i>
+                      {{ visit.date|date:'Y/m/d H:i' }}
+                    {% else %}
+                      <span class="text-muted">—</span>
+                    {% endif %}
+                  </dd>
+
+                  <dt class="col-4 text-muted">ظرفیت</dt>
+                  <dd class="col-8">
+                    {% if visit.capacity %}
+                      <strong>{{ visit.capacity }}</strong> نفر
+                    {% else %}
+                      <span class="text-muted">نامحدود</span>
+                    {% endif %}
+                  </dd>
+
+                  <dt class="col-4 text-muted">وضعیت</dt>
+                  <dd class="col-8">
+                    {% if visit.is_active %}
+                      <span class="badge badge-success"><i class="fe fe-check mr-1"></i>فعال</span>
+                    {% else %}
+                      <span class="badge badge-secondary"><i class="fe fe-slash mr-1"></i>غیرفعال</span>
+                    {% endif %}
+                  </dd>
+
+                  <dt class="col-4 text-muted">تاریخ ایجاد</dt>
+                  <dd class="col-8">{{ visit.created_at|date:'Y/m/d H:i' }}</dd>
+                </dl>
+              </div>
+            </div>
+
+            <!-- درخواست‌های این بازدید -->
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span>
+                  <i class="fe fe-users mr-2 text-info"></i>
+                  درخواست‌ها ({{ stats.total }})
+                </span>
+                <a href="{% url 'app_visit:request_create' %}?visit={{ visit.id }}" class="btn btn-sm btn-outline-success"><i class="fe fe-plus mr-1"></i> افزودن</a>
+              </div>
+              <div class="card-body p-0">
+                {% if requests %}
+                  <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>کاربر</th>
+                          <th>همراه</th>
+                          <th>وضعیت</th>
+                          <th>تاریخ</th>
+                          <th class="text-right">اکشن</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for r in requests %}
+                          <tr>
+                            <td>{{ r.id }}</td>
+                            <td>
+                              {{ r.user.full_name }}<br />
+                              <small class="text-muted" style="direction:ltr">{{ r.user.mobile }}</small>
+                            </td>
+                            <td>
+                              {% if r.have_companion %}
+                                <span class="badge badge-info">
+                                  <i class="fe fe-user-plus mr-1"></i>
+                                  {{ r.companion_name }} {{ r.companion_family }}
+                                </span>
+                              {% else %}
+                                <span class="text-muted small">—</span>
+                              {% endif %}
+                            </td>
+                            <td>
+                              {% if r.status == 'pending' %}
+                                <span class="badge badge-warning"><i class="fe fe-clock mr-1"></i>در انتظار</span>
+                              {% elif r.status == 'approved' %}
+                                <span class="badge badge-success"><i class="fe fe-check mr-1"></i>تأیید شده</span>
+                              {% else %}
+                                <span class="badge badge-danger"><i class="fe fe-x mr-1"></i>رد شده</span>
+                              {% endif %}
+                            </td>
+                            <td>
+                              <small>{{ r.created_at|date:'Y/m/d' }}</small>
+                            </td>
+                            <td class="text-right">
+                              <a href="{% url 'app_visit:request_detail' r.id %}" class="btn btn-sm btn-outline-primary"><i class="fe fe-eye"></i></a>
+                              {% if r.status == 'pending' %}
+                                <form method="post" class="d-inline" action="{% url 'app_visit:request_approve' r.id %}">
+                                  {% csrf_token %}
+                                  <button class="btn btn-sm btn-success" title="تأیید"><i class="fe fe-check"></i></button>
+                                </form>
+                                <button type="button" class="btn btn-sm btn-danger" title="رد" data-toggle="modal" data-target="#rejectModal{{ r.id }}"><i class="fe fe-x"></i></button>
+                              {% endif %}
+                            </td>
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                {% else %}
+                  <div class="text-center text-muted py-4">
+                    <i class="fe fe-inbox d-block mb-2" style="font-size:2rem;"></i>
+                    درخواستی ثبت نشده است
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- ستون راست: آمار + اکشن‌ها -->
+          <div class="col-md-4">
+            <!-- آمار -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-bar-chart-2 mr-2 text-primary"></i> آمار
+              </div>
+              <div class="card-body">
+                <dl class="row mb-0">
+                  <dt class="col-7 text-muted">تأیید شده</dt>
+                  <dd class="col-5 text-right"><strong class="text-success">{{ stats.approved }}</strong></dd>
+
+                  <dt class="col-7 text-muted">در انتظار</dt>
+                  <dd class="col-5 text-right"><strong class="text-warning">{{ stats.pending }}</strong></dd>
+
+                  <dt class="col-7 text-muted">رد شده</dt>
+                  <dd class="col-5 text-right"><strong class="text-danger">{{ stats.rejected }}</strong></dd>
+
+                  <dt class="col-7 text-muted">باقی‌مانده ظرفیت</dt>
+                  <dd class="col-5 text-right">
+                    {% if stats.remaining is None %}
+                      <span class="text-muted">نامحدود</span>
+                    {% elif stats.remaining == 0 %}
+                      <span class="badge badge-danger">تکمیل</span>
+                    {% else %}
+                      <strong class="text-info">{{ stats.remaining }}</strong>
+                    {% endif %}
+                  </dd>
+                </dl>
+              </div>
+            </div>
+
+            <!-- اکشن‌ها -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-zap mr-2 text-primary"></i> اکشن‌ها
+              </div>
+              <div class="card-body d-flex flex-column">
+                <a href="{% url 'app_visit:visit_update' visit.id %}" class="btn btn-primary btn-block mb-2"><i class="fe fe-edit-2 mr-2"></i> ویرایش بازدید</a>
+
+                <button type="button"
+                  class="btn {% if visit.is_active %}
+                    
+                    btn-outline-warning
+
+                  {% else %}
+                    
+                    btn-outline-success
+
+                  {% endif %} btn-block"
+                  data-toggle="modal"
+                  data-target="#toggleActiveModal">
+                  <i class="fe {% if visit.is_active %}
+                      
+                      fe-slash
+
+                    {% else %}
+                      
+                      fe-check-circle
+
+                    {% endif %} mr-2">
+
+                  </i>
+                  {% if visit.is_active %}
+                    غیرفعال کردن
+                  {% else %}
+                    فعال کردن
+                  {% endif %}
+                </button>
+              </div>
+            </div>
+
+            <!-- ناحیه خطر -->
+            <div class="card custom-card shadow-sm" style="border-color:#f5c6cb;">
+              <div class="card-header fw-bold d-flex align-items-center text-danger" style="background-color:#f8d7da;border-color:#f5c6cb;">
+                <i class="fe fe-alert-triangle mr-2"></i> ناحیه خطر
+              </div>
+              <div class="card-body">
+                {% if stats.approved > 0 %}
+                  <p class="small text-danger mb-0">
+                    <i class="fe fe-lock mr-1"></i>
+                    این بازدید {{ stats.approved }} درخواست تأیید‌شده دارد و قابل حذف نیست.
+                  </p>
+                {% else %}
+                  <p class="small text-muted mb-2">حذف بازدید، تمام درخواست‌ها را نیز پاک می‌کند.</p>
+                  <button type="button" class="btn btn-sm btn-outline-danger btn-block" data-toggle="modal" data-target="#deleteModal"><i class="fe fe-trash-2 mr-1"></i> حذف بازدید</button>
+                {% endif %}
+              </div>
+            </div>
+
+            <a href="{% url 'app_visit:visit_index' %}" class="btn btn-link btn-sm text-secondary btn-block mt-2"><i class="fe fe-arrow-right mr-1"></i> بازگشت به لیست بازدیدها</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ═══ مودال‌ها ═══ #}
+
+  {# فعال/غیرفعال #}
+  <div class="modal fade" id="toggleActiveModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header border-0">
+          <h5 class="modal-title fw-bold">
+            <i class="fe {% if visit.is_active %}
+                
+                fe-slash text-warning
+
+              {% else %}
+                
+                fe-check-circle text-success
+
+              {% endif %} mr-2">
+
+            </i>
+            {% if visit.is_active %}
+              غیرفعال‌سازی
+            {% else %}
+              فعال‌سازی
+            {% endif %}بازدید
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">
+            آیا از{% if visit.is_active %}
+              غیرفعال کردن
+            {% else %}
+              فعال کردن
+            {% endif %}بازدید #{{ visit.id }} مطمئن هستید؟{% if visit.is_active %}
+              <br /><small class="text-muted">با غیرفعال‌سازی، امکان تأیید درخواست‌های جدید وجود ندارد.</small>
+            {% endif %}
+          </p>
+        </div>
+        <div class="modal-footer border-0">
+          <form method="post" action="{% url 'app_visit:visit_toggle_active' visit.id %}" class="w-100">
+            {% csrf_token %}
+            <div class="d-flex">
+              <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+              <button type="submit"
+                class="btn {% if visit.is_active %}
+                  
+                  btn-warning
+
+                {% else %}
+                  
+                  btn-success
+
+                {% endif %} flex-fill ml-1">
+                بله، ادامه بده
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# حذف #}
+  {% if stats.approved == 0 %}
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-color:#f5c6cb;">
+          <div class="modal-header border-0" style="background-color:#f8d7da;">
+            <h5 class="modal-title fw-bold text-danger"><i class="fe fe-alert-triangle mr-2"></i> حذف بازدید</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-2">آیا از حذف بازدید #{{ visit.id }} مطمئن هستید؟</p>
+            <ul class="small text-muted mb-0">
+              <li>تمام درخواست‌های این بازدید ({{ stats.total }} مورد) حذف می‌شوند</li>
+              <li>
+                این عملیات <strong class="text-danger">قابل بازگشت نیست</strong>
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer border-0">
+            <form method="post" action="{% url 'app_visit:visit_delete' visit.id %}" class="w-100">
+              {% csrf_token %}
+              <div class="d-flex">
+                <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+                <button type="submit" class="btn btn-danger flex-fill ml-1"><i class="fe fe-trash-2 mr-1"></i> بله، حذف کن</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# مودال‌های رد برای هر درخواست pending #}
+  {% for r in requests %}
+    {% if r.status == 'pending' %}
+      <div class="modal fade" id="rejectModal{{ r.id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header border-0">
+              <h5 class="modal-title fw-bold"><i class="fe fe-x-circle text-danger mr-2"></i> رد درخواست</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <form method="post" action="{% url 'app_visit:request_reject' r.id %}">
+              {% csrf_token %}
+              <div class="modal-body">
+                <p class="small mb-2">
+                  درخواست <strong>{{ r.user.full_name }}</strong> را رد می‌کنید؟
+                </p>
+                <label class="form-label fw-bold small">دلیل رد <span class="text-danger">*</span></label>
+                <textarea name="reason" class="form-control" rows="3" placeholder="مثلاً: ظرفیت تکمیل است…" required maxlength="2000"></textarea>
+              </div>
+              <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-dismiss="modal">انصراف</button>
+                <button type="submit" class="btn btn-danger"><i class="fe fe-x mr-1"></i> رد کن</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
+{% block js %}
+
+{% endblock %}

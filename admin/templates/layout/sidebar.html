@@ -197,11 +197,11 @@
           </a>
         </li>
       {% endif %}
-      {% comment %}
+
       <!-- فاکتور -->
-      {% if 'InvoiceRead' in adminAccess %}
+      {% if 'FactorRead' in adminAccess %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'invoice:invoice_index' %}">
+          <a class="nav-link" href="{% url 'app_factor:factor_index' %}">
             <span class="shape1"></span><span class="shape2"></span>
             <i class="ti-receipt sidemenu-icon"></i>
             <span class="sidemenu-label">فاکتورها</span>
@@ -210,9 +210,9 @@
       {% endif %}
 
       <!-- آموزش -->
-      {% if 'CourseRead' in adminAccess %}
+      {% if 'LearnRead' in adminAccess %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'course:course_index' %}">
+          <a class="nav-link" href="{% url 'app_learn:learn_index' %}">
             <span class="shape1"></span><span class="shape2"></span>
             <i class="ti-book sidemenu-icon"></i>
             <span class="sidemenu-label">آموزش‌ها</span>
@@ -220,32 +220,10 @@
         </li>
       {% endif %}
 
-      <!-- گالری -->
-      {% if 'GalleryRead' in adminAccess %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'gallery:gallery_index' %}">
-            <span class="shape1"></span><span class="shape2"></span>
-            <i class="ti-gallery sidemenu-icon"></i>
-            <span class="sidemenu-label">گالری</span>
-          </a>
-        </li>
-      {% endif %}
-
-      <!-- بازدید -->
-      {% if 'VisitRead' in adminAccess %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'visit:visit_index' %}">
-            <span class="shape1"></span><span class="shape2"></span>
-            <i class="ti-eye sidemenu-icon"></i>
-            <span class="sidemenu-label">بازدیدها</span>
-          </a>
-        </li>
-      {% endif %}
-
       <!-- پشتیبانی -->
       {% if 'SupportRead' in adminAccess %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'support:support_index' %}">
+          <a class="nav-link" href="{% url 'app_support:support_index' %}">
             <span class="shape1"></span><span class="shape2"></span>
             <i class="ti-headphone-alt sidemenu-icon"></i>
             <span class="sidemenu-label">پشتیبانی</span>
@@ -253,6 +231,58 @@
         </li>
       {% endif %}
 
+      <!-- بازدید -->
+      {% if 'VisitRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link with-sub" href="#">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-eye sidemenu-icon"></i>
+            <span class="sidemenu-label">بازدید از کارخانه</span>
+            <i class="angle fe fe-chevron-left"></i>
+          </a>
+          <ul class="nav-sub">
+            <li class="nav-sub-item">
+              <a class="nav-sub-link" href="{% url 'app_visit:visit_index' %}">تنظیمات</a>
+            </li>
+            <li class="nav-sub-item">
+              <a class="nav-sub-link" href="{% url 'app_visit:request_index' %}">درخواست ها</a>
+            </li>
+          </ul>
+        </li>
+      {% endif %}
+
+      <!-- گالری -->
+      {% if 'GalleryRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'app_gallery:gallery_index' %}">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-gallery sidemenu-icon"></i>
+            <span class="sidemenu-label">گالری</span>
+          </a>
+        </li>
+      {% endif %}
+
+      <!-- بازنگری -->
+      {% if 'ReviewRead' in adminAccess %}
+        <li class="nav-item">
+          <a class="nav-link with-sub" href="#">
+            <span class="shape1"></span><span class="shape2"></span>
+            <i class="ti-reload sidemenu-icon"></i>
+            <span class="sidemenu-label">بازخورد</span>
+            <i class="angle fe fe-chevron-left"></i>
+          </a>
+          <ul class="nav-sub">
+            <li class="nav-sub-item">
+              <a class="nav-sub-link" href="{% url 'app_review:question_index' %}">سوالات</a>
+            </li>
+            <li class="nav-sub-item">
+              <a class="nav-sub-link" href="{% url 'app_review:answer_index' %}">جواب ها</a>
+            </li>
+          </ul>
+        </li>
+      {% endif %}
+
+      {% comment %}
       <!-- سوالات -->
       {% if 'FaqRead' in adminAccess %}
         <li class="nav-item">
@@ -262,18 +292,7 @@
             <span class="sidemenu-label">سوالات متداول</span>
           </a>
         </li>
-      {% endif %}
-
-      <!-- بازنگری -->
-      {% if 'ReviewRead' in adminAccess %}
-        <li class="nav-item">
-          <a class="nav-link" href="{% url 'review:review_index' %}">
-            <span class="shape1"></span><span class="shape2"></span>
-            <i class="ti-reload sidemenu-icon"></i>
-            <span class="sidemenu-label">بازنگری</span>
-          </a>
-        </li>
-      {% endif %} {% endcomment %}
+      {% endif %}}{% endcomment %}
     </ul>
   </div>
 </div>

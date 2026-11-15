@@ -1,0 +1,360 @@
+{% extends 'layout/app.html' %}
+{% load static %}
+{% load customTags %}
+
+{% block title %}
+  تیکت #{{ ticket.id }}
+{% endblock %}
+
+{% block content %}
+  <div class="main-content side-content pt-0">
+    <div class="container-fluid">
+      <div class="inner-body">
+        {% include 'layout/pageHeader.html' %}
+
+        <div class="row g-3">
+          <!-- ═══════════════════════════════════════════ -->
+          <!-- ستون چپ: چت -->
+          <!-- ═══════════════════════════════════════════ -->
+          <div class="col-md-8">
+            <!-- هدر تیکت -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div class="flex-grow-1">
+                    <h5 class="mb-1">{{ ticket.subject }}</h5>
+                    <div class="d-flex flex-wrap">
+                      <span class="badge badge-light text-dark border mr-1 mb-1"><i class="fe fe-tag mr-1"></i>{{ ticket.get_category_display }}</span>
+                      {% if ticket.priority == 'urgent' %}
+                        <span class="badge badge-danger mr-1 mb-1"><i class="fe fe-alert-octagon mr-1"></i>فوری</span>
+                      {% elif ticket.priority == 'high' %}
+                        <span class="badge badge-warning mr-1 mb-1"><i class="fe fe-arrow-up mr-1"></i>زیاد</span>
+                      {% elif ticket.priority == 'normal' %}
+                        <span class="badge badge-info mr-1 mb-1"><i class="fe fe-minus mr-1"></i>عادی</span>
+                      {% else %}
+                        <span class="badge badge-secondary mr-1 mb-1"><i class="fe fe-arrow-down mr-1"></i>کم</span>
+                      {% endif %}
+
+                      {% if ticket.status == 'open' %}
+                        <span class="badge badge-warning mb-1"><i class="fe fe-inbox mr-1"></i>باز</span>
+                      {% elif ticket.status == 'in_progress' %}
+                        <span class="badge badge-primary mb-1"><i class="fe fe-refresh-cw mr-1"></i>در حال بررسی</span>
+                      {% elif ticket.status == 'resolved' %}
+                        <span class="badge badge-success mb-1"><i class="fe fe-check mr-1"></i>حل شده</span>
+                      {% else %}
+                        <span class="badge badge-secondary mb-1"><i class="fe fe-lock mr-1"></i>بسته</span>
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <small class="text-muted">#{{ ticket.id }}</small><br />
+                    <small class="text-muted">{{ ticket.created_at|date:'Y/m/d H:i' }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- چت -->
+            <div class="card custom-card shadow-sm">
+              <div class="card-header fw-bold d-flex justify-content-between align-items-center">
+                <span><i class="fe fe-message-square mr-2 text-primary"></i> مکالمه</span>
+                <small class="text-muted">{{ chat_messages|length }} پیام</small>
+              </div>
+
+              <div class="card-body p-0">
+                <!-- لیست پیام‌ها -->
+                <div class="chat-messages p-3" style="max-height:600px;overflow-y:auto;background:#f5f7fb;">
+                  {% for msg in chat_messages %}
+                    <div class="d-flex mb-3 {% if msg.is_admin_reply %}justify-content-end{% endif %}">
+                      {% if not msg.is_admin_reply %}
+                        <!-- avatar کاربر -->
+                        <div class="flex-shrink-0 mr-2">
+                          {% if msg.sender.avatar %}
+                            <img src="{{ msg.sender.avatar.url }}" width="36" height="36" class="rounded-circle object-fit-cover" alt="" />
+                          {% else %}
+                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width:36px;height:36px;">
+                              <i class="fe fe-user"></i>
+                            </div>
+                          {% endif %}
+                        </div>
+                      {% endif %}
+
+                      <div style="max-width:75%;">
+                        <div class="small text-muted mb-1 {% if msg.is_admin_reply %}text-right{% endif %}">
+                          {{ msg.sender.full_name }}
+                          {% if msg.is_admin_reply %}
+                            <span class="badge badge-primary" style="font-size:9px;">ادمین</span>
+                          {% endif %}· {{ msg.created_at|date:'H:i' }}
+                          {% if msg.is_admin_reply and msg.is_read %}
+                            <i class="fe fe-check-circle text-info" title="خوانده شده توسط کاربر"></i>
+                          {% elif not msg.is_admin_reply and msg.is_read %}
+                            <i class="fe fe-check-circle text-info" title="خوانده شده توسط ادمین"></i>
+                          {% endif %}
+                        </div>
+
+                        <div class="p-3 rounded
+                                  {% if msg.is_admin_reply %}
+                            text-white
+                          {% else %}
+                            bg-white border
+                          {% endif %}"
+                          style="
+                             {% if msg.is_admin_reply %}background-color:#4d7cf3;{% endif %}
+                             border-radius:12px !important;
+                             word-wrap:break-word;
+                           ">
+                          {% if msg.text %}
+                            <div style="white-space:pre-line;line-height:1.7;">{{ msg.text }}</div>
+                          {% endif %}
+
+                          {% if msg.file %}
+                            {% with fname=msg.file.name|lower %}
+                              {% if '.jpg' in fname or '.jpeg' in fname or '.png' in fname or '.webp' in fname %}
+                                <div class="mt-2">
+                                  <a href="{{ msg.file.url }}" target="_blank"><img src="{{ msg.file.url }}" alt="attachment" class="rounded border" style="max-width:200px;max-height:200px;" /></a>
+                                </div>
+                              {% else %}
+                                <a href="{{ msg.file.url }}"
+                                  target="_blank"
+                                  class="d-inline-block mt-2 btn btn-sm {% if msg.is_admin_reply %}
+                                    btn-outline-light
+                                  {% else %}
+                                    btn-outline-primary
+                                  {% endif %}">
+                                  <i class="fe fe-paperclip mr-1"></i>
+                                  دریافت فایل
+                                </a>
+                              {% endif %}
+                            {% endwith %}
+                          {% endif %}
+                        </div>
+                      </div>
+
+                      {% if msg.is_admin_reply %}
+                        <div class="flex-shrink-0 ml-2">
+                          {% if msg.sender.avatar %}
+                            <img src="{{ msg.sender.avatar.url }}" width="36" height="36" class="rounded-circle object-fit:cover" alt="" />
+                          {% else %}
+                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width:36px;height:36px;">
+                              <i class="fe fe-shield"></i>
+                            </div>
+                          {% endif %}
+                        </div>
+                      {% endif %}
+                    </div>
+                  {% empty %}
+                    <div class="text-center text-muted py-5">
+                      <i class="fe fe-message-square d-block mb-2" style="font-size:2rem;"></i>
+                      پیامی ارسال نشده است
+                    </div>
+                  {% endfor %}
+                </div>
+
+                <!-- فرم ارسال پیام -->
+                {% if is_closed %}
+                  <div class="card-footer bg-light border-top text-center">
+                    <div class="alert alert-secondary mb-0 small">
+                      <i class="fe fe-lock mr-1"></i>
+                      این تیکت بسته شده است.{% if ticket.close_reason %}
+                        <br /><strong>دلیل:</strong> {{ ticket.close_reason }}
+                      {% endif %}
+                    </div>
+                  </div>
+                {% else %}
+                  <div class="card-footer bg-white border-top">
+                    <form method="post" action="{% url 'app_support:support_send_message' ticket.id %}" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <div class="form-group mb-2">
+                        <textarea name="text" class="form-control" rows="3" placeholder="پاسخ خود را بنویسید…" style="resize:vertical;border-radius:.5rem;"></textarea>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="flex-grow-1 mr-2">
+                          <input type="file" name="file" class="form-control-file" accept=".jpg,.jpeg,.png,.webp,.pdf,.zip,.rar" />
+                          <small class="text-muted">jpg، png، webp، pdf، zip، rar — حداکثر ۱۰MB</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i class="fe fe-send mr-1"></i> ارسال</button>
+                      </div>
+                    </form>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════════ -->
+          <!-- ستون راست: اطلاعات + اکشن‌ها -->
+          <!-- ═══════════════════════════════════════════ -->
+          <div class="col-md-4">
+            <!-- اطلاعات تیکت -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-info mr-2 text-info"></i> اطلاعات تیکت
+              </div>
+              <div class="card-body">
+                <dl class="row mb-0 small">
+                  <dt class="col-5 text-muted">کاربر</dt>
+                  <dd class="col-7">
+                    <a href="{% url 'app_user:user_detail' ticket.user.id %}" class="text-decoration-none">{{ ticket.user.full_name }}</a><br />
+                    <small class="text-muted" style="direction:ltr">{{ ticket.user.mobile }}</small>
+                  </dd>
+
+                  <dt class="col-5 text-muted">دسته</dt>
+                  <dd class="col-7">{{ ticket.get_category_display }}</dd>
+
+                  <dt class="col-5 text-muted">اولویت</dt>
+                  <dd class="col-7">{{ ticket.get_priority_display }}</dd>
+
+                  <dt class="col-5 text-muted">وضعیت</dt>
+                  <dd class="col-7">{{ ticket.get_status_display }}</dd>
+
+                  <dt class="col-5 text-muted">تاریخ ایجاد</dt>
+                  <dd class="col-7">{{ ticket.created_at|date:'Y/m/d H:i' }}</dd>
+
+                  <dt class="col-5 text-muted">آخرین پیام</dt>
+                  <dd class="col-7">{{ ticket.last_message_at|date:'Y/m/d H:i' }}</dd>
+
+                  {% if ticket.closed_by %}
+                    <dt class="col-5 text-muted">بسته‌کننده</dt>
+                    <dd class="col-7">
+                      {{ ticket.closed_by.full_name }}
+                      <small class="text-muted d-block">{{ ticket.closed_at|date:'Y/m/d H:i' }}</small>
+                    </dd>
+                  {% endif %}
+                </dl>
+              </div>
+            </div>
+
+            <!-- اکشن‌ها -->
+            <div class="card custom-card mb-3 shadow-sm">
+              <div class="card-header fw-bold">
+                <i class="fe fe-zap mr-2 text-primary"></i> اکشن‌ها
+              </div>
+              <div class="card-body d-flex flex-column">
+                {% if not is_closed %}
+                  <a href="{% url 'app_support:support_update' ticket.id %}" class="btn btn-outline-primary btn-block mb-2"><i class="fe fe-edit-2 mr-2"></i> ویرایش تیکت</a>
+                {% endif %}
+
+                {% if transitions %}
+                  <div class="mb-2">
+                    <p class="small text-muted mb-1">تغییر وضعیت به:</p>
+                    {% for t in transitions %}
+                      <form method="post" action="{% url 'app_support:support_change_status' ticket.id %}" class="d-inline-block mr-1 mb-1">
+                        {% csrf_token %}
+                        <input type="hidden" name="new_status" value="{{ t.value }}" />
+                        <button class="btn btn-sm btn-outline-info">
+                          {% if t.value == 'in_progress' %}
+                            <i class="fe fe-refresh-cw mr-1"></i>
+                          {% elif t.value == 'resolved' %}
+                            <i class="fe fe-check mr-1"></i>
+                          {% elif t.value == 'open' %}
+                            <i class="fe fe-inbox mr-1"></i>
+                          {% endif %}
+                          {{ t.label }}
+                        </button>
+                      </form>
+                    {% endfor %}
+                  </div>
+                {% endif %}
+
+                {% if is_open %}
+                  <button type="button" class="btn btn-outline-danger btn-block" data-toggle="modal" data-target="#closeModal"><i class="fe fe-lock mr-2"></i> بستن تیکت</button>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- ناحیه خطر -->
+            {% if not is_closed %}
+              <div class="card custom-card shadow-sm" style="border-color:#f5c6cb;">
+                <div class="card-header fw-bold d-flex align-items-center text-danger" style="background-color:#f8d7da;border-color:#f5c6cb;">
+                  <i class="fe fe-alert-triangle mr-2"></i> ناحیه خطر
+                </div>
+                <div class="card-body">
+                  <p class="small text-muted mb-2">حذف تیکت غیرقابل بازگشت است و تمام پیام‌ها و فایل‌ها پاک می‌شوند.</p>
+                  <button type="button" class="btn btn-sm btn-outline-danger btn-block" data-toggle="modal" data-target="#deleteModal"><i class="fe fe-trash-2 mr-1"></i> حذف تیکت</button>
+                </div>
+              </div>
+            {% endif %}
+
+            <a href="{% url 'app_support:support_index' %}" class="btn btn-link btn-sm text-secondary btn-block mt-2"><i class="fe fe-arrow-right mr-1"></i> بازگشت به لیست تیکت‌ها</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ═══ مودال بستن ═══ #}
+  {% if is_open %}
+    <div class="modal fade" id="closeModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title fw-bold"><i class="fe fe-lock text-danger mr-2"></i> بستن تیکت</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <form method="post" action="{% url 'app_support:support_close' ticket.id %}">
+            {% csrf_token %}
+            <div class="modal-body">
+              <div class="alert alert-warning small mb-3">
+                <i class="fe fe-alert-triangle mr-1"></i>
+                پس از بستن، کاربر نمی‌تواند پیام جدید ارسال کند و تیکت نهایی می‌شود.
+              </div>
+              <label class="form-label fw-bold small">دلیل بستن (اختیاری)</label>
+              <textarea name="reason" class="form-control" rows="3" placeholder="مثلاً: مشکل حل شد، درخواست کاربر انجام شد…" maxlength="2000"></textarea>
+              <small class="text-muted">حداکثر ۲۰۰۰ کاراکتر</small>
+            </div>
+            <div class="modal-footer border-0">
+              <button type="button" class="btn btn-light" data-dismiss="modal">انصراف</button>
+              <button type="submit" class="btn btn-danger"><i class="fe fe-lock mr-1"></i> بستن تیکت</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {# ═══ مودال حذف ═══ #}
+  {% if not is_closed %}
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-color:#f5c6cb;">
+          <div class="modal-header border-0" style="background-color:#f8d7da;">
+            <h5 class="modal-title fw-bold text-danger"><i class="fe fe-alert-triangle mr-2"></i> حذف تیکت</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="بستن"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-2">
+              آیا از حذف کامل تیکت
+              <strong>«{{ ticket.subject }}»</strong>
+              مطمئن هستید؟
+            </p>
+            <ul class="small text-muted mb-0">
+              <li>تمام پیام‌ها و فایل‌های پیوست حذف می‌شوند</li>
+              <li>
+                این عملیات <strong class="text-danger">قابل بازگشت نیست</strong>
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer border-0">
+            <form method="post" action="{% url 'app_support:support_delete' ticket.id %}" class="w-100">
+              {% csrf_token %}
+              <div class="d-flex">
+                <button type="button" class="btn btn-light flex-fill mr-1" data-dismiss="modal">انصراف</button>
+                <button type="submit" class="btn btn-danger flex-fill ml-1"><i class="fe fe-trash-2 mr-1"></i> بله، حذف کن</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{% block js %}
+  <script>
+    // اسکرول خودکار به آخرین پیام
+    ;(function () {
+      var box = document.querySelector('.chat-messages')
+      if (box) box.scrollTop = box.scrollHeight
+    })()
+  </script>
+{% endblock %}
