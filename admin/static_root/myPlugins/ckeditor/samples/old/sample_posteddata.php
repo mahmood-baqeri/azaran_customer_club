@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/ckeditor/samples/old/sample_posteddata.php
+
 <?php /* <body><pre>
 
 -------------------------------------------------------------------------------------------

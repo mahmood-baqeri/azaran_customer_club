@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/page/script.js
+
 $(document).ready(function () {
 
      // =============================================

@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/checkout-jquery-steps.js
+
 $(function(){
 $("#checkoutsteps").steps({
 headerTag: "h4",

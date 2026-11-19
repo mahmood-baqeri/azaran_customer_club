@@ -1,3 +1,5 @@
+# Path: applications/promotion/apps.py
+
 from django.apps import AppConfig
 
 

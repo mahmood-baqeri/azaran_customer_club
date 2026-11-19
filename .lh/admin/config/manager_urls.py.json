@@ -1,0 +1,18 @@
+{
+    "sourceFile": "admin/config/manager_urls.py",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1795061277836,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1795061277836,
+            "name": "Commit-0",
+            "content": "# Path: config/manager_urls.py\n\nfrom django.contrib import admin\nfrom django.urls import include, path\nfrom rest_framework import routers\n\nrouter = routers.DefaultRouter()\n\nurlpatterns = [\n\n    # Apps\n    path(\"\", include('applications.dashboard.url')),\n    path(\"log/\", include('applications.log.url')),\n    path(\"role/\", include('applications.role.url')),\n    path(\"setting/\", include('applications.setting.url')),\n    path('page/', include('applications.page.url')),\n    path('category/', include('applications.category.url')),\n    \n    path('gift/', include('applications.gift.url')),\n    path('promotion/', include('applications.promotion.url')),\n    path('score/', include('applications.score.urls')),\n    path('notification/', include('applications.notification.url')),\n    path('project/', include('applications.project.url')),\n    path('factor/', include('applications.factor.url')),\n    path('learn/', include('applications.learn.url')),\n    path('support/', include('applications.support.url')),\n    path('visit/', include('applications.visit.url')),\n    path('gallery/', include('applications.gallery.url')),\n    path('review/', include('applications.review.url')),\n    path('faq/', include('applications.faq.url')),\n\n\n    # User areas\n    path(f\"users/\", include('applications.user.urls.base')),\n\n    path('server_api/', include('config.urls_rest_api', namespace='api')),\n    path(\"tinymce/\", include(\"tinymce.urls\")),\n\n    # Admin & tools\n    path(\"administrator/\", admin.site.urls),\n    path(\"api-auth/\", include('rest_framework.urls', namespace='rest_framework')),\n]\n"
+        }
+    ]
+}

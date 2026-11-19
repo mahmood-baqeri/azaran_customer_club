@@ -1,3 +1,5 @@
+# Path: applications/learn/models.py
+
 # applications/learn/models.py
 
 from django.db import models

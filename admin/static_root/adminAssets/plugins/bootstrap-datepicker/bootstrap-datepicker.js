@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/bootstrap-datepicker/bootstrap-datepicker.js
+
 /*!
  * Datepicker for Bootstrap v1.8.0 (https://github.com/uxsolutions/bootstrap-datepicker)
  *

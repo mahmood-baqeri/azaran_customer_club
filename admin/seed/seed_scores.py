@@ -1,3 +1,5 @@
+# Path: seed/seed_scores.py
+
 # admin/seed/seed_scores.py
 
 import os

@@ -1,3 +1,5 @@
+# Path: applications/faq/clean_data.py
+
 # applications/faq/clean_data.py
 
 from .models import Category

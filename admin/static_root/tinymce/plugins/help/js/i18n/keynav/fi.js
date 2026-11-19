@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/fi.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.fi',
 '<h1>Näppäimistönavigoinnin aloittaminen</h1>\n' +
   '\n' +

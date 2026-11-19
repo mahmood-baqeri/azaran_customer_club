@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/multislider/multislider-rtl.js
+
 /*
 *   MultiSlider | MIT License
 *

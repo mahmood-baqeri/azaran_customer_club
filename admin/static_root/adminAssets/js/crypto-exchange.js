@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/crypto-exchange.js
+
 $(function(e){
   'use strict'
   

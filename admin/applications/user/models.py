@@ -1,3 +1,5 @@
+# Path: applications/user/models.py
+
 #######    applications/user/models.py
 
 import uuid

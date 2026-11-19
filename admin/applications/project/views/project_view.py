@@ -1,3 +1,5 @@
+# Path: applications/project/views/project_view.py
+
 # applications/project/views/project_view.py
 
 import logging

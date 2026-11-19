@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/jspdf/jspdf.umd.js
+
 /** @license
  *
  * jsPDF - PDF Document creation from JavaScript

@@ -1,3 +1,5 @@
+# Path: app_fastapi/conf/response.py
+
 from django.db.models.fields.files import FieldFile
 from fastapi.responses import JSONResponse
 from django.core.serializers.json import DjangoJSONEncoder

@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/sidemenu/sidemenu2-rtl.js
+
 $(function() {
 	
 		var nav = $('.main-sidebar-body');

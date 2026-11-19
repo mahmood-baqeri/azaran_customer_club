@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/mapel/maps/world_countries.js
+
 /*!
  *
  * Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)

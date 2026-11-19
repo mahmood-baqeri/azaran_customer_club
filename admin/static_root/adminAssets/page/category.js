@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/page/category.js
+
 $(document).ready(function () {
 
      // =============================================

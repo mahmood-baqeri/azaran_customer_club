@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/ckeditor/plugins/wordcount/lang/ko.js
+
 /*
 Korean translation by Maxime Houdais
 */

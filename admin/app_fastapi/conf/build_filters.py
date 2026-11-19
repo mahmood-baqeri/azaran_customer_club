@@ -1,3 +1,5 @@
+# Path: app_fastapi/conf/build_filters.py
+
 from django.db.models import Q, CharField, TextField
 
 

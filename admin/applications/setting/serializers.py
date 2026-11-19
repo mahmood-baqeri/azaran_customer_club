@@ -1,3 +1,5 @@
+# Path: applications/setting/serializers.py
+
 from rest_framework import serializers
 from applications.setting.models import City
 

@@ -1,3 +1,5 @@
+# Path: applications/gallery/clean_data.py
+
 # applications/gallery/clean_data.py
 
 from django.core.files.uploadedfile import UploadedFile

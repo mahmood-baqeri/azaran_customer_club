@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/tooltip.js
+
 $(function() {
 	'use strict'
 	$('[data-toggle="tooltip"]').tooltip();

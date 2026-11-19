@@ -1,3 +1,5 @@
+# Path: applications/faq/views/__init__.py
+
 # applications/faq/views/__init__.py
 
 from .faq_category import (

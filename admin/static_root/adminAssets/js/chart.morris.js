@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/chart.morris.js
+
 $(function() {
 	'use strict';
 

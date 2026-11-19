@@ -1,3 +1,5 @@
+// Path: static_root/rest_framework/js/default.js
+
 $(document).ready(function() {
   // JSON highlighting.
   prettyPrint();

@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/ckeditor/plugins/wordcount/lang/ar.js
+
 // Arabic Translation by Amine BENHAMIDA
 
 CKEDITOR.plugins.setLang('wordcount', 'ar', {

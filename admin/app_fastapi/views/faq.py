@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/faq.py
+
 # app_fastapi/views/faq.py
 
 from typing import Optional

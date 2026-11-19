@@ -1,3 +1,5 @@
+# Path: applications/gift/views/gift.py
+
 # applications/gift/views/gift.py
 
 import json

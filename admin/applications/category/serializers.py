@@ -1,3 +1,5 @@
+# Path: applications/category/serializers.py
+
 # applications/category/serializers.py
 
 from rest_framework import serializers

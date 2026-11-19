@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/chart.flot.js
+
 $(function() {
 	'use strict';
 

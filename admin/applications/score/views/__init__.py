@@ -1,3 +1,5 @@
+# Path: applications/score/views/__init__.py
+
 # applications/score/view/__init__.py
 
 from .score_rule_view import (

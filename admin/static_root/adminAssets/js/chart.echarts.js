@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/chart.echarts.js
+
 $(function() {
 	'use strict';
 

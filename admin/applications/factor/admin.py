@@ -1,3 +1,5 @@
+# Path: applications/factor/admin.py
+
 # applications/factor/admin.py
 
 from django.contrib import admin

@@ -1,3 +1,5 @@
+# Path: app_fastapi/schemas/user.py
+
 from typing import Optional
 
 from pydantic import BaseModel

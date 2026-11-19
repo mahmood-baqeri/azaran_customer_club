@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/chart.sparkline.js
+
 $(function() {
 	'use strict'
 	/***************** LINE CHARTS *****************/

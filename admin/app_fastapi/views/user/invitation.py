@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/user/invitation.py
+
 # admin/app_fastapi/views/user/invitation.py
 
 import logging

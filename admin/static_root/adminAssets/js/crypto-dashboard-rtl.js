@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/crypto-dashboard-rtl.js
+
 $(function(e){
   'use strict'
   

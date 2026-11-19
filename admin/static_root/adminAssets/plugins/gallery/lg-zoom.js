@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/gallery/lg-zoom.js
+
 /**!
  * lg-zoom.js | 1.0.1 | December 22nd 2016
  * http://sachinchoolur.github.io/lg-zoom.js

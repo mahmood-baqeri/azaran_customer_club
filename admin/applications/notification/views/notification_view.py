@@ -1,3 +1,5 @@
+# Path: applications/notification/views/notification_view.py
+
 # applications/notification/views/notification_view.py
 
 import logging

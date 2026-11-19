@@ -1,3 +1,5 @@
+# Path: config/manager_urls.py
+
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
@@ -31,7 +33,7 @@ urlpatterns = [
     # User areas
     path(f"users/", include('applications.user.urls.base')),
 
-    path('server_api/', include('config.urls_rest_api')),
+    path('server_api/', include('config.urls_rest_api', namespace='api')),
     path("tinymce/", include("tinymce.urls")),
 
     # Admin & tools

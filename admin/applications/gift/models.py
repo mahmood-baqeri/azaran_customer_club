@@ -1,3 +1,5 @@
+# Path: applications/gift/models.py
+
 # applications/gift/models.py
 
 from django.db import models

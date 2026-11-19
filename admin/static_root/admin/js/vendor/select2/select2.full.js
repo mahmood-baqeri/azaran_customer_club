@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/vendor/select2/select2.full.js
+
 /*!
  * Select2 4.0.13
  * https://select2.github.io

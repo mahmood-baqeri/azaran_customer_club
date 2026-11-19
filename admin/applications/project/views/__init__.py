@@ -1,3 +1,5 @@
+# Path: applications/project/views/__init__.py
+
 # applications/project/views/__init__.py
 
 from .project_view import (

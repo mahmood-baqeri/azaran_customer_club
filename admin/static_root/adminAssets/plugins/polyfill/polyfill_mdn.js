@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/polyfill/polyfill_mdn.js
+
 /**
  * Minified by jsDelivr using Terser v3.14.1.
  * Original file: /npm/findindex_polyfill_mdn@1.0.0/findIndex.js

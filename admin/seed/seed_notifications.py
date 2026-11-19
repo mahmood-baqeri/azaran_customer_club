@@ -1,3 +1,5 @@
+# Path: seed/seed_notifications.py
+
 # admin/seed/seed_notifications.py
 
 import os

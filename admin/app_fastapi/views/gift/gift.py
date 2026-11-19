@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/gift/gift.py
+
 # app_fastapi/views/gift.py
 
 import uuid

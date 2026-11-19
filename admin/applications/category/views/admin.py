@@ -1,3 +1,5 @@
+# Path: applications/category/views/admin.py
+
 import json
 
 from django.contrib import messages

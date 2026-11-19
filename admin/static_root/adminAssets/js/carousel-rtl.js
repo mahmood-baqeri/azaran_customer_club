@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/carousel-rtl.js
+
 (function($) {
 	
 	// ______________Owl-carousel-icons2

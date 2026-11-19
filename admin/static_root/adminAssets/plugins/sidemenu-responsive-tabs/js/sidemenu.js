@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/sidemenu-responsive-tabs/js/sidemenu.js
+
 (function () {
 	"use strict";
 

@@ -1,3 +1,5 @@
+// Path: static_root/debug_toolbar/js/history.js
+
 import { $$, ajaxForm, getDebugElement, replaceToolbarState } from "./utils.js";
 
 const djDebug = getDebugElement();

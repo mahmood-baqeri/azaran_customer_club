@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/sweet-alert/jquery.sweet-alert.js
+
 $(function(e) {
 	
 	//Basic

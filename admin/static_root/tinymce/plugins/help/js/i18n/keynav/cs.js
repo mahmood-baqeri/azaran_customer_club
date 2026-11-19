@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/cs.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.cs',
 '<h1>Začínáme navigovat pomocí klávesnice</h1>\n' +
   '\n' +

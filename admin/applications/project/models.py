@@ -1,3 +1,5 @@
+# Path: applications/project/models.py
+
 # applications/project/models.py
 
 from django.core.exceptions import ValidationError

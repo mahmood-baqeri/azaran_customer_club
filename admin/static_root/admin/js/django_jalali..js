@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/django_jalali..js
+
 function mod(e, t) {
   return e - t * Math.floor(e / t);
 }

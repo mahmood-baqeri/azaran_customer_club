@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/jquery-ui/ui/widgets/datepicker.js
+
 // jscs:disable maximumLineLength
 /* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
 /*!

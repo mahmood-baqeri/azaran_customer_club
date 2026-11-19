@@ -1,3 +1,5 @@
+# Path: applications/user/view/manager_view.py
+
 # applications/user/views/manager_view.py
 
 import logging

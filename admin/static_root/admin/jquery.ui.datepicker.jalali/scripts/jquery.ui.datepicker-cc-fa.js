@@ -1,3 +1,5 @@
+// Path: static_root/admin/jquery.ui.datepicker.jalali/scripts/jquery.ui.datepicker-cc-fa.js
+
 ﻿// Mahdi Hasheminezhad. email: hasheminezhad at gmail dot com (http://hasheminezhad.com)
 jQuery(function($){
 	$.datepicker.regional['fa'] = {

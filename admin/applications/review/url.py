@@ -1,3 +1,5 @@
+# Path: applications/review/url.py
+
 # applications/review/url.py
 
 from django.urls import path

@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/jquery.init.js
+
 /*global jQuery:false*/
 'use strict';
 /* Puts the included jQuery into our own namespace using noConflict and passing

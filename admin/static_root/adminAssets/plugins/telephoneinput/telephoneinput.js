@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/telephoneinput/telephoneinput.js
+
 /*
 intl-tel-input 
 version: 0.9.2

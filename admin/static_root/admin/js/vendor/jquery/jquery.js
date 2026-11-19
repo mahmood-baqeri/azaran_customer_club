@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/vendor/jquery/jquery.js
+
 /*!
  * jQuery JavaScript Library v3.7.1
  * https://jquery.com/

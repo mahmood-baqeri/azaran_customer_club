@@ -1,3 +1,5 @@
+# Path: applications/learn/clean_data.py
+
 # applications/review/clean_data.py
 
 from django.core.files.uploadedfile import UploadedFile

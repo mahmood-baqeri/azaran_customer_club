@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/score/admin.py
+
 """
 Endpointهای ادمین برای مدیریت امتیاز.
 """

@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/zh_TW.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.zh_TW',
 '<h1>開始鍵盤瀏覽</h1>\n' +
   '\n' +

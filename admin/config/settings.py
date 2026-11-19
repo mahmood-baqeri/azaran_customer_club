@@ -1,3 +1,5 @@
+# Path: config/settings.py
+
 import os
 from pathlib import Path
 from datetime import timedelta
@@ -110,9 +112,9 @@ if DEVELOPMENT == 'server':
 
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.postgresql',
             'HOST': os.environ.get('DB_HOST', 'localhost'),
-            'PORT': os.environ.get('DB_PORT', '3306'),
+            'PORT': os.environ.get('DB_PORT', '5432'), # پورت پیش‌فرض پستگرس
             'NAME': os.environ.get('DB_NAME', ''),
             'USER': os.environ.get('DB_USER', ''),
             'PASSWORD': os.environ.get('DB_PASSWORD', ''),
@@ -121,12 +123,12 @@ if DEVELOPMENT == 'server':
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
+            'ENGINE': 'django.db.backends.postgresql',
             'HOST': 'localhost',
-            'PORT': '3306',
-            'NAME': 'azar_customer',
-            'USER': 'root',
-            'PASSWORD': '',
+            'PORT': '5432',
+            'NAME': 'club_customer',       # نام دیتابیسی که در pgAdmin ساختید
+            'USER': 'postgres',            # نام کاربری پیش‌فرض پستگرس
+            'PASSWORD': 'Mb@1401',    # رمزی که هنگام نصب پستگرس گذاشتید
         }
     }
 

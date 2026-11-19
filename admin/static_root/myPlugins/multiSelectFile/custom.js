@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/multiSelectFile/custom.js
+
 $(document).ready(function($) {
     "use strict";
 

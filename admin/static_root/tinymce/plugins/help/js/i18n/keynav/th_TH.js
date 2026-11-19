@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/th_TH.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.th_TH',
 '<h1>เริ่มต้นการนำทางด้วยแป้นพิมพ์</h1>\n' +
   '\n' +

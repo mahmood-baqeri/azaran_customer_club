@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/switcher/js/switcher-rtl.js
+
 // Swticher Cookie Base
 /**
  * Styleswitch stylesheet switcher built on jQuery

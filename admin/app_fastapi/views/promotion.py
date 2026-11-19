@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/promotion.py
+
 # app_fastapi/views/promotion.py
 
 from typing import Optional

@@ -1,3 +1,5 @@
+# Path: applications/dashboard/views.py
+
 from datetime import datetime, timedelta
 from pprint import pprint
 from django.shortcuts import render, redirect

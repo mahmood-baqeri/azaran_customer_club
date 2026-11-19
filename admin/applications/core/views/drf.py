@@ -1,3 +1,5 @@
+# Path: applications/core/views/drf.py
+
 import os
 from urllib.parse import unquote
 
@@ -62,3 +64,16 @@ class TinyMCEImageViewSet(viewsets.ViewSet):
             {'status': 'error', 'message': 'Image not found.'},
             status=status.HTTP_404_NOT_FOUND,
         )
+        
+    
+    from rest_framework.decorators import action
+
+    @action(detail=False, methods=['post'], url_path='delete')
+    def destroy_by_name(self, request):
+        image_name = request.data.get('image_name', '')
+        image_path = os.path.join(settings.MEDIA_ROOT, UPLOAD_SUBDIR, image_name)
+        if os.path.exists(image_path):
+            os.remove(image_path)
+            return Response({'status': 'success', 'message': 'Image deleted successfully.'})
+        return Response({'status': 'error', 'message': 'Image not found.'},
+                        status=status.HTTP_404_NOT_FOUND)

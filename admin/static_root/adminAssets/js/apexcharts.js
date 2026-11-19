@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/apexcharts.js
+
 /*!
  * ApexCharts v3.22.2
  * (c) 2018-2020 Juned Chhipa

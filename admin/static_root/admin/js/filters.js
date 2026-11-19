@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/filters.js
+
 /**
  * Persist changelist filters state (collapsed/expanded).
  */

@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/setting.py
+
 from typing import List
 
 from asgiref.sync import sync_to_async

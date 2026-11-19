@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/modal.js
+
 $(function() {
 	'use strict'
 	

@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/mapelmaps.js
+
 ! function($) {
 
 	$(".mapcontainer").mapael({

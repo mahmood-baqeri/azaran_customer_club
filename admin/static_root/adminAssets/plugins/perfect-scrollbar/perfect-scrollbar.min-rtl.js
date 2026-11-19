@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/perfect-scrollbar/perfect-scrollbar.min-rtl.js
+
 /*!
  * perfect-scrollbar v1.4.0
  * (c) 2018 Hyunje Jun

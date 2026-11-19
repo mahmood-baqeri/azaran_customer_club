@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/user/auth.py
+
 # admin/app_fastapi/views/user_auth.py
 
 import uuid

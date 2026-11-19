@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/chart.peity.js
+
 $(function(){
   'use strict'
 

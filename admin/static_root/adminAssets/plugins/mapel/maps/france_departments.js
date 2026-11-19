@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/mapel/maps/france_departments.js
+
 /*!
  *
  * Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)

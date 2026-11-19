@@ -1,3 +1,5 @@
+# Path: applications/gallery/models.py
+
 # applications/gallery/models.py
 
 from django.core.exceptions import ValidationError

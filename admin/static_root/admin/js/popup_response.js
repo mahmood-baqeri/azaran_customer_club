@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/popup_response.js
+
 'use strict';
 {
     const initData = JSON.parse(document.getElementById('django-admin-popup-response-constants').dataset.popupResponse);

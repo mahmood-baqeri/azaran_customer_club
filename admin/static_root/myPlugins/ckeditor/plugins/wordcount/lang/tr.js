@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/ckeditor/plugins/wordcount/lang/tr.js
+
 ﻿/*
 Mesut ÇAKIR
 mesut.cakir@hotmail.com.tr

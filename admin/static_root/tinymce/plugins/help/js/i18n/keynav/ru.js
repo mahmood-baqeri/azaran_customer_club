@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/ru.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.ru',
 '<h1>Начните управление с помощью клавиатуры</h1>\n' +
   '\n' +

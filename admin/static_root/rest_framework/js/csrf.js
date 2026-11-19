@@ -1,3 +1,5 @@
+// Path: static_root/rest_framework/js/csrf.js
+
 function getCookie(name) {
   var cookieValue = null;
 

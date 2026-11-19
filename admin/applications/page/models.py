@@ -1,3 +1,5 @@
+# Path: applications/page/models.py
+
 # django/applications/page/models.py
 
 import uuid

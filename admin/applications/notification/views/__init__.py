@@ -1,3 +1,5 @@
+# Path: applications/notification/views/__init__.py
+
 # applications/notification/views/__init__.py
 
 from .notification_view import (

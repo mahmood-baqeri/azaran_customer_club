@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/change_form.js
+
 'use strict';
 {
     const inputTags = ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'];

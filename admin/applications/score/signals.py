@@ -1,3 +1,5 @@
+# Path: applications/score/signals.py
+
 # applications/user/signals.py
 
 from django.db.models.signals import post_save

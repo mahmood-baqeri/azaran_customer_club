@@ -1,3 +1,5 @@
+# Path: applications/page/views/admin.py
+
 import os
 import json
 import uuid

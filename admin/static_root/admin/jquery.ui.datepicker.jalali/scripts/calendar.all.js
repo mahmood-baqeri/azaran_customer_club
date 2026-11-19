@@ -1,3 +1,5 @@
+// Path: static_root/admin/jquery.ui.datepicker.jalali/scripts/calendar.all.js
+
 /*
             JavaScript functions for positional astronomy
 

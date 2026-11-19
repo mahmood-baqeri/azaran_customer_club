@@ -1,3 +1,5 @@
+# Path: applications/category/validation.py
+
 import json
 
 from django.contrib import messages

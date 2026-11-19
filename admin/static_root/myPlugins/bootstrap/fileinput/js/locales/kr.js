@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/bootstrap/fileinput/js/locales/kr.js
+
 /*!
  * FileInput Korean Translations
  *

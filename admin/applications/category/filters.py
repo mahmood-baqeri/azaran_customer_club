@@ -1,3 +1,5 @@
+# Path: applications/category/filters.py
+
 # applications/category/filters.py
 
 from django_filters import rest_framework as filters

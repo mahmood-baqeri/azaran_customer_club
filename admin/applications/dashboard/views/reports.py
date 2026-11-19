@@ -1,3 +1,5 @@
+# Path: applications/dashboard/views/reports.py
+
 # applications/dashboard/views/reports.py
 
 import logging

@@ -1,3 +1,5 @@
+# Path: applications/score/forms.py
+
 # applications/score/forms.py
 
 from applications.core.forms import (

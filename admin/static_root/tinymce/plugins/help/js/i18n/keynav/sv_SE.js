@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/sv_SE.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.sv_SE',
 '<h1>Påbörja tangentbordsnavigering</h1>\n' +
   '\n' +

@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/mapbox/mapbox-gl-language.js
+
 /**
  * Create a new [Mapbox GL JS plugin](https://www.mapbox.com/blog/build-mapbox-gl-js-plugins/) that
  * modifies the layers of the map style to use the 'text-field' that matches the browser language.

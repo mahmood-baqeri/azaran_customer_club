@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/actions.js
+
 /*global gettext, interpolate, ngettext, Actions*/
 'use strict';
 {

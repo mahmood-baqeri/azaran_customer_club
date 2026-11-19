@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/form-elements.js
+
 $(function() {
 	'use strict'
 	

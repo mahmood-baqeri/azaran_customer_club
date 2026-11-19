@@ -1,0 +1,26 @@
+{
+    "sourceFile": "admin/config/urls_rest_api.py",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1795061253086,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1795061427716,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,5 +1,5 @@\n-# Path: config/urls_rest_api.py\n+# config/urls_rest_api.py\n \n from django.urls import path, include\n from rest_framework.routers import DefaultRouter\n \n@@ -7,17 +7,20 @@\n from applications.page.views.drf import PageViewSet\n from applications.setting.views.drf import CityViewSet\n from applications.core.views.drf import TinyMCEImageViewSet\n \n-\n app_name = 'api'\n \n-\n router = DefaultRouter()\n-router.register(r'v1/category',       CategoryViewSet,      basename='category')\n-router.register(r'v1/page',           PageViewSet,          basename='page')\n-router.register(r'v1/city',           CityViewSet,          basename='city')\n-router.register(r'v1/tinymce-image',  TinyMCEImageViewSet,  basename='tinymce-image')\n+router.register(r'v1/category',      CategoryViewSet,      basename='category')\n+router.register(r'v1/page',          PageViewSet,          basename='page')\n+router.register(r'v1/city',          CityViewSet,          basename='city')\n+router.register(r'v1/tinymce-image', TinyMCEImageViewSet,  basename='tinymce-image')\n \n urlpatterns = [\n+    # نام‌های سفارشی که تمپلیت انتظار دارد\n+    path('v1/tinymce-image/', TinyMCEImageViewSet.as_view({'get': 'list', 'post': 'create'}), name='get_uploaded_images'),\n+    path('v1/tinymce-image/upload/', TinyMCEImageViewSet.as_view({'post': 'create'}), name='upload_image'),\n+    path('v1/tinymce-image/delete/', TinyMCEImageViewSet.as_view({'post': 'destroy_by_name'}), name='delete_image'),\n+\n     path('', include(router.urls)),\n ]\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1795061509440,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,4 @@\n-# config/urls_rest_api.py\n-\n from django.urls import path, include\n from rest_framework.routers import DefaultRouter\n \n from applications.category.views.drf import CategoryViewSet\n@@ -10,17 +8,14 @@\n \n app_name = 'api'\n \n router = DefaultRouter()\n-router.register(r'v1/category',      CategoryViewSet,      basename='category')\n-router.register(r'v1/page',          PageViewSet,          basename='page')\n-router.register(r'v1/city',          CityViewSet,          basename='city')\n-router.register(r'v1/tinymce-image', TinyMCEImageViewSet,  basename='tinymce-image')\n+router.register(r'v1/category', CategoryViewSet, basename='category')\n+router.register(r'v1/page',     PageViewSet,     basename='page')\n+router.register(r'v1/city',     CityViewSet,     basename='city')\n \n urlpatterns = [\n-    # نام‌های سفارشی که تمپلیت انتظار دارد\n-    path('v1/tinymce-image/', TinyMCEImageViewSet.as_view({'get': 'list', 'post': 'create'}), name='get_uploaded_images'),\n-    path('v1/tinymce-image/upload/', TinyMCEImageViewSet.as_view({'post': 'create'}), name='upload_image'),\n-    path('v1/tinymce-image/delete/', TinyMCEImageViewSet.as_view({'post': 'destroy_by_name'}), name='delete_image'),\n-\n+    path('v1/tinymce-image/',        TinyMCEImageViewSet.as_view({'get': 'list', 'post': 'create'}), name='get_uploaded_images'),\n+    path('v1/tinymce-image/upload/', TinyMCEImageViewSet.as_view({'post': 'create'}),                name='upload_image'),\n+    path('v1/tinymce-image/delete/', TinyMCEImageViewSet.as_view({'post': 'destroy_by_name'}),       name='delete_image'),\n     path('', include(router.urls)),\n ]\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1795061253086,
+            "name": "Commit-0",
+            "content": "# Path: config/urls_rest_api.py\n\nfrom django.urls import path, include\nfrom rest_framework.routers import DefaultRouter\n\nfrom applications.category.views.drf import CategoryViewSet\nfrom applications.page.views.drf import PageViewSet\nfrom applications.setting.views.drf import CityViewSet\nfrom applications.core.views.drf import TinyMCEImageViewSet\n\n\napp_name = 'api'\n\n\nrouter = DefaultRouter()\nrouter.register(r'v1/category',       CategoryViewSet,      basename='category')\nrouter.register(r'v1/page',           PageViewSet,          basename='page')\nrouter.register(r'v1/city',           CityViewSet,          basename='city')\nrouter.register(r'v1/tinymce-image',  TinyMCEImageViewSet,  basename='tinymce-image')\n\nurlpatterns = [\n    path('', include(router.urls)),\n]"
+        }
+    ]
+}

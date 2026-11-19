@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/gallery/gallery.py
+
 # app_fastapi/views/gallery/gallery.py
 
 import logging

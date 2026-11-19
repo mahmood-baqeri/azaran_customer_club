@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/darggable/darggable.js
+
 $(function () {
 	// ______________Dragable cards
 	$(".sortable").sortable({

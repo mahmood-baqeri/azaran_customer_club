@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/gallery/lg-pager.js
+
 /**!
  * lg-pager.js | 1.0.0 | October 5th 2016
  * http://sachinchoolur.github.io/lg-pager.js

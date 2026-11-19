@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/iranMap/mapp.env.js
+
 $(document).ready(function() {
 	var development = {
 		url: {

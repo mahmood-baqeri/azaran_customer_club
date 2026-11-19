@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/SelectFilter2.js
+
 /*global SelectBox, gettext, ngettext, interpolate, quickElement, SelectFilter*/
 /*
 SelectFilter2 - Turns a multiple-select box into a filter interface.

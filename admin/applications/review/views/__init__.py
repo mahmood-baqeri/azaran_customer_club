@@ -1,3 +1,5 @@
+# Path: applications/review/views/__init__.py
+
 # applications/review/views/__init__.py
 
 from .review_question import (

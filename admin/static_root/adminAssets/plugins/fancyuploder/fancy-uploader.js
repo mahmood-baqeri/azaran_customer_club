@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/fancyuploder/fancy-uploader.js
+
 (function($) {
 	//fancyfileuplod
 	$('#demo').FancyFileUpload({

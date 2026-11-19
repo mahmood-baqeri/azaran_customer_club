@@ -1,3 +1,5 @@
+# Path: applications/gallery/url.py
+
 # applications/gallery/url.py
 
 from django.urls import path

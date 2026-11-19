@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/cancel.js
+
 'use strict';
 {
     // Call function fn when the DOM is loaded and ready. If it is already

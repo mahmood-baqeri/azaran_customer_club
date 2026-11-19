@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/el.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.el',
 '<h1>Έναρξη πλοήγησης μέσω πληκτρολογίου</h1>\n' +
   '\n' +

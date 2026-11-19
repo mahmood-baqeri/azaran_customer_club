@@ -1,3 +1,5 @@
+# Path: applications/faq/apps.py
+
 from django.apps import AppConfig
 
 

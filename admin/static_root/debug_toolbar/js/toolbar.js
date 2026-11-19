@@ -1,3 +1,5 @@
+// Path: static_root/debug_toolbar/js/toolbar.js
+
 import {
     $$,
     ajax,

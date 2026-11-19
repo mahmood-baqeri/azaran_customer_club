@@ -1,3 +1,5 @@
+# Path: applications/user/view/user_view.py
+
 # applications/user/views/user_view.py
 
 import json

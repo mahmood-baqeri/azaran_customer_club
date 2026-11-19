@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/it.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.it',
 '<h1>Iniziare la navigazione tramite tastiera</h1>\n' +
   '\n' +

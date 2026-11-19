@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/clipboard/clipboard.js
+
 (function($) {
 	"use strict";
 	

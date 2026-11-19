@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/nav_sidebar.js
+
 'use strict';
 {
     const toggleNavSidebar = document.getElementById('toggle-nav-sidebar');

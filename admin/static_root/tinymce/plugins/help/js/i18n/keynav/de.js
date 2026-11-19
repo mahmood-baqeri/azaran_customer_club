@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/de.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.de',
 '<h1>Grundlagen der Tastaturnavigation</h1>\n' +
   '\n' +

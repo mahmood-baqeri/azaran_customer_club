@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/chart.chartjs.js
+
 $(function() {
 	
 	/*LIne-Chart */

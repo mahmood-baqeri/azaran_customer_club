@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/inlines.js
+
 /*global DateTimeShortcuts, SelectFilter*/
 /**
  * Django admin inlines

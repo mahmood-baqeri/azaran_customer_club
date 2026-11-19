@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/sl_SI.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.sl_SI',
 '<h1>Začetek krmarjenja s tipkovnico</h1>\n' +
   '\n' +

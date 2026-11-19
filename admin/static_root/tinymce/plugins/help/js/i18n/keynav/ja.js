@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/ja.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.ja',
 '<h1>キーボード ナビゲーションの開始</h1>\n' +
   '\n' +

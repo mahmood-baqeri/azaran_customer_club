@@ -1,3 +1,5 @@
+# Path: applications/core/tags.py
+
 import json
 import datetime
 

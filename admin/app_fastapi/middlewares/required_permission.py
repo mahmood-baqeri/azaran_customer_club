@@ -1,3 +1,5 @@
+# Path: app_fastapi/middlewares/required_permission.py
+
 from asgiref.sync import sync_to_async
 from fastapi import Depends
 from fastapi.responses import JSONResponse

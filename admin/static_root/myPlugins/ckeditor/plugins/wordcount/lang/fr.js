@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/ckeditor/plugins/wordcount/lang/fr.js
+
 ﻿// French Translation by Nicolas M. et Pierre-Luc Auclair
 
 CKEDITOR.plugins.setLang('wordcount', 'fr', {

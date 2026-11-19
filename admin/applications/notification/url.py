@@ -1,3 +1,5 @@
+# Path: applications/notification/url.py
+
 # applications/notification/url.py
 
 from django.urls import path

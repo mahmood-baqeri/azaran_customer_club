@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/gallery/lightgallery.js
+
 /**!
  * lightgallery.js | 1.0.3 | May 17th 2018
  * http://sachinchoolur.github.io/lightgallery.js/

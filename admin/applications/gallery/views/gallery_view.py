@@ -1,3 +1,5 @@
+# Path: applications/gallery/views/gallery_view.py
+
 # applications/gallery/views/gallery_view.py
 
 import logging

@@ -1,3 +1,5 @@
+// Path: static_root/debug_toolbar/js/utils.js
+
 export const $$ = {
     on(root, eventName, selector, fn) {
         root.removeEventListener(eventName, fn);

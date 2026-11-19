@@ -1,3 +1,5 @@
+# Path: applications/user/view/admin_login.py
+
 import json
 
 from django.db.models import Q

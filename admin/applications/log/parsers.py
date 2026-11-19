@@ -1,3 +1,5 @@
+# Path: applications/log/parsers.py
+
 """
 پارسرهای مشترک بین Django و FastAPI.
 هیچ import وابسته به Django ندارد.

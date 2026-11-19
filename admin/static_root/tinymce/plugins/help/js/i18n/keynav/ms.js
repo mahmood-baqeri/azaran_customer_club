@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/ms.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.ms',
 '<h1>Mulakan navigasi papan kekunci</h1>\n' +
   '\n' +

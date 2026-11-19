@@ -1,3 +1,5 @@
+# Path: applications/review/apps.py
+
 from django.apps import AppConfig
 
 

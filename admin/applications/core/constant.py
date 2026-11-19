@@ -1,3 +1,5 @@
+# Path: applications/core/constant.py
+
 # admin/applications/core/constant.py
 
 """

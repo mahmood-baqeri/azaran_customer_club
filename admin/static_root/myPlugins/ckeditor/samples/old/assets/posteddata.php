@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/ckeditor/samples/old/assets/posteddata.php
+
 <!DOCTYPE html>
 <?php
 /*

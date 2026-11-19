@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/popover.js
+
 $(function() {
 	'use strict'
 	$('[data-toggle="popover"]').popover();

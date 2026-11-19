@@ -1,3 +1,5 @@
+# Path: applications/category/apps.py
+
 from django.apps import AppConfig
 
 

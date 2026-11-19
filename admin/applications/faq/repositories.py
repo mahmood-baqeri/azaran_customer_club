@@ -1,3 +1,5 @@
+# Path: applications/faq/repositories.py
+
 # applications/faq/repositories.py
 
 import logging

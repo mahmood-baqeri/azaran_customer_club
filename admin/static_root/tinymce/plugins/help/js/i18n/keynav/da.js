@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/da.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.da',
 '<h1>Start tastaturnavigation</h1>\n' +
   '\n' +

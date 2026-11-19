@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/select2.js
+
 $(document).ready(function() {
 	$('.select2').select2({
 		placeholder: 'Choose one',

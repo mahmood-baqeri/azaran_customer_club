@@ -1,3 +1,5 @@
+# Path: applications/score/apps.py
+
 from django.apps import AppConfig
 
 

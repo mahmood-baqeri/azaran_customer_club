@@ -1,3 +1,5 @@
+# Path: applications/user/view/datatable.py
+
 from django.db import models
 from django.db.models import Case, When, IntegerField
 from django.http import JsonResponse

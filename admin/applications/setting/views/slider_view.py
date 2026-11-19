@@ -1,3 +1,5 @@
+# Path: applications/setting/views/slider_view.py
+
 import json
 
 from django.contrib.auth.decorators import permission_required

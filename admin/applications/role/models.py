@@ -1,3 +1,5 @@
+# Path: applications/role/models.py
+
 from django.db import models
 
 from applications.core.forms.helper import pick_value

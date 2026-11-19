@@ -1,3 +1,5 @@
+# Path: applications/notification/forms.py
+
 # applications/notification/forms.py
 
 from applications.core.forms import (

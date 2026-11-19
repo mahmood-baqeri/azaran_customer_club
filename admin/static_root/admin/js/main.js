@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/main.js
+
 /**
  * Created by arman on 7/24/16.
  */

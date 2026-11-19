@@ -1,3 +1,5 @@
+# Path: applications/project/url.py
+
 # applications/project/url.py
 
 from django.urls import path

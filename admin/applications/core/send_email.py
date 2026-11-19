@@ -1,3 +1,5 @@
+# Path: applications/core/send_email.py
+
 from email.message import EmailMessage
 import aiosmtplib
 from django.utils.translation import gettext_lazy as _

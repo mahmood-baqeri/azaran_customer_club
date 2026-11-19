@@ -1,3 +1,5 @@
+# Path: applications/dashboard/views/dashboard.py
+
 # applications/dashboard/views/dashboard.py
 
 from django.shortcuts import render

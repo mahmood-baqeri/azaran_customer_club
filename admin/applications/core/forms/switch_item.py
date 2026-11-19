@@ -1,3 +1,5 @@
+# Path: applications/core/forms/switch_item.py
+
 from .helper import normalize_choices, normalize_selection, to_bool
 
 

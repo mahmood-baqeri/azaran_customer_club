@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/factor/admin.py
+
 # app_fastapi/views/factor/admin.py
 
 import logging

@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/jquery-countdown/countdown.js
+
 $(function () {
 	 var austDay = new Date("December 1, 2022");
 		$('#launch_date').countdown(

@@ -1,3 +1,5 @@
+# Path: applications/learn/views/learn_view.py
+
 # applications/learn/views/learn_view.py
 
 import logging

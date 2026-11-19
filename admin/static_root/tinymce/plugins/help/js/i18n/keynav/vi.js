@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/vi.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.vi',
 '<h1>Bắt đầu điều hướng bàn phím</h1>\n' +
   '\n' +

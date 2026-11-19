@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/gallery/lg-fullscreen.js
+
 /**!
  * lg-fullscreen.js | 1.0.0 | October 5th 2016
  * http://sachinchoolur.github.io/lg-fullscreen.js

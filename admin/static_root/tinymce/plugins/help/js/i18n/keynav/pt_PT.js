@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/pt_PT.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.pt_PT',
 '<h1>Iniciar navegação com teclado</h1>\n' +
   '\n' +

@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/SelectBox.js
+
 'use strict';
 {
     const SelectBox = {

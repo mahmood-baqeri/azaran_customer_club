@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/notification/notification.py
+
 # app_fastapi/views/notification/notification.py
 import logging
 from typing import Optional

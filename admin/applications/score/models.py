@@ -1,3 +1,5 @@
+# Path: applications/score/models.py
+
 # admin/applications/score/models.py
 
 from django.db import models

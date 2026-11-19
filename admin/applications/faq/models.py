@@ -1,3 +1,5 @@
+# Path: applications/faq/models.py
+
 # applications/faq/models.py
 
 from django.db import models

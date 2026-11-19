@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/jquery.flot/jquery.flot.resize.js
+
 /* Flot plugin for automatically redrawing plots as the placeholder resizes.
 
 Copyright (c) 2007-2014 IOLA and Ole Laursen.

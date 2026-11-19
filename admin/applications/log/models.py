@@ -1,3 +1,5 @@
+# Path: applications/log/models.py
+
 from django.db import models
 from django.utils import timezone
 from applications.user.models import User

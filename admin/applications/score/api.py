@@ -1,3 +1,5 @@
+# Path: applications/score/api.py
+
 """
 تنها سطح عمومی برای بقیه اپ‌ها.
 از این توابع استفاده کن، نه از record_score_transaction مستقیم.

@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/page/page-content.js
+
 $(document).ready(function () {
      var currentPageId = $('input[name="page_id"]').val();
      var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();

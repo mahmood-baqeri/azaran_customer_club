@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/ckeditor/plugins/wordcount/lang/fi.js
+
 /**
  * Finnish localisation.
  *

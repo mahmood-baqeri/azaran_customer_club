@@ -1,3 +1,5 @@
+# Path: applications/learn/url.py
+
 # applications/learn/url.py
 
 from django.urls import path

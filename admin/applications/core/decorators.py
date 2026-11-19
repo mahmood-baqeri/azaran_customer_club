@@ -1,3 +1,5 @@
+# Path: applications/core/decorators.py
+
 import functools
 from django.shortcuts import redirect
 from django.contrib import messages

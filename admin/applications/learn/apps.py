@@ -1,3 +1,5 @@
+# Path: applications/learn/apps.py
+
 from django.apps import AppConfig
 
 

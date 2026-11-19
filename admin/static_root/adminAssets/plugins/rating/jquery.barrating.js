@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/rating/jquery.barrating.js
+
 /**
  * jQuery Bar Rating Plugin v1.2.2
  *

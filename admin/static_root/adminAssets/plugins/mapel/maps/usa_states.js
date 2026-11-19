@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/mapel/maps/usa_states.js
+
 /*!
  *
  * Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)

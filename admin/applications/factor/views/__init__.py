@@ -1,3 +1,5 @@
+# Path: applications/factor/views/__init__.py
+
 # applications/factor/views/__init__.py
 
 from .factor_view import (

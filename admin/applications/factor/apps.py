@@ -1,3 +1,5 @@
+# Path: applications/factor/apps.py
+
 from django.apps import AppConfig
 
 

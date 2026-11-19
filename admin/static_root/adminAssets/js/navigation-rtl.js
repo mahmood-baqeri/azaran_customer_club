@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/navigation-rtl.js
+
  $(function() {
  	'use strict'
  	$('#navComplex').lightSlider({

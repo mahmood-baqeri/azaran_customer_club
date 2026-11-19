@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/crypto-buysell.js
+
 $(function(){	
     'use strict'
 	

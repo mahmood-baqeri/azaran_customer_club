@@ -1,3 +1,5 @@
+# Path: config/wsgi.py
+
 """
 WSGI config for src project.
 

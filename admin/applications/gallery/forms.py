@@ -1,3 +1,5 @@
+# Path: applications/gallery/forms.py
+
 # applications/gallery/forms.py
 
 from applications.core.forms import (

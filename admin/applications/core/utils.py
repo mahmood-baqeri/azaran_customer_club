@@ -1,3 +1,5 @@
+# Path: applications/core/utils.py
+
 # backend/apps/core/utils.py
 import hashlib
 import secrets

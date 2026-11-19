@@ -1,3 +1,5 @@
+# Path: applications/core/exceptions.py
+
 # backend/apps/core/exceptions.py
 from rest_framework.exceptions import APIException
 

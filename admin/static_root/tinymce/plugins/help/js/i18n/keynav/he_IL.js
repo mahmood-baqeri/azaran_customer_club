@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/he_IL.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.he_IL',
 '<h1>התחל ניווט במקלדת</h1>\n' +
   '\n' +

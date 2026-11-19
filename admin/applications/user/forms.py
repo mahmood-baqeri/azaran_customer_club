@@ -1,3 +1,5 @@
+# Path: applications/user/forms.py
+
 # applications/user/forms.py
 
 from applications.core.forms import (

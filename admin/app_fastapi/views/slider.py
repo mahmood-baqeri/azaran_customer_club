@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/slider.py
+
 from asgiref.sync import sync_to_async
 from fastapi import APIRouter, HTTPException, Depends, Request, Form
 

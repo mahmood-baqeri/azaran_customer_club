@@ -1,3 +1,5 @@
+# Path: applications/gift/views/__init__.py
+
 # applications/gift/views/__init__.py
 
 from .gift import (

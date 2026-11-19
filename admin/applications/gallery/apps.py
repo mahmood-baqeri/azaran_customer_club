@@ -1,3 +1,5 @@
+# Path: applications/gallery/apps.py
+
 from django.apps import AppConfig
 
 

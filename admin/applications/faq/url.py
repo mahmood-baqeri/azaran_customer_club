@@ -1,3 +1,5 @@
+# Path: applications/faq/url.py
+
 # applications/faq/url.py
 
 from django.urls import path

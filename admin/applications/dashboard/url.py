@@ -1,3 +1,5 @@
+# Path: applications/dashboard/url.py
+
 # applications/dashboard/urls.py
 
 from django.urls import path

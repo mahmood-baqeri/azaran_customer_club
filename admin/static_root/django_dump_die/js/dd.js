@@ -1,3 +1,5 @@
+// Path: static_root/django_dump_die/js/dd.js
+
 const djangoDumpDie = {
 
     /**

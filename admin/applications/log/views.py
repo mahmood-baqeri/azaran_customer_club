@@ -1,3 +1,5 @@
+# Path: applications/log/views.py
+
 import json
 from urllib.parse import urlencode
 from datetime import timedelta

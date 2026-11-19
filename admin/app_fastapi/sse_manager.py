@@ -1,3 +1,5 @@
+# Path: app_fastapi/sse_manager.py
+
 # ========== applications/_fastapi/sse_manager.py - نسخه نهایی ==========
 import asyncio
 import json

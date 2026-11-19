@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/fileuploads/js/file-upload.js
+
 $('.dropify').dropify({
 	messages: {
 		'default': 'Drag and drop a file here or click',

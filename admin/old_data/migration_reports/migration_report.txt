@@ -1,0 +1,16 @@
+USER MIGRATION REPORT
+==================================================
+
+Mode: REAL MIGRATION
+
+total: 12005
+valid_mobile: 12004
+invalid_mobile: 1
+created: 11994
+updated: 10
+profiles_created: 0
+profiles_updated: 12004
+skipped: 1
+errors: 0
+
+Finished at: 2026-11-19 06:21:42.495060+00:00

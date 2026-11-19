@@ -1,3 +1,5 @@
+# Path: applications/core/forms/imageUpload_item.py
+
 from .helper import normalize_files
 
 

@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/fancyuploder/jquery.ui.widget.js
+
 (function( factory ) {
 	if ( typeof define === "function" && define.amd ) {
 

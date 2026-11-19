@@ -1,3 +1,5 @@
+# Path: applications/core/fileManager.py
+
 # applications/core/fileManager.py
 
 import os

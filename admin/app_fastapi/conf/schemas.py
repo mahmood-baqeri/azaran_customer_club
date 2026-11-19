@@ -1,3 +1,5 @@
+# Path: app_fastapi/conf/schemas.py
+
 from pydantic import BaseModel
 
 

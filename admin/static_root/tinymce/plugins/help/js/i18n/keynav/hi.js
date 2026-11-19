@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/hi.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.hi',
 '<h1>कीबोर्ड नेविगेशन शुरू करें</h1>\n' +
   '\n' +

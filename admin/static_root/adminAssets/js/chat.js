@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/chat.js
+
 $(function() {
 	'use strict'
 	const ps = new PerfectScrollbar('.main-chat-list', {

@@ -1,3 +1,5 @@
+# Path: applications/factor/models.py
+
 # applications/factor/models.py
 
 import re

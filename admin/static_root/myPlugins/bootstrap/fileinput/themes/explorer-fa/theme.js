@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/bootstrap/fileinput/themes/explorer-fa/theme.js
+
 /*!
  * bootstrap-fileinput v5.1.4
  * http://plugins.krajee.com/file-input

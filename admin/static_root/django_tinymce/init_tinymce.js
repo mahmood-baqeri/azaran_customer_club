@@ -1,3 +1,5 @@
+// Path: static_root/django_tinymce/init_tinymce.js
+
 'use strict';
 
 {

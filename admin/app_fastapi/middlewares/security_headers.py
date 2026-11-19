@@ -1,3 +1,5 @@
+# Path: app_fastapi/middlewares/security_headers.py
+
 # ========== applications/_fastapi/middlewares/security_headers.py ==========
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request

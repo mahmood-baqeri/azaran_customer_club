@@ -1,3 +1,5 @@
+# Path: applications/score/views/user_score_view.py
+
 # applications/score/view/user_score_view.py
 
 import logging

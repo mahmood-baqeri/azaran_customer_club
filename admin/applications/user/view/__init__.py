@@ -1,3 +1,5 @@
+# Path: applications/user/view/__init__.py
+
 # applications/user/views/__init__.py
 
 from .user_view import (

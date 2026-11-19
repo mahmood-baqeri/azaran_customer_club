@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/jvectormap/gdp-data.js
+
 var gdpData = {
   "AF": 16.63,
   "AL": 11.58,

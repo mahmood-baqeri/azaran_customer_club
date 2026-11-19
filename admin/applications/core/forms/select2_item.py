@@ -1,3 +1,5 @@
+# Path: applications/core/forms/select2_item.py
+
 from .helper import normalize_choices, normalize_selection
 
 

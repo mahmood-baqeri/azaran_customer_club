@@ -1,3 +1,5 @@
+# Path: applications/core/processors.py
+
 # applications/core/context_processors.py
 
 import datetime

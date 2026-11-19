@@ -1,3 +1,5 @@
+# Path: applications/promotion/repositories.py
+
 # applications/promotion/repositories.py
 
 import logging

@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/score/score.py
+
 from typing import Optional
 from datetime import datetime
 from typing import Optional

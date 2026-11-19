@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/gallery/lg-autoplay.js
+
 /**!
  * lg-autoplay.js | 1.0.0 | October 5th 2016
  * http://sachinchoolur.github.io/lg-autoplay.js

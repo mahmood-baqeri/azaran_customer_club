@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/prepopulate.js
+
 /*global URLify*/
 'use strict';
 {

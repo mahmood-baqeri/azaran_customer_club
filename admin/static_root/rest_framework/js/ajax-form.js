@@ -1,3 +1,5 @@
+// Path: static_root/rest_framework/js/ajax-form.js
+
 function replaceDocument(docString) {
   var doc = document.open("text/html");
 

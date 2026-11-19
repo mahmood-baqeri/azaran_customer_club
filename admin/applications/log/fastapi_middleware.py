@@ -1,3 +1,5 @@
+# Path: applications/log/fastapi_middleware.py
+
 """
 Middleware لاگ برای FastAPI.
 از همان مدل RequestLog جنگو استفاده می‌کند.

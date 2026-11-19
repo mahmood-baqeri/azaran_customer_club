@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/ko_KR.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.ko_KR',
 '<h1>키보드 탐색 시작</h1>\n' +
   '\n' +

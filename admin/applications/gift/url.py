@@ -1,3 +1,5 @@
+# Path: applications/gift/url.py
+
 # applications/gift/urls.py
 
 from django.urls import path

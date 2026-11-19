@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/iranMap/app.js
+
 $(document).ready(function() {
 	var app = new Mapp({
 		element: '#app',

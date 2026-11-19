@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/rating/ratings.js
+
 $(function() {
     function ratingEnable() {
         $('#example-1to10').barrating('show', {

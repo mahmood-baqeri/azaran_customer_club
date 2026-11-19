@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/ckeditor/plugins/wordcount/lang/ro.js
+
 ﻿// Romanian Translation by Bogdanov Mihail
 
 CKEDITOR.plugins.setLang('wordcount', 'ro', {

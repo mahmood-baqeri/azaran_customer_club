@@ -1,3 +1,5 @@
+# Path: static_root/myPlugins/bootstrap/fileinput/.github/config.yml
+
 # Configuration for sentiment-bot - https://github.com/behaviorbot/sentiment-bot
 
 # *Required* toxicity threshold between 0 and .99 with the higher numbers being the most toxic

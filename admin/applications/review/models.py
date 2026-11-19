@@ -1,3 +1,5 @@
+# Path: applications/review/models.py
+
 # applications/review/models.py
 
 from django.db import models

@@ -1,3 +1,5 @@
+# Path: applications/user/services.py
+
 
 """
 سرویس‌های اپ کاربر (فقط دعوت).

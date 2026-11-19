@@ -1,3 +1,5 @@
+# Path: applications/factor/views/factor_view.py
+
 # applications/factor/views/factor_view.py
 
 import logging

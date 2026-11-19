@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/form-wizard-rtl.js
+
 $(function() {
 	'use strict'
 	

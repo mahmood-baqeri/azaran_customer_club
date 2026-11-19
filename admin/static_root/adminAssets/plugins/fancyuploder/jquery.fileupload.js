@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/fancyuploder/jquery.fileupload.js
+
 ;(function (factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {

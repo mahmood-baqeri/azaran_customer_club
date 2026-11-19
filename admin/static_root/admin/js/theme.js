@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/theme.js
+
 'use strict';
 {
     function setTheme(mode) {

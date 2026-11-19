@@ -1,3 +1,5 @@
+# Path: applications/score/clean_data.py
+
 # applications/score/clean_data.py
 
 import json

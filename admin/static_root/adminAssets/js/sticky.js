@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/sticky.js
+
 $(document).ready(function(){
 
   var stickyElement = $(".sticky"),

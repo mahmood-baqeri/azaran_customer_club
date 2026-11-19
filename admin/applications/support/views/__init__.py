@@ -1,3 +1,5 @@
+# Path: applications/support/views/__init__.py
+
 # applications/support/views/__init__.py
 
 from .support_view import (

@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/calendar.js
+
 //Full Calendar
 document.addEventListener('DOMContentLoaded', function() {
 	var containerEl = document.getElementById('external-events-list');

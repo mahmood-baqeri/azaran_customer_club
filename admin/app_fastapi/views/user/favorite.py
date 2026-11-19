@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/user/favorite.py
+
 # admin/app_fastapi/views/user/user_favorite.py
 
 from channels.db import database_sync_to_async

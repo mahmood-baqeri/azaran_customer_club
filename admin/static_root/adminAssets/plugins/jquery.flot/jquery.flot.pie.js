@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/jquery.flot/jquery.flot.pie.js
+
 /* Flot plugin for rendering pie charts.
 
 Copyright (c) 2007-2014 IOLA and Ole Laursen.

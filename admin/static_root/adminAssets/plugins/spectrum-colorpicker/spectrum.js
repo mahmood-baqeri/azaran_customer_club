@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/spectrum-colorpicker/spectrum.js
+
 // Spectrum Colorpicker v1.8.1
 // https://github.com/bgrins/spectrum
 // Author: Brian Grinstead

@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/bootstrap/fileinput/js/locales/lt.js
+
 /*!
  * FileInput <_LANG_> Translations
  *

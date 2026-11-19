@@ -1,55 +1,56 @@
+# Path: applications/setting/forms.py
+
 import json
-from applications.core.keyValue import appSettings, adPosition, Pages, settingPhoto, settingNumbers, settingBoolean, settingLong, settingTextareas
+from applications.core.keyValue import (
+    appSettings, adPosition, Pages,
+    settingPhoto, settingNumbers, settingBoolean, settingLong, settingTextareas,
+)
+from applications.core.forms import (
+    make_input_item, make_select2_item, make_switch_item,
+    make_image_item, make_date_item,
+    pick_value, pick_bool,
+)
 
 
-def setting__setting__form(item=None):
-    select2 = []
-    for ac in appSettings():
-        select2.append({'label': ac[1], 'id': ac[0]})
+
+# ─────────────────────────────────────────────────────────
+# تنظیمات (setting)
+# ─────────────────────────────────────────────────────────
+def setting__setting__form(item=None, raw_data=None):
+    choices = [{'id': ac[0], 'label': ac[1]} for ac in appSettings()]
 
     return [
-        {
-            'l': 'گزینه',
-            'n': 'key',
-            'v': item.key if item else '',
-            'id': 'settingSelectedTheItem',
-            'r': None,
-            'data': select2,
-            'c': 'col-md-4',
-            'b': 'select2Single.html',
-        }, {
-            'l': "تصویر",
-            'n': 'photo',
-            'v': item.value_file if item else '',
-            'id': 'thePhotoElement',
-            'r': None,
-            'c': 'col-md-4 theSettingItemRoot d-none',
-            'b': 'photo.html'
-        }, {
-            'l': "عدد",
-            'n': '',
-            'v': item.value_text if item else '',
-            'id': 'theNumberElement',
-            'r': None,
-            'c': 'col-md-4 theSettingItemRoot d-none',
-            'b': 'number.html'
-        }, {
-            'l': "متن",
-            'n': '',
-            'v': item.value_text if item else '',
-            'id': 'theTextElement',
-            'r': None,
-            'c': 'col-md-8 theSettingItemRoot d-none',
-            'b': 'textBox.html'
-        }, {
-            'l': "متن" + " " + "کوتاه",
-            'n': '',
-            'v': item.value_text if item else '',
-            'id': 'theTextAreaElement',
-            'r': None,
-            'c': 'col-md-12 theSettingItemRoot d-none',
-            'b': 'textarea.html'
-        },
+        make_select2_item(
+            label='گزینه', name='key',
+            choices=choices,
+            value=pick_value(raw_data, item, 'key'),
+            required=True, col_class='col-md-4',
+            input_id='settingSelectedTheItem',
+        ),
+        make_image_item(
+            label='تصویر', name='photo',
+            existing=item.value_file if item else None,
+            col_class='col-md-4 theSettingItemRoot d-none',
+            input_id='thePhotoElement',
+        ),
+        make_input_item(
+            label='عدد', name='value_number', kind='number',
+            value=pick_value(raw_data, item, 'value_text'),
+            col_class='col-md-4 theSettingItemRoot d-none',
+            input_id='theNumberElement',
+        ),
+        make_input_item(
+            label='متن', name='value_text',
+            value=pick_value(raw_data, item, 'value_text'),
+            col_class='col-md-8 theSettingItemRoot d-none',
+            input_id='theTextElement',
+        ),
+        make_input_item(
+            label='متن کوتاه', name='value_textarea', kind='textarea',
+            value=pick_value(raw_data, item, 'value_text'),
+            rows=4, col_class='col-md-12 theSettingItemRoot d-none',
+            input_id='theTextAreaElement',
+        ),
         {
             'l': "متن" + " " + "طولانی",
             'n': '',
@@ -59,165 +60,138 @@ def setting__setting__form(item=None):
             'c': 'col-md-12 theSettingItemRoot d-none',
             'b': 'tinymceUseForSetting.html'
         },
-        {
-            'l': "وضعیت فعال",
-            'n': '',
-            'v': item.value_text if item else '',
-            'id': 'theBooleanElement',
-            'r': None,
-            'c': 'col-md-4 theSettingItemRoot d-none',
-            'b': 'switch.html'
-        },
+        make_switch_item(
+            label='وضعیت فعال', name='value_boolean',
+            value=pick_bool(raw_data, item, 'value_text'),
+            col_class='col-md-4 theSettingItemRoot d-none',
+            input_id='theBooleanElement',
+        ),
+        # بلوک مدیریت گروه‌های تنظیمات (ساختار ثابت قدیمی)
         {
             'b': 'manageSetting.html',
             'settingGroups': {
-                'thePhotoElement': settingPhoto(),
-                'theNumberElement': settingNumbers(),
-                'theBooleanElement': settingBoolean(),
-                'theCkEditorElement': settingLong(),
-                'theTextAreaElement': settingTextareas(),
-            }
-        }
+                'thePhotoElement':     settingPhoto(),
+                'theNumberElement':    settingNumbers(),
+                'theBooleanElement':   settingBoolean(),
+                'theCkEditorElement':  settingLong(),
+                'theTextAreaElement':  settingTextareas(),
+            },
+        },
     ]
 
 
-def setting__gallery__form(item=None):
-    pages = []
-    for page in Pages():
-        pages.append({'label': page[1], 'id': page[0]})
+
+# ─────────────────────────────────────────────────────────
+# گالری (gallery)
+# ─────────────────────────────────────────────────────────
+def setting__gallery__form(item=None, raw_data=None):
+    pages = [{'id': p[0], 'label': p[1]} for p in Pages()]
 
     return [
-        {
-            'l': "صفحه",
-            'n': 'page',
-            'v': item.page if item else '',
-            'id': 'PageElement',
-            'r': 1,
-            'data': pages,
-            'c': 'col-md-8',
-            'b': 'select2Single.html',
-        },
-        {
-            'l': "وضعیت فعال",
-            'n': 'is_active',
-            'v': item.is_active if item else '',
-            'id': 'theBooleanElement',
-            'r': None,
-            'c': 'col-md-2',
-            'b': 'switch.html'
-        }, {
-            'l': "عکس",
-            'n': 'photo',
-            'v': item.photo if item else '',
-            'id': 'thePhotoElement',
-            'r': None,
-            'c': 'col-md-4',
-            'b': 'photo.html'
-        }]
+        make_select2_item(
+            label='صفحه', name='page',
+            choices=pages,
+            value=pick_value(raw_data, item, 'page'),
+            required=True, col_class='col-md-8',
+        ),
+        make_switch_item(
+            label='وضعیت فعال', name='is_active',
+            value=pick_bool(raw_data, item, 'is_active', default=True),
+            col_class='col-md-2',
+        ),
+        make_image_item(
+            label='عکس', name='photo',
+            existing=item.photo if item else None,
+            col_class='col-md-4',
+        ),
+    ]
 
 
-def setting__ad__form(item=None):
-    positions = []
-    for ac in adPosition():
-        positions.append({'label': ac[1], 'id': ac[0]})
+
+# ─────────────────────────────────────────────────────────
+# تبلیغات (ad)
+# ─────────────────────────────────────────────────────────
+def setting__ad__form(item=None, raw_data=None):
+    positions = [{'id': ac[0], 'label': ac[1]} for ac in adPosition()]
 
     return [
-        {
-            'l': "عنوان",
-            'n': 'title',
-            'v': item.title if item else '',
-            'id': 'theTextElement',
-            'r': None,
-            'c': 'col-md-5',
-            'b': 'textBox.html'
-        },
-        {
-            'l': "لینک",
-            'n': 'link',
-            'v': item.link if item else '',
-            'id': 'theLinkElement',
-            'r': None,
-            'c': 'col-md-5',
-            'b': 'textBox.html'
-        },
-        {
-            'l': "وضعیت فعال",
-            'n': 'is_active',
-            'v': item.is_active if item else '',
-            'id': 'theBooleanElement',
-            'r': None,
-            'c': 'col-md-2',
-            'b': 'switch.html'
-        },
-        {
-            'l': "موقعیت",
-            'n': 'position',
-            'v': item.position if item else '',
-            'id': 'settingSelectedTheItemposition',
-            'r': None,
-            'data': positions,
-            'c': 'col-md-4',
-            'b': 'select2Single.html',
-        },
-        {
-            'l': "عکس",
-            'n': 'photo',
-            'v': item.photo if item else '',
-            'id': 'thePhotoElement',
-            'r': None,
-            'c': 'col-md-4',
-            'b': 'photo.html'
-        },
-        {
-            'l': "تاریخ انقضا",
-            'n': 'expireDate',
-            'v': item.expireDate if item else None,
-            'id': 'expireDateDayEl',
-            'r': None,
-            'c': 'col-md-4',
-            'b': 'date.html'
-        }
+        make_input_item(
+            label='عنوان', name='title',
+            value=pick_value(raw_data, item, 'title'),
+            required=True, col_class='col-md-5',
+            input_id='theTextElement',
+        ),
+        make_input_item(
+            label='لینک', name='link',
+            value=pick_value(raw_data, item, 'link'),
+            col_class='col-md-5',
+            input_id='theLinkElement',
+        ),
+        make_switch_item(
+            label='وضعیت فعال', name='is_active',
+            value=pick_bool(raw_data, item, 'is_active', default=True),
+            col_class='col-md-2',
+            input_id='theBooleanElement',
+        ),
+        make_select2_item(
+            label='موقعیت', name='position',
+            choices=positions,
+            value=pick_value(raw_data, item, 'position'),
+            required=True, col_class='col-md-4',
+            input_id='settingSelectedTheItemposition',
+        ),
+        make_image_item(
+            label='عکس', name='photo',
+            existing=item.photo if item else None,
+            col_class='col-md-4',
+            input_id='thePhotoElement',
+        ),
+        make_date_item(
+            label='تاریخ انقضا', name='expireDate',
+            value=pick_value(raw_data, item, 'expireDate'),
+            col_class='col-md-4',
+            input_id='expireDateDayEl',
+        ),
     ]
     
 
-def setting__slider__form(item=None):
+
+
+# ─────────────────────────────────────────────────────────
+# اسلایدر (slider)
+# ─────────────────────────────────────────────────────────
+def setting__slider__form(item=None, raw_data=None):
     return [
-        {
-            'l': "عنوان",
-            'n': 'title',
-            'v': item.title if item else '',
-            'id': 'theTextElement',
-            'r': None,
-            'c': 'col-md-12',
-            'b': 'textBox.html'
-        }, {
-            'l': "پاراگراف",
-            'n': 'paragraph',
-            'v': item.paragraph if item else '',
-            'id': 'theparagraphElement',
-            'r': None,
-            'c': 'col-md-12',
-            'b': 'textBox.html'
-        }, {
-            'l': "عکس",
-            'n': 'photo',
-            'v': item.photo if item else '',
-            'id': 'thePhotoElement',
-            'r': None,
-            'c': 'col-md-4',
-            'b': 'photo.html'
-        }, {
-            'l': "وضعیت فعال",
-            'n': 'is_active',
-            'v': item.is_active if item else '',
-            'id': 'theBooleanElement',
-            'r': None,
-            'c': 'col-md-2',
-            'b': 'switch.html'
-        }
+        make_input_item(
+            label='عنوان', name='title',
+            value=pick_value(raw_data, item, 'title'),
+            required=True, col_class='col-md-12',
+            input_id='theTextElement',
+        ),
+        make_input_item(
+            label='پاراگراف', name='paragraph',
+            value=pick_value(raw_data, item, 'paragraph'),
+            col_class='col-md-12',
+            input_id='theparagraphElement',
+        ),
+        make_image_item(
+            label='عکس', name='photo',
+            existing=item.photo if item else None,
+            col_class='col-md-4',
+            input_id='thePhotoElement',
+        ),
+        make_switch_item(
+            label='وضعیت فعال', name='is_active',
+            value=pick_bool(raw_data, item, 'is_active', default=True),
+            col_class='col-md-2',
+            input_id='theBooleanElement',
+        ),
     ]
 
 
+# ─────────────────────────────────────────────────────────
+# صفحه (page)
+# ─────────────────────────────────────────────────────────
 def setting__page__form(item=None):
     pages = []
     for ac in Pages():

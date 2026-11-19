@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/ecommerce-dashboard.js
+
 $(function(e){
  
 	

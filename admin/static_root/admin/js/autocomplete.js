@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/autocomplete.js
+
 'use strict';
 {
     const $ = django.jQuery;

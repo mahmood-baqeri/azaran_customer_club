@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/vector-map.js
+
 $(function() {
 	'use strict';
 	$('#vmap').vectorMap({

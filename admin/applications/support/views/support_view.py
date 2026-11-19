@@ -1,3 +1,5 @@
+# Path: applications/support/views/support_view.py
+
 # applications/support/views/support_view.py
 
 import logging

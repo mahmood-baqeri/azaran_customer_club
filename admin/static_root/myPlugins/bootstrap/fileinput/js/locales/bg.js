@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/bootstrap/fileinput/js/locales/bg.js
+
 /*!
  * FileInput Bulgarian Translations
  *

@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/calendar.js
+
 /*global gettext, pgettext, get_format, quickElement, removeChildren*/
 /*
 calendar.js - Calendar functions by Adrian Holovaty

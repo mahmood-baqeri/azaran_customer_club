@@ -1,3 +1,5 @@
+# Path: applications/setting/url.py
+
 from django.urls import path
 
 from applications.setting.views import setting_view, slider_view

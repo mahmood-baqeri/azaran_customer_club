@@ -1,3 +1,5 @@
+# Path: applications/user/urls/user_urls.py
+
 # applications/user/urls.py
 
 from django.urls import path

@@ -1,3 +1,5 @@
+// Path: static_root/debug_toolbar/js/timer.js
+
 import { $$, getDebugElement } from "./utils.js";
 
 const djDebug = getDebugElement();

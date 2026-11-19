@@ -1,3 +1,5 @@
+// Path: static_root/admin/jquery.ui.datepicker.jalali/scripts/jquery.ui.datepicker-cc.js
+
 /*!
  * jQuery UI Datepicker 1.10.3
  * http://jqueryui.com

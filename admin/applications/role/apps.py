@@ -1,3 +1,5 @@
+# Path: applications/role/apps.py
+
 from django.apps import AppConfig
 
 

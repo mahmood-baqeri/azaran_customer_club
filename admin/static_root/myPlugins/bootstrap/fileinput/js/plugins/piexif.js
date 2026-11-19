@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/bootstrap/fileinput/js/plugins/piexif.js
+
 /* piexifjs
 
 The MIT License (MIT)

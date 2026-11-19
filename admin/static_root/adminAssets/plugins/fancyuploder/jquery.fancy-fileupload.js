@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/fancyuploder/jquery.fancy-fileupload.js
+
 // jQuery plugin to display a custom jQuery File Uploader interface.
 // (C) 2017 CubicleSoft.  All Rights Reserved.
 

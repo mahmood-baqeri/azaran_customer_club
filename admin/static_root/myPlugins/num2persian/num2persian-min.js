@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/num2persian/num2persian-min.js
+
 /**
  * Name:Javascript Number To Persian Convertor.
  * License: GPL-2.0

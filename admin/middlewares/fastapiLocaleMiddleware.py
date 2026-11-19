@@ -1,3 +1,5 @@
+# Path: middlewares/fastapiLocaleMiddleware.py
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from django.utils import translation
 

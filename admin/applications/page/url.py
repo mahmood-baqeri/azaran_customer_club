@@ -1,3 +1,5 @@
+# Path: applications/page/url.py
+
 from django.urls import path
 from applications.page.views import admin, content_item
 

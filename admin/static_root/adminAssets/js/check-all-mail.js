@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/check-all-mail.js
+
  $(function() {
  	'use strict'
  	$('#checkAll').on('click', function() {

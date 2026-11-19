@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/fancyuploder/jquery.iframe-transport.js
+
 (function (factory) {
     'use strict';
     if (typeof define === 'function' && define.amd) {

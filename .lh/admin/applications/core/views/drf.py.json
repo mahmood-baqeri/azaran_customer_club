@@ -1,0 +1,18 @@
+{
+    "sourceFile": "admin/applications/core/views/drf.py",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1795061425162,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1795061425162,
+            "name": "Commit-0",
+            "content": "# Path: applications/core/views/drf.py\n\nimport os\nfrom urllib.parse import unquote\n\nfrom django.conf import settings\nfrom django.core.files.storage import default_storage\nfrom rest_framework import viewsets, status\nfrom rest_framework.response import Response\nfrom rest_framework.permissions import IsAuthenticated\n\nfrom applications.core.serializers import TinyMCEUploadSerializer\n\nUPLOAD_SUBDIR = 'tinymce_uploads'\n\n\nclass TinyMCEImageViewSet(viewsets.ViewSet):\n    permission_classes = [IsAuthenticated]\n    lookup_value_regex = '[^/]+'   # اجازه می‌دهد نام فایل (با نقطه) به عنوان pk بیاید\n\n    # GET  /v1/tinymce-image/  ← لیست تصاویر\n    def list(self, request):\n        media_path = os.path.join(settings.MEDIA_ROOT, UPLOAD_SUBDIR)\n        if not os.path.exists(media_path):\n            return Response({'images': []})\n\n        images = [\n            {\n                'name': file_name,\n                'url': request.build_absolute_uri(\n                    f'{settings.MEDIA_URL}{UPLOAD_SUBDIR}/{file_name}'\n                ),\n            }\n            for file_name in os.listdir(media_path)\n        ]\n        return Response({'images': images})\n\n    # POST /v1/tinymce-image/  ← آپلود تصویر\n    def create(self, request):\n        serializer = TinyMCEUploadSerializer(data=request.data)\n        serializer.is_valid(raise_exception=True)\n\n        uploaded_file = serializer.validated_data['file']\n\n        os.makedirs(os.path.join(settings.MEDIA_ROOT, UPLOAD_SUBDIR), exist_ok=True)\n\n        relative_path = os.path.join(UPLOAD_SUBDIR, uploaded_file.name)\n        # در صورت وجود فایل هم‌نام، Django نام یکتا برمی‌گرداند\n        saved_path = default_storage.save(relative_path, uploaded_file)\n\n        file_url = request.build_absolute_uri(settings.MEDIA_URL + saved_path)\n        return Response({'location': file_url}, status=status.HTTP_201_CREATED)\n\n    # DELETE /v1/tinymce-image/<image_name>/  ← حذف تصویر\n    def destroy(self, request, pk=None):\n        image_name = unquote(pk)\n        image_path = os.path.join(settings.MEDIA_ROOT, UPLOAD_SUBDIR, image_name)\n\n        if os.path.exists(image_path):\n            os.remove(image_path)\n            return Response({'status': 'success', 'message': 'Image deleted successfully.'})\n\n        return Response(\n            {'status': 'error', 'message': 'Image not found.'},\n            status=status.HTTP_404_NOT_FOUND,\n        )\n        \n    \n    from rest_framework.decorators import action\n\n    @action(detail=False, methods=['post'], url_path='delete')\n    def destroy_by_name(self, request):\n        image_name = request.data.get('image_name', '')\n        image_path = os.path.join(settings.MEDIA_ROOT, UPLOAD_SUBDIR, image_name)\n        if os.path.exists(image_path):\n            os.remove(image_path)\n            return Response({'status': 'success', 'message': 'Image deleted successfully.'})\n        return Response({'status': 'error', 'message': 'Image not found.'},\n                        status=status.HTTP_404_NOT_FOUND)"
+        }
+    ]
+}

@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/widgets.js
+
 $(function() {
 	'use strict'
 	

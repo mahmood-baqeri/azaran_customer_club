@@ -1,3 +1,5 @@
+# Path: app_fastapi/views/user/job_certificate.py
+
 # admin/app_fastapi/views/user/user_job_certificate.py
 
 from asgiref.sync import sync_to_async

@@ -1,3 +1,5 @@
+# Path: applications/user/urls/base.py
+
 # admin/applications/user/url/base.py
 
 from django.urls import path, include

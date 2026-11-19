@@ -1,3 +1,5 @@
+# Path: applications/faq/views/faq_category.py
+
 # applications/faq/views/faq_category.py
 
 import logging

@@ -1,3 +1,5 @@
+# Path: applications/category/views/drf.py
+
 # applications/category/drf.py
 
 from rest_framework import viewsets, status

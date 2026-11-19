@@ -1,3 +1,5 @@
+# Path: app_fastapi/schemas/setting.py
+
 from typing import Optional
 
 from pydantic import BaseModel, HttpUrl

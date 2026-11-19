@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/sidemenu/sidemenu1-rtl.js
+
 $(function() {
 	$('.main-sidebar .with-sub').on('click', function(e) {
 		e.preventDefault();

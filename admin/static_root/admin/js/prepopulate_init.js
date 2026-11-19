@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/prepopulate_init.js
+
 'use strict';
 {
     const $ = django.jQuery;

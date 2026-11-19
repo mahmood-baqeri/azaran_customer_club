@@ -1,3 +1,5 @@
+# Path: applications/score/urls.py
+
 # applications/score/urls.py
 
 from django.urls import path

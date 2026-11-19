@@ -1,3 +1,5 @@
+# Path: applications/score/hooks.py
+
 """
 Hookهای خودکار امتیاز برای رویدادهای User/UserProfile/JobCertificate/FavoriteAnswer.
 """

@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/form-layouts.js
+
 $(function() {
 	'use strict'
 	$('.main-form-group .form-control').on('focusin focusout', function() {

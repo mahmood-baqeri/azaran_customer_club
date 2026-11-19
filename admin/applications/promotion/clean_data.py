@@ -1,3 +1,5 @@
+# Path: applications/promotion/clean_data.py
+
 # applications/promotion/clean_data.py
 
 from .forms import OrderAssignForm, OrderStatusForm

@@ -1,3 +1,5 @@
+# Path: applications/page/views/content_item.py
+
 import json
 
 from django.contrib.auth.decorators import permission_required

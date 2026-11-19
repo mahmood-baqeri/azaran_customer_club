@@ -1,3 +1,5 @@
+# Path: applications/user/urls/admin_urls.py
+
 from django.urls import path
 from applications.user.view import admin_login
 from applications.user.view import manager_view

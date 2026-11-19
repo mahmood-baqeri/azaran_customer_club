@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/ckeditor/plugins/wordcount/lang/fa.js
+
 ﻿/*
 Its The Persian (Farsi) Language Translate For Iranian By "Mohsen Esmaili"
 */

@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/mapel/jquery.mapael.js
+
 /*!
  *
  * Jquery Mapael - Dynamic maps jQuery plugin (based on raphael.js)

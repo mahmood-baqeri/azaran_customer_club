@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/eu.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.eu',
 '<h1>Hasi teklatuaren nabigazioa</h1>\n' +
   '\n' +

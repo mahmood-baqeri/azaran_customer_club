@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/urlify.js
+
 /*global XRegExp*/
 'use strict';
 {

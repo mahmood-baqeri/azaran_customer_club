@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/zh_CN.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.zh_CN',
 '<h1>开始键盘导航</h1>\n' +
   '\n' +

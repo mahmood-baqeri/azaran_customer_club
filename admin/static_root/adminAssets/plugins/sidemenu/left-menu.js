@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/sidemenu/left-menu.js
+
 (function($) {
 	"use strict";
 	

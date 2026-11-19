@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/jquery-countdown/jquery.countdown.js
+
 /*! http://keith-wood.name/countdown.html
 	Countdown for jQuery v2.1.0.
 	Written by Keith Wood (wood.keith{at}optusnet.com.au) January 2008.

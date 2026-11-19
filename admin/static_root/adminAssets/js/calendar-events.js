@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/calendar-events.js
+
 // sample calendar events data
 'use strict'
 var curYear = moment().format('YYYY');

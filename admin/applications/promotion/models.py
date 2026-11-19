@@ -1,3 +1,5 @@
+# Path: applications/promotion/models.py
+
 # applications/promotion/models.py
 
 from django.db import models

@@ -1,3 +1,5 @@
+# Path: applications/promotion/views/__init__.py
+
 # applications/promotion/views/__init__.py
 
 from .promotion import (

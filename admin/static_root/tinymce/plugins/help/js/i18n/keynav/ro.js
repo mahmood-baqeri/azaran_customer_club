@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/ro.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.ro',
 '<h1>Începeți navigarea de la tastatură</h1>\n' +
   '\n' +

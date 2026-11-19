@@ -1,3 +1,5 @@
+# Path: applications/core/validators.py
+
 # backend/apps/core/validators.py
 from django.core.exceptions import ValidationError
 from email_validator import validate_email, EmailNotValidError

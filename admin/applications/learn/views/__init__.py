@@ -1,3 +1,5 @@
+# Path: applications/learn/views/__init__.py
+
 # applications/review/views/__init__.py
 
 from .learn_view import (

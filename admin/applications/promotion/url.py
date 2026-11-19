@@ -1,3 +1,5 @@
+# Path: applications/promotion/url.py
+
 # applications/promotion/urls.py
 
 from django.urls import path

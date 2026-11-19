@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/fileuploads/js/fileupload.js
+
 /*!
  * =============================================================
  * dropify v0.2.2 - Override your input files with style.

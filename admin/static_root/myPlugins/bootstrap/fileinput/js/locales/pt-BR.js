@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/bootstrap/fileinput/js/locales/pt-BR.js
+
 /*!
  * FileInput Brazillian Portuguese Translations
  *

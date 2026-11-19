@@ -1,3 +1,5 @@
+# Path: applications/core/baseModel.py
+
 # django/applications/core/baseModel.py
 
 import jdatetime

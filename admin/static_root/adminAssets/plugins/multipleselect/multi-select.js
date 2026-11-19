@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/multipleselect/multi-select.js
+
 (function($) {
 	"use strict";
 	//basic

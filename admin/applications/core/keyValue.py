@@ -1,3 +1,5 @@
+# Path: applications/core/keyValue.py
+
 from django.utils.translation import gettext_lazy as _
 
 from django.db import models

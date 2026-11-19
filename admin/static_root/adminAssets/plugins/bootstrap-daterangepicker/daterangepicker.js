@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/bootstrap-daterangepicker/daterangepicker.js
+
 /**
 * @version: 2.1.27
 * @author: Dan Grossman http://www.dangrossman.info/

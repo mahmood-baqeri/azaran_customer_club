@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/gallery/lg-share.js
+
 /**!
  * lg-share.js | 1.2.2 | January 14th 2018
  * http://sachinchoolur.github.io/lg-share.js

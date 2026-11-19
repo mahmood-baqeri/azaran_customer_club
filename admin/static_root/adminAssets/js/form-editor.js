@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/form-editor.js
+
 $(function() {
 	'use strict'
 	var icons = Quill.import('ui/icons');

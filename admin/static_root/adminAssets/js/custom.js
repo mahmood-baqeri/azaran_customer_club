@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/custom.js
+
 $(function() {
 	'use strict'
 	

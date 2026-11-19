@@ -1,3 +1,5 @@
+# Path: applications/score/constants.py
+
 """
 ثابت‌های کمکی امتیاز — جداکننده قواعد ثابت از منطق سرویس.
 """

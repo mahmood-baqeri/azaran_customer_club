@@ -1,3 +1,5 @@
+# Path: applications/notification/models.py
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.db import models

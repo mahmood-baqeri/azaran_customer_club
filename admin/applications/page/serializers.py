@@ -1,3 +1,5 @@
+# Path: applications/page/serializers.py
+
 from rest_framework import serializers
 
 from applications.page.models import Page

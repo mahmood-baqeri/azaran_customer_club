@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/ar.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.ar',
 '<h1>بدء التنقل بواسطة لوحة المفاتيح</h1>\n' +
   '\n' +

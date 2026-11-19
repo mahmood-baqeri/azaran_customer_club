@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/plugins/help/js/i18n/keynav/hu_HU.js
+
 tinymce.Resource.add('tinymce.html-i18n.help-keynav.hu_HU',
 '<h1>Billentyűzetes navigáció indítása</h1>\n' +
   '\n' +

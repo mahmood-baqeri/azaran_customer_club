@@ -1,3 +1,5 @@
+// Path: static_root/admin/js/core.js
+
 // Core JavaScript helper functions
 'use strict';
 

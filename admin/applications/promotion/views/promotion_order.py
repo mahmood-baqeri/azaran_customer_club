@@ -1,3 +1,5 @@
+# Path: applications/promotion/views/promotion_order.py
+
 # applications/promotion/views/promotion_order.py
 
 import json

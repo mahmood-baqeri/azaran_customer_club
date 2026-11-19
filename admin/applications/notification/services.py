@@ -1,3 +1,5 @@
+# Path: applications/notification/services.py
+
 """
 سرویس‌های ماژول نوتیفیکیشن — لایه‌ی منطق اتمی، مستقل از FastAPI.
 """

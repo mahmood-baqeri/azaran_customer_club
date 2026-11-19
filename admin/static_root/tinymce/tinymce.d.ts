@@ -1,3 +1,5 @@
+// Path: static_root/tinymce/tinymce.d.ts
+
 interface StringPathBookmark {
     start: string;
     end?: string;

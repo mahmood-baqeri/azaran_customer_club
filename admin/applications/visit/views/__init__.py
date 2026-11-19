@@ -1,3 +1,5 @@
+# Path: applications/visit/views/__init__.py
+
 # applications/visit/views/__init__.py
 
 from .visit import (

@@ -1,3 +1,5 @@
+# Path: applications/gallery/views/__init__.py
+
 # applications/gallery/views/__init__.py
 
 from .gallery_view import (

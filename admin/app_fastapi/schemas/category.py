@@ -1,3 +1,5 @@
+# Path: app_fastapi/schemas/category.py
+
 from typing import Optional
 from typing import List, Literal, Optional
 

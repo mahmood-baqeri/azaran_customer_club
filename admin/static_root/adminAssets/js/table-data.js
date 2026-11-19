@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/table-data.js
+
 $(function() {
 	'use strict'
 	

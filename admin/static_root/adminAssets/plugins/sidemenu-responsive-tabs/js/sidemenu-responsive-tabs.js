@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/sidemenu-responsive-tabs/js/sidemenu-responsive-tabs.js
+
 // Easy Responsive Tabs Plugin
 // Author: Samson.Onna <Email : samson3d@gmail.com> 
 (function ($) {

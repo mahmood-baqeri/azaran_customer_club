@@ -1,3 +1,5 @@
+// Path: static_root/myPlugins/ckeditor/plugins/wsc/dialogs/wsc.js
+
 ﻿/*
  Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
  For licensing, see LICENSE.html or http://ckeditor.com/license

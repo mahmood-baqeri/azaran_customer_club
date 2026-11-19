@@ -1,3 +1,5 @@
+# Path: applications/review/clean_data.py
+
 # applications/review/clean_data.py
 
 from .models import ReviewQuestion

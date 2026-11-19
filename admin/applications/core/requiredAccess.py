@@ -1,3 +1,5 @@
+# Path: applications/core/requiredAccess.py
+
 from django.shortcuts import render, redirect
 from django.core.exceptions import PermissionDenied
 from django.http import Http404

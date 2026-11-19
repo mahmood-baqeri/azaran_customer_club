@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/js/contacts.js
+
 $(function() {
 	'use strict'
 

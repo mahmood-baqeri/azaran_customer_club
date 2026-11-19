@@ -1,3 +1,5 @@
+# Path: applications/score/tasks.py
+
 """
 Cron jobs: EXPIRE, WEEKLY_STREAK, GALLERY_TOP.
 """

@@ -1,3 +1,5 @@
+# Path: applications/log/middleware.py
+
 """
 Middleware لاگ درخواست‌ها
 

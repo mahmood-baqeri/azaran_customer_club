@@ -1,3 +1,5 @@
+# Path: applications/dashboard/views/__init__.py
+
 # applications/dashboard/views/__init__.py
 
 from .dashboard import dashboard

@@ -1,3 +1,5 @@
+// Path: static_root/adminAssets/plugins/model-datepicker/js/datepicker.js
+
 /*!
  * Datepicker v1.0.7
  * https://fengyuanchen.github.io/datepicker
